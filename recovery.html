@@ -28,20 +28,18 @@
         <script>
         async function checkEmailConfirmation() {
             const msg = document.getElementById('message');
-            // Verifica se existe token na hash ou query
             const hash = window.location.hash;
             const search = window.location.search;
-            const hasToken = hash.includes('access_token') || search.includes('token_hash');
-            if (!hasToken) {
-                msg.textContent = 'Link inválido ou expirado.';
-                msg.style.color = 'red';
-                return;
-            }
-            // Espera supabase carregar
+            const params = new URLSearchParams(search);
+            const hashParams = new URLSearchParams(hash.replace(/^#/, ''));
+
+            // Helper para esperar supabase
             function waitForSupabase(cb) {
                 if (window.supabaseConfig && window.supabaseConfig.getClient) cb();
                 else setTimeout(() => waitForSupabase(cb), 50);
             }
+
+            // Lógica principal
             waitForSupabase(async () => {
                 await window.supabaseConfig.init();
                 const supabase = window.supabaseConfig.getClient();
@@ -50,20 +48,63 @@
                     msg.style.color = 'red';
                     return;
                 }
-                try {
-                    const { data, error } = await supabase.auth.getSession();
-                    if (error || !data.session) {
+
+                // 1. PKCE flow: ?code=...
+                if (params.has('code')) {
+                    try {
+                        const { error } = await supabase.auth.exchangeCodeForSession(params.get('code'));
+                        if (error) throw error;
+                        msg.textContent = 'Email confirmado com sucesso! A redirecionar...';
+                        msg.style.color = 'green';
+                        setTimeout(() => { window.location.href = '/auth.html'; }, 2000);
+                        return;
+                    } catch (e) {
                         msg.textContent = 'Link inválido ou expirado.';
                         msg.style.color = 'red';
                         return;
                     }
-                    msg.textContent = 'Email confirmado! A redirecionar...';
-                    msg.style.color = 'green';
-                    setTimeout(() => { window.location.href = '/auth.html'; }, 2000);
-                } catch (e) {
-                    msg.textContent = 'Erro ao confirmar email.';
-                    msg.style.color = 'red';
                 }
+
+                // 2. Hash ou query com type=signup/email_change
+                const type = hashParams.get('type') || params.get('type');
+                if (type === 'signup' || type === 'email_change') {
+                    // Se vier com access_token/refresh_token no hash
+                    if (hashParams.get('access_token') && hashParams.get('refresh_token')) {
+                        // Supabase já faz o setSession automaticamente, só precisa verificar sessão
+                        try {
+                            const { data, error } = await supabase.auth.getSession();
+                            if (error || !data.session) throw error;
+                            msg.textContent = 'Email confirmado com sucesso! A redirecionar...';
+                            msg.style.color = 'green';
+                            setTimeout(() => { window.location.href = '/auth.html'; }, 2000);
+                            return;
+                        } catch (e) {
+                            msg.textContent = 'Link inválido ou expirado.';
+                            msg.style.color = 'red';
+                            return;
+                        }
+                    }
+                    // Caso especial: token_hash na query (ex: ?token_hash=...&type=signup)
+                    if (params.get('token_hash')) {
+                        // Supabase trata isto internamente, só precisa verificar sessão
+                        try {
+                            const { data, error } = await supabase.auth.getSession();
+                            if (error || !data.session) throw error;
+                            msg.textContent = 'Email confirmado com sucesso! A redirecionar...';
+                            msg.style.color = 'green';
+                            setTimeout(() => { window.location.href = '/auth.html'; }, 2000);
+                            return;
+                        } catch (e) {
+                            msg.textContent = 'Link inválido ou expirado.';
+                            msg.style.color = 'red';
+                            return;
+                        }
+                    }
+                }
+
+                // Se não encontrou nenhum dos fluxos válidos
+                msg.textContent = 'Link inválido ou expirado.';
+                msg.style.color = 'red';
             });
         }
         checkEmailConfirmation();
