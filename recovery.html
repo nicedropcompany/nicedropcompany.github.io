@@ -8,181 +8,65 @@
 
     <title>NiceDrop | Password Recovery</title>
 
-    <link rel="stylesheet" href="style.css">
-
-</head>
-
-<body class="app-page">
-
-    <main style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;">
-
-        <div
-            style="width:min(100%,520px);background:white;padding:36px;box-shadow:-5px 5px 0 rgba(0,0,0,0.30);border:1px solid rgba(0,0,0,0.08);">
-
-            <h2>Reset Password</h2>
-            <p id="message" class="hero-text">Enter your new password below to recover your account.</p>
-
-            <form id="recoveryForm" style="margin-top:24px;">
-
-                <label for="password">New Password</label>
-                <br>
-                <input type="password" id="password" name="password" required placeholder="Enter new password"
-                    style="width:100%;padding:16px 14px;font-size:18px;border-radius:0;">
-
-                <br><br>
-
-                <label for="passwordConfirm">Confirm Password</label>
-                <br>
-                <input type="password" id="passwordConfirm" name="passwordConfirm" required
-                    placeholder="Confirm new password"
-                    style="width:100%;padding:16px 14px;font-size:18px;border-radius:0;">
-
-                <div class="buttons" style="margin-top:20px;">
-                    <button type="submit" id="submitBtn" class="btn">Update Password</button>
-                </div>
-
-            </form>
-
-        </div>
-
-    </main>
-
-    <script src="script.js"></script>
-    <script src="supabase-config.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-
-    <script type="module">
-        console.log("RECOVERY SCRIPT STARTED")
-
-        const form = document.getElementById("recoveryForm");
-        const messageEl = document.getElementById("message");
-        const submitBtn = document.getElementById("submitBtn");
-
-        let client = null;
-        let hasValidRecoverySession = false;
-
-        function isMobileDevice() {
-            return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-        }
-
-        function showMessage(text, isError = false) {
-            messageEl.textContent = text;
-            messageEl.style.color = isError ? "red" : "";
-        }
-
-        async function initRecoverySession() {
-            console.log("INIT START")
-
-            if (!client) {
-                showMessage("Configure Supabase in supabase-config.js to use recovery.", true);
+    <!DOCTYPE html>
+    <html lang="pt-PT">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>NiceDrop | Confirmação de Email</title>
+        <link rel="stylesheet" href="/style.css">
+    </head>
+    <body class="app-page">
+        <main style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;">
+            <div style="width:min(100%,520px);background:white;padding:36px;box-shadow:-5px 5px 0 rgba(0,0,0,0.30);border:1px solid rgba(0,0,0,0.08);">
+                <h2>Confirmação de Email</h2>
+                <p id="message" class="hero-text">A verificar o seu link...</p>
+            </div>
+        </main>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="/supabase-config.js"></script>
+        <script>
+        async function checkEmailConfirmation() {
+            const msg = document.getElementById('message');
+            // Verifica se existe token na hash ou query
+            const hash = window.location.hash;
+            const search = window.location.search;
+            const hasToken = hash.includes('access_token') || search.includes('token_hash');
+            if (!hasToken) {
+                msg.textContent = 'Link inválido ou expirado.';
+                msg.style.color = 'red';
                 return;
             }
-
-            submitBtn.disabled = true;
-
-            const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-            const accessToken = hashParams.get("access_token");
-            const refreshToken = hashParams.get("refresh_token");
-            const type = hashParams.get("type");
-
-            console.log("HASH:", window.location.hash)
-
-            if (type === "recovery" && accessToken && refreshToken) {
-                console.log("Recovery detected")
-
-                const { error } = await client.auth.setSession({
-                    access_token: accessToken,
-                    refresh_token: refreshToken
-                });
-
-                if (error) {
-                    console.error(error)
-                    showMessage("Invalid or expired link", true);
+            // Espera supabase carregar
+            function waitForSupabase(cb) {
+                if (window.supabaseConfig && window.supabaseConfig.getClient) cb();
+                else setTimeout(() => waitForSupabase(cb), 50);
+            }
+            waitForSupabase(async () => {
+                await window.supabaseConfig.init();
+                const supabase = window.supabaseConfig.getClient();
+                if (!supabase) {
+                    msg.textContent = 'Erro ao inicializar Supabase.';
+                    msg.style.color = 'red';
                     return;
                 }
-
-                // clean URL
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
-
-            const { data, error } = await client.auth.getSession();
-
-            console.log("SESSION:", data)
-
-            if (error || !data.session) {
-                showMessage("Open this page from your email recovery link.", true);
-                return;
-            }
-
-            hasValidRecoverySession = true;
-            submitBtn.disabled = false;
-            showMessage("Enter your new password.");
-        }
-
-        // Initialize Supabase and then recovery
-        async function initApp() {
-            const config = window.supabaseConfig;
-            if (!config || !config.isConfigured || !config.isConfigured()) {
-                showMessage("Configure Supabase in supabase-config.js to use recovery.", true);
-                return;
-            }
-
-            try {
-                await config.init();
-                client = config.getClient();
-                if (client) {
-                    initRecoverySession();
+                try {
+                    const { data, error } = await supabase.auth.getSession();
+                    if (error || !data.session) {
+                        msg.textContent = 'Link inválido ou expirado.';
+                        msg.style.color = 'red';
+                        return;
+                    }
+                    msg.textContent = 'Email confirmado! A redirecionar...';
+                    msg.style.color = 'green';
+                    setTimeout(() => { window.location.href = '/auth.html'; }, 2000);
+                } catch (e) {
+                    msg.textContent = 'Erro ao confirmar email.';
+                    msg.style.color = 'red';
                 }
-            } catch (err) {
-                console.error("Failed to initialize Supabase:", err);
-                showMessage("Failed to initialize Supabase.", true);
-            }
+            });
         }
-
-        initApp();
-
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault();
-
-            if (!hasValidRecoverySession) return;
-
-            const password = document.getElementById("password").value;
-            const confirm = document.getElementById("passwordConfirm").value;
-
-            if (password !== confirm) {
-                showMessage("Passwords do not match", true);
-                return;
-            }
-
-            form.style.display = "none";
-            showMessage("Updating password..");
-
-            const { error } = await client.auth.updateUser({ password });
-
-            if (error) {
-                showMessage(error.message, true);
-                form.style.display = "block";
-                return;
-            }
-
-            showMessage("Password updated!");
-
-            setTimeout(() => {
-                if (isMobileDevice()) {
-                    window.location.href = "io.supabase.flutter://login-callback";
-                    return;
-                }
-
-                window.location.href = "index.html";
-            }, 1500);
-        });
-
-        function showMessage(text, isError = false) {
-            messageEl.textContent = text;
-            messageEl.style.color = isError ? "red" : "";
-        }
-    </script>
-
-</body>
-
-</html>
+        checkEmailConfirmation();
+        </script>
+    </body>
+    </html>
