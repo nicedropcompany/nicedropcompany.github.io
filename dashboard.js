@@ -111,7 +111,7 @@ function init() {
             // Get user profile
             const { data: profile, error } = await supabase
                 .from('profiles')
-                .select('id, username, role, email')
+                .select('id, username, role, store_id')
                 .eq('id', session.user.id)
                 .single();
             if (error || !profile) {
@@ -130,7 +130,7 @@ function init() {
                 const { data: ownerStores, error: storesError } = await supabase
                     .from('stores')
                     .select('id, name, service, latitude, longitude, owner_id')
-                    .eq('owner_id', profile.id);
+                    .eq('id', profile.store_id);
                 if (!storesError && ownerStores) stores = ownerStores;
             }
             state.stores = stores;
@@ -146,6 +146,8 @@ function init() {
             }
             // Auto-select first store
             state.currentStoreId = state.stores[0]?.id || null;
+            // Load drones and team for the first store
+            await loadStoreData(state.currentStoreId);
             renderSidebarStores();
             renderMainContent();
             bindEvents();
@@ -167,9 +169,8 @@ function bindEvents() {
     addMemberForm.addEventListener('submit', handleAddMember);
 }
 
-function renderSidebarStores() {
+async function renderSidebarStores() {
     let html = '';
-    // Se for admin ou developer, mostra botão Admin no topo
     if (state.user.role === 'admin' || state.user.role === 'developer') {
         html += `<div class="sidebar-store-item" id="adminSidebarBtn" style="background:#111;color:#fff;cursor:pointer;justify-content:center;font-weight:bold;">
             <span style="margin-right:8px;">⚙️</span> ADMIN
@@ -186,7 +187,6 @@ function renderSidebarStores() {
     }).join('');
     sidebarStores.innerHTML = html;
 
-    // Bind admin button
     if (state.user.role === 'admin' || state.user.role === 'developer') {
         const adminBtn = document.getElementById('adminSidebarBtn');
         if (adminBtn) {
@@ -197,8 +197,9 @@ function renderSidebarStores() {
     }
 
     sidebarStores.querySelectorAll('.sidebar-store-item[data-store-id]').forEach(item => {
-        item.addEventListener('click', () => {
+        item.addEventListener('click', async () => {
             state.currentStoreId = Number(item.dataset.storeId);
+            await loadStoreData(state.currentStoreId);
             renderSidebarStores();
             renderMainContent();
         });
@@ -218,8 +219,8 @@ function renderMainContent() {
     mainTopbar.style.display = 'flex';
     
     const store = state.stores.find(s => s.id === state.currentStoreId);
-    const drones = state.drones[state.currentStoreId] || [];
-    const members = state.members[state.currentStoreId] || [];
+    const drones = state.drones || [];
+    const team = state.team || [];
     
     // Top bar
     storeTitle.textContent = store.name;
@@ -252,22 +253,21 @@ function renderMainContent() {
     
     // Detail cards based on role
     if (state.user.role === 'developer') {
-        renderDetailRowDeveloper(store, drones, members);
+        renderDetailRowDeveloper(store, drones, team);
     } else {
-        renderDetailRowOwner(store, drones, members);
+        renderDetailRowOwner(store, drones, team);
     }
 }
 
-function renderDetailRowDeveloper(store, drones, members) {
+function renderDetailRowDeveloper(store, drones, team) {
     detailRow.classList.add('three-col');
     detailRow.innerHTML = `
         <!-- TEAM CARD -->
         <div class="detail-card">
             <div class="detail-card-title">Equipa</div>
             <div class="team-list" id="teamList">
-                ${renderTeamList(members, true)}
+                ${renderTeamList(team, true)}
             </div>
-            <button class="add-member-btn" onclick="openModal('addMemberModal')">+ ADICIONAR MEMBRO</button>
         </div>
         
         <!-- DRONES CARD -->
@@ -276,30 +276,25 @@ function renderDetailRowDeveloper(store, drones, members) {
             <div class="drones-list" id="dronesList">
                 ${renderDronesList(drones)}
             </div>
-            <button class="add-drone-btn" onclick="openModal('addDroneModal')">+ ADICIONAR DRONE</button>
         </div>
         
         <!-- HISTORY CARD -->
         <div class="detail-card">
             <div class="detail-card-title">Histórico da Loja</div>
-            ${renderHistory(store, drones, members)}
+            ${renderHistory(store, drones, team)}
         </div>
     `;
-    
-    // Re-bind member action buttons
-    bindMemberActions(members);
 }
 
-function renderDetailRowOwner(store, drones, members) {
+function renderDetailRowOwner(store, drones, team) {
     detailRow.classList.remove('three-col');
     detailRow.innerHTML = `
         <!-- TEAM CARD (60%) -->
         <div class="detail-card">
             <div class="detail-card-title">Equipa</div>
             <div class="team-list" id="teamList">
-                ${renderTeamList(members, state.user.role === 'owner')}
+                ${renderTeamList(team, state.user.role === 'owner')}
             </div>
-            ${state.user.role === 'owner' ? '<button class="add-member-btn" onclick="openModal(\'addMemberModal\')">+ ADICIONAR MEMBRO</button>' : ''}
         </div>
         
         <!-- DRONES CARD (40%) -->
@@ -310,9 +305,28 @@ function renderDetailRowOwner(store, drones, members) {
             </div>
         </div>
     `;
-    
-    // Re-bind member action buttons
-    bindMemberActions(members);
+}
+// Load drones and team for a store from Supabase
+async function loadStoreData(storeId) {
+    const supabase = window.supabaseConfig.getClient();
+    // Load drones
+    let drones = [];
+    let team = [];
+    if (storeId) {
+        const { data: dronesData } = await supabase
+            .from('drones')
+            .select('id, name, status, capacity')
+            .eq('store_id', storeId);
+        if (dronesData) drones = dronesData;
+        // Load team
+        const { data: teamData } = await supabase
+            .from('profiles')
+            .select('id, username, role')
+            .eq('store_id', storeId);
+        if (teamData) team = teamData;
+    }
+    state.drones = drones;
+    state.team = team;
 }
 
 function renderTeamList(members, canManage) {
