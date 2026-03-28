@@ -117,27 +117,36 @@ async function loadStores() {
 }
 
 async function createStore() {
-    const email = document.getElementById('ownerEmail').value.trim();
+    const ownerEmail = document.getElementById('ownerEmail').value.trim();
     const name = document.getElementById('storeName').value.trim();
     const lat = document.getElementById('storeLat').value;
     const lng = document.getElementById('storeLng').value;
-    if (!email || !name || !lat || !lng) {
+    if (!ownerEmail || !name || !lat || !lng) {
         alert('Preencha todos os campos e selecione a localização no mapa.');
         return;
     }
+    // Find owner by email
     const { data: owner, error: ownerError } = await adminSupabase
         .from('users_with_email')
         .select('id')
-        .eq('email', email)
+        .eq('email', ownerEmail)
         .single();
     if (ownerError || !owner) { alert('Owner não encontrado.'); return; }
-    const { error } = await adminSupabase.from('stores').insert({
-        name, latitude: parseFloat(lat), longitude: parseFloat(lng), service: false
-    });
-    if (error) { alert('Erro ao criar loja: ' + error.message); return; }
-    await adminSupabase.from('profiles').update({ role: 'owner' }).eq('id', owner.id);
+    // Insert store and get new id
+    const { data: newStore, error: storeError } = await adminSupabase
+        .from('stores')
+        .insert({ name, latitude: parseFloat(lat), longitude: parseFloat(lng), service: false, owner_id: owner.id })
+        .select('id')
+        .single();
+    if (storeError || !newStore) { alert('Erro ao criar loja: ' + (storeError?.message || '')); return; }
+    // Update owner's profile
+    const { error: updateError } = await adminSupabase
+        .from('profiles')
+        .update({ store_id: newStore.id, role: 'owner' })
+        .eq('id', owner.id);
+    if (updateError) { alert('Erro ao atualizar owner: ' + updateError.message); return; }
+    alert('Loja criada com sucesso!');
     await loadStores();
-    alert('Loja criada!');
 }
 
 async function addDrone() {
