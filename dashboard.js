@@ -5,7 +5,9 @@
 
 const user = JSON.parse(localStorage.getItem('user'));
 if (!user) {
-    window.location.href = '/auth.html';
+    if (window.location.pathname !== '/auth.html') {
+        window.location.href = '/auth.html';
+    }
 }
 
 if (user && (user.role === 'developer' || user.role === 'admin')) {
@@ -15,7 +17,9 @@ if (user && (user.role === 'developer' || user.role === 'admin')) {
 if (user && user.role === 'client') {
     alert('Conta cliente não pode aceder ao dashboard.');
     localStorage.removeItem('user');
-    window.location.href = '/auth.html';
+    if (window.location.pathname !== '/auth.html') {
+        window.location.href = '/auth.html';
+    }
 }
 
 const STORAGE_KEYS = {

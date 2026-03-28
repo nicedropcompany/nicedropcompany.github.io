@@ -450,7 +450,9 @@ function bootstrapStorage() {
 function getSessionUser() {
     const raw = localStorage.getItem('user');
     if (!raw) {
-        window.location.href = '/auth.html';
+        if (window.location.pathname !== '/auth.html') {
+            window.location.href = '/auth.html';
+        }
         return null;
     }
 
@@ -458,7 +460,9 @@ function getSessionUser() {
         return JSON.parse(raw);
     } catch {
         localStorage.removeItem('user');
-        window.location.href = '/auth.html';
+        if (window.location.pathname !== '/auth.html') {
+            window.location.href = '/auth.html';
+        }
         return null;
     }
 }
@@ -496,7 +500,9 @@ function readJson(key, fallback) {
 
 function logout() {
     localStorage.removeItem('user');
-    window.location.href = '/auth.html';
+    if (window.location.pathname !== '/auth.html') {
+        window.location.href = '/auth.html';
+    }
 }
 
 function formatEuro(value) {

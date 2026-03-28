@@ -148,20 +148,6 @@ async function initAuth() {
             return;
         }
 
-        const { data: { session } } = await authState.supabase.auth.getSession();
-        if (session) {
-            const { data: profile } = await authState.supabase
-                .from('profiles')
-                .select('role')
-                .eq('id', session.user.id)
-                .single();
-
-            if (profile?.role === 'developer') {
-                window.location.href = '/admin.html';
-            } else if (profile?.role === 'owner') {
-                window.location.href = '/dashboard.html';
-            }
-        }
 
         setupEventListeners();
         console.log('✅ Auth pronto');
