@@ -123,6 +123,7 @@ function renderMain() {
         </div>
         <div class="detail-card">
             <div class="detail-card-title">Equipa</div>
+            <button id="addEmployeeBtn" class="add-member-btn">Adicionar Funcionário</button>
             ${state.team.length ? state.team.map(m => `
                 <div class="team-member-row">
                     <div class="member-avatar">${(m.username || 'U')[0].toUpperCase()}</div>
@@ -133,6 +134,35 @@ function renderMain() {
                 </div>`).join('') : '<div class="empty-state-text">SEM MEMBROS</div>'}
         </div>
     `;
+    // Add event for Adicionar Funcionário
+    const addEmployeeBtn = document.getElementById('addEmployeeBtn');
+    if (addEmployeeBtn) {
+        addEmployeeBtn.addEventListener('click', async () => {
+            const email = prompt('Email do funcionário a adicionar:');
+            if (!email) return;
+            // Search user by email
+            const { data: user } = await supabaseClient
+                .from('users_with_email')
+                .select('id')
+                .eq('email', email)
+                .single();
+            if (!user) {
+                alert('Utilizador não encontrado');
+                return;
+            }
+            // Update profile
+            const { error } = await supabaseClient
+                .from('profiles')
+                .update({ store_id: state.currentStoreId, role: 'operator' })
+                .eq('id', user.id);
+            if (error) {
+                alert('Erro ao adicionar funcionário: ' + error.message);
+                return;
+            }
+            // Reload team
+            await loadStoreData(state.currentStoreId);
+        });
+    }
 }
 
 function bindEvents() {
