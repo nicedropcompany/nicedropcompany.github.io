@@ -154,4 +154,11 @@ function closeModal(modalId) {
 window.closeModal = closeModal;
 window.openModal = openModal;
 
+function formatEuro(value) {
+    return new Intl.NumberFormat('pt-PT', {
+        style: 'currency',
+        currency: 'EUR'
+    }).format(value || 0);
+}
+
 document.addEventListener('DOMContentLoaded', init);
