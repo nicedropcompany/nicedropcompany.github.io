@@ -58,7 +58,7 @@ function init() {
         }
         const { data: profile, error: profileError } = await supabase
             .from('profiles')
-            .select('role, email')
+            .select('role')
             .eq('id', session.user.id)
             .single();
         console.log('Profile:', profile, 'Error:', profileError);
