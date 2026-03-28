@@ -135,27 +135,7 @@ function setupEventListeners() {
 }
 
 async function initAuth() {
-    try {
-        if (!window.supabaseConfig?.isConfigured()) {
-            showMessage('error', 'Supabase não configurado.');
-            return;
-        }
-
-        authState.supabase = window.supabaseConfig.init();
-
-        if (!authState.supabase) {
-            showMessage('error', 'Erro ao inicializar Supabase.');
-            return;
-        }
-
-
-        setupEventListeners();
-        console.log('✅ Auth pronto');
-
-    } catch (error) {
-        console.error('Erro initAuth:', error.message);
-        showMessage('error', 'Erro ao inicializar autenticação.');
-    }
+    setupEventListeners();
 }
 
 document.addEventListener('DOMContentLoaded', function () {
