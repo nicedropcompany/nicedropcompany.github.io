@@ -1,3 +1,15 @@
+// Issue 1 - logout not defined
+async function logout() {
+    await window.supabaseConfig.getClient().auth.signOut();
+    localStorage.removeItem('nicedrop_user');
+    window.location.href = '/auth.html';
+}
+// Logout function for sidebar
+async function logout() {
+    await window.supabaseConfig.getClient().auth.signOut();
+    localStorage.removeItem('nicedrop_user');
+    window.location.href = '/auth.html';
+}
 function waitForSupabase(cb) {
     if (window.supabase?.createClient) {
         cb();
@@ -119,19 +131,19 @@ function init() {
                 return;
             }
             state.user = profile;
-            // Load stores from Supabase
+            // Issue 2 - Load stores for sidebar
             let stores = [];
             if (profile.role === 'developer') {
-                const { data: allStores, error: storesError } = await supabase
+                const { data: allStores } = await supabase
                     .from('stores')
-                    .select('id, name, service, latitude, longitude, owner_id');
-                if (!storesError && allStores) stores = allStores;
+                    .select('id, name, service');
+                if (allStores) stores = allStores;
             } else if (profile.role === 'owner') {
-                const { data: ownerStores, error: storesError } = await supabase
+                const { data: ownerStores } = await supabase
                     .from('stores')
-                    .select('id, name, service, latitude, longitude, owner_id')
+                    .select('id, name, service')
                     .eq('id', profile.store_id);
-                if (!storesError && ownerStores) stores = ownerStores;
+                if (ownerStores) stores = ownerStores;
             }
             state.stores = stores;
             // Setup user info
@@ -148,7 +160,7 @@ function init() {
             state.currentStoreId = state.stores[0]?.id || null;
             // Load drones and team for the first store
             await loadStoreData(state.currentStoreId);
-            renderSidebarStores();
+            await renderSidebarStores();
             renderMainContent();
             bindEvents();
         });
@@ -199,8 +211,9 @@ async function renderSidebarStores() {
     sidebarStores.querySelectorAll('.sidebar-store-item[data-store-id]').forEach(item => {
         item.addEventListener('click', async () => {
             state.currentStoreId = Number(item.dataset.storeId);
+            // Load drones and team for selected store
             await loadStoreData(state.currentStoreId);
-            renderSidebarStores();
+            await renderSidebarStores();
             renderMainContent();
         });
     });
@@ -309,16 +322,16 @@ function renderDetailRowOwner(store, drones, team) {
 // Load drones and team for a store from Supabase
 async function loadStoreData(storeId) {
     const supabase = window.supabaseConfig.getClient();
-    // Load drones
     let drones = [];
     let team = [];
     if (storeId) {
+        // Load drones for selected store
         const { data: dronesData } = await supabase
             .from('drones')
             .select('id, name, status, capacity')
             .eq('store_id', storeId);
         if (dronesData) drones = dronesData;
-        // Load team
+        // Load team for selected store
         const { data: teamData } = await supabase
             .from('profiles')
             .select('id, username, role')
@@ -327,6 +340,8 @@ async function loadStoreData(storeId) {
     }
     state.drones = drones;
     state.team = team;
+    // Show drones and team in detailRow
+    renderMainContent();
 }
 
 function renderTeamList(members, canManage) {
