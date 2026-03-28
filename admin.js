@@ -48,8 +48,8 @@ async function init() {
 
 async function loadUsers() {
     const { data: users, error } = await adminSupabase
-        .from('profiles')
-        .select('id, username, role');
+        .from('users_with_email')
+        .select('id, username, role, store_id, email');
     if (error) { console.error('Erro users:', error.message); return; }
 
     const counts = { developer: 0, owner: 0, operator: 0, client: 0 };
@@ -66,7 +66,7 @@ async function loadUsers() {
     document.getElementById('usersBody').innerHTML = users.map(u => `
         <tr>
             <td>${u.username || '-'}</td>
-            <td>${u.id}</td>
+            <td>${u.email || '-'}</td>
             <td>${u.role || '-'}</td>
             <td>
                 <select onchange="changeRole('${u.id}', this.value)">
@@ -126,9 +126,9 @@ async function createStore() {
         return;
     }
     const { data: owner, error: ownerError } = await adminSupabase
-        .from('profiles')
+        .from('users_with_email')
         .select('id')
-        .eq('username', email)
+        .eq('email', email)
         .single();
     if (ownerError || !owner) { alert('Owner não encontrado.'); return; }
     const { error } = await adminSupabase.from('stores').insert({
