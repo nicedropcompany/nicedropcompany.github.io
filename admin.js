@@ -58,12 +58,11 @@ function init() {
         }
         const { data: profile, error: profileError } = await supabase
             .from('profiles')
-            .select('role')
+            .select('role, username')
             .eq('id', session.user.id)
             .single();
         console.log('Profile:', profile, 'Error:', profileError);
         const role = profile?.role;
-        console.log('Role encontrado:', role);
         if (role !== 'developer') {
             console.log('Role não é developer, redirecionar para auth.html');
             if (!window.location.pathname.endsWith('auth.html')) {
@@ -71,12 +70,37 @@ function init() {
             }
             return;
         }
-        state.user = { ...profile, email: profile?.email, role };
-        adminEmailEl.textContent = `${state.user.email} (${state.user.role})`;
+        state.user = { ...profile, role };
+        adminEmailEl.textContent = `${profile.username} (${role})`;
+        await loadUsersFromProfiles(supabase);
+        await loadStoresFromTable(supabase);
         bootstrapStorage();
         loadState();
         bindEvents();
         renderAll();
+    async function loadUsersFromProfiles(supabase) {
+        const { data: users, error } = await supabase
+            .from('profiles')
+            .select('id, username, role');
+        if (error) {
+            console.error('Erro ao carregar utilizadores:', error.message);
+            state.users = [];
+            return;
+        }
+        state.users = users || [];
+    }
+
+    async function loadStoresFromTable(supabase) {
+        const { data: stores, error } = await supabase
+            .from('stores')
+            .select('id, name, service, latitude, longitude');
+        if (error) {
+            console.error('Erro ao carregar lojas:', error.message);
+            state.stores = [];
+            return;
+        }
+        state.stores = stores || [];
+    }
     });
 
     // Mapa Leaflet para localização da loja
@@ -124,7 +148,7 @@ function renderUsers() {
     const term = searchInput.value.trim().toLowerCase();
     const rows = state.users.filter(u => {
         if (!term) return true;
-        return u.email.toLowerCase().includes(term) || u.name.toLowerCase().includes(term);
+        return (u.username && u.username.toLowerCase().includes(term)) || (u.id && u.id.toLowerCase().includes(term));
     });
 
     if (!rows.length) {
@@ -134,19 +158,12 @@ function renderUsers() {
 
     usersBody.innerHTML = rows.map(user => `
         <tr>
-            <td>${user.name}</td>
-            <td>${user.email}</td>
-            <td>${user.role}</td>
-            <td><button class="btn-remove-user" title="Apagar utilizador" data-email="${user.email}">✖</button></td>
+            <td>${user.username || '-'}</td>
+            <td>${user.id || '-'}</td>
+            <td>${user.role || '-'}</td>
+            <td></td>
         </tr>
     `).join('');
-
-    usersBody.querySelectorAll('.btn-remove-user').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const email = btn.dataset.email;
-            showConfirmDeleteUser(email);
-        });
-    });
 }
 
 function showConfirmDeleteUser(email) {
