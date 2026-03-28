@@ -33,21 +33,43 @@ const adminDashboardSection = document.getElementById('adminDashboardSection');
 const adminDashboardContainer = document.getElementById('adminDashboardContainer');
 
 function init() {
-    const session = getSessionUser();
-    if (!session) return;
-
-    if (session.role !== 'developer' && session.role !== 'admin') {
-        window.location.href = '/dashboard.html';
-        return;
-    }
-
-    state.user = session;
-    adminEmailEl.textContent = `${state.user.email} (${state.user.role})`;
-
-    bootstrapStorage();
-    loadState();
-    bindEvents();
-    renderAll();
+    (async () => {
+        if (!window.supabaseConfig || !window.supabaseConfig.getClient) {
+            console.error('SupabaseConfig não encontrado!');
+            return;
+        }
+        const supabase = window.supabaseConfig.getClient();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        console.log('Session:', session, 'Error:', sessionError);
+        if (!session) {
+            console.log('Sem sessão, redirecionar para auth.html');
+            if (!window.location.pathname.endsWith('auth.html')) {
+                window.location.href = '/auth.html';
+            }
+            return;
+        }
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('role, email')
+            .eq('id', session.user.id)
+            .single();
+        console.log('Profile:', profile, 'Error:', profileError);
+        const role = profile?.role;
+        console.log('Role encontrado:', role);
+        if (role !== 'developer') {
+            console.log('Role não é developer, redirecionar para auth.html');
+            if (!window.location.pathname.endsWith('auth.html')) {
+                window.location.href = '/auth.html';
+            }
+            return;
+        }
+        state.user = { ...profile, email: profile?.email, role };
+        adminEmailEl.textContent = `${state.user.email} (${state.user.role})`;
+        bootstrapStorage();
+        loadState();
+        bindEvents();
+        renderAll();
+    })();
 
     // Mapa Leaflet para localização da loja
     if (window.L && document.getElementById('map')) {
