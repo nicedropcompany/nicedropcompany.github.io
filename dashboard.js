@@ -77,10 +77,8 @@ const addDroneBtn = document.getElementById('addDroneBtn');
 function init() {
     waitForSupabase(() => {
         window.supabaseConfig.init();
-        bootstrapStorage();
-        loadDataFromStorage();
         
-        state.stores = getVisibleStoresForUser();
+            state.stores = [];
         
         // Setup user info
         const letter = ((state.user.username || state.user.name || 'U')[0] || 'U').toUpperCase();
@@ -101,6 +99,57 @@ function init() {
         renderMainContent();
         bindEvents();
     });
+        waitForSupabase(async () => {
+            window.supabaseConfig.init();
+            const supabase = window.supabaseConfig.getClient();
+            // Get session
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                window.location.href = '/auth.html';
+                return;
+            }
+            // Get user profile
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('id, username, role, email')
+                .eq('id', session.user.id)
+                .single();
+            if (error || !profile) {
+                window.location.href = '/auth.html';
+                return;
+            }
+            state.user = profile;
+            // Load stores from Supabase
+            let stores = [];
+            if (profile.role === 'developer') {
+                const { data: allStores, error: storesError } = await supabase
+                    .from('stores')
+                    .select('id, name, service, latitude, longitude, owner_id');
+                if (!storesError && allStores) stores = allStores;
+            } else if (profile.role === 'owner') {
+                const { data: ownerStores, error: storesError } = await supabase
+                    .from('stores')
+                    .select('id, name, service, latitude, longitude, owner_id')
+                    .eq('owner_id', profile.id);
+                if (!storesError && ownerStores) stores = ownerStores;
+            }
+            state.stores = stores;
+            // Setup user info
+            const letter = ((state.user.username || state.user.name || 'U')[0] || 'U').toUpperCase();
+            userAvatar.textContent = letter;
+            userName.textContent = state.user.username || state.user.name;
+            userRole.textContent = state.user.role.toUpperCase();
+            // Show/hide developer actions
+            if (state.user.role === 'developer') {
+                actionLabel.style.display = 'block';
+                sidebarActions.style.display = 'flex';
+            }
+            // Auto-select first store
+            state.currentStoreId = state.stores[0]?.id || null;
+            renderSidebarStores();
+            renderMainContent();
+            bindEvents();
+        });
 }
 
 function bindEvents() {
@@ -543,167 +592,5 @@ function removeMember(storeId, email) {
 }
 
 // ========== STORAGE & DATA FUNCTIONS ==========
-function bootstrapStorage() {
-    if (localStorage.getItem(STORAGE_KEYS.stores) && 
-        localStorage.getItem(STORAGE_KEYS.drones) && 
-        localStorage.getItem(STORAGE_KEYS.members)) {
-        return;
-    }
-    
-    const stores = [
-        { id: 1, name: 'Porto Central', city: 'Porto', ownerEmail: 'dev@nicedrop.pt', status: 'active' },
-        { id: 2, name: 'Lisboa Norte', city: 'Lisboa', ownerEmail: 'dev@nicedrop.pt', status: 'active' },
-        { id: 3, name: 'Braga HUB', city: 'Braga', ownerEmail: 'owner@nicedrop.pt', status: 'active' }
-    ];
-    
-    const drones = {
-        1: [
-            { id: 'ND-001', storeId: 1, name: 'Falcon I', status: 'active', trips: 156, distance: 450, revenue: 3250, expense: 1200 },
-            { id: 'ND-002', storeId: 1, name: 'Falcon II', status: 'active', trips: 98, distance: 290, revenue: 2100, expense: 890 }
-        ],
-        2: [
-            { id: 'ND-003', storeId: 2, name: 'Eagle I', status: 'maintenance', trips: 42, distance: 130, revenue: 980, expense: 540 }
-        ],
-        3: [
-            { id: 'ND-004', storeId: 3, name: 'Hawk I', status: 'active', trips: 210, distance: 620, revenue: 4500, expense: 1800 }
-        ]
-    };
-    
-    const members = {
-        1: [
-            { storeId: 1, email: 'dev@nicedrop.pt', role: 'owner' },
-            { storeId: 1, email: 'op@nicedrop.pt', role: 'operator' }
-        ],
-        2: [
-            { storeId: 2, email: 'dev@nicedrop.pt', role: 'owner' }
-        ],
-        3: [
-            { storeId: 3, email: 'owner@nicedrop.pt', role: 'owner' },
-            { storeId: 3, email: 'op@nicedrop.pt', role: 'operator' }
-        ]
-    };
-    
-    localStorage.setItem(STORAGE_KEYS.stores, JSON.stringify(stores));
-    localStorage.setItem(STORAGE_KEYS.drones, JSON.stringify(drones));
-    localStorage.setItem(STORAGE_KEYS.members, JSON.stringify(members));
-}
-
-function loadDataFromStorage() {
-    state.stores = getStores();
-    state.drones = getDrones();
-    state.members = getMembers();
-}
-
-function getStores() {
-    return readJson(STORAGE_KEYS.stores, []);
-}
-
-function getDrones() {
-    return readJson(STORAGE_KEYS.drones, {});
-}
-
-function getMembers() {
-    return readJson(STORAGE_KEYS.members, {});
-}
-
-function getUsers() {
-    return readJson(STORAGE_KEYS.users, []);
-}
-
-function getVisibleStoresForUser() {
-    const allStores = getStores();
-    
-    if (state.user.role === 'developer') {
-        return allStores;
-    }
-    
-    if (state.user.role === 'owner') {
-        const members = getMembers();
-        return allStores.filter(s => {
-            const isPrimaryOwner = s.ownerEmail.toLowerCase() === state.user.email.toLowerCase();
-            const storeMembers = members[String(s.id)] || [];
-            const isTeamOwner = storeMembers.some(
-                m => m.email.toLowerCase() === state.user.email.toLowerCase() && m.role === 'owner'
-            );
-            return isPrimaryOwner || isTeamOwner;
-        });
-    }
-    
-    if (state.user.role === 'operator') {
-        const members = getMembers();
-        const storeIds = new Set();
-        for (const storeId in members) {
-            const storeMembers = members[storeId] || [];
-            if (storeMembers.some(m => m.email.toLowerCase() === state.user.email.toLowerCase())) {
-                storeIds.add(Number(storeId));
-            }
-        }
-        return allStores.filter(s => storeIds.has(s.id));
-    }
-    
-    return [];
-}
-
-function readJson(key, fallback) {
-    try {
-        const raw = localStorage.getItem(key);
-        return raw ? JSON.parse(raw) : fallback;
-    } catch {
-        return fallback;
-    }
-}
-
-function generateDronesForStore(storeName, storeId) {
-    return [
-        {
-            id: `ND-${String(storeId).slice(-4)}A`,
-            storeId,
-            name: `${storeName} Alpha`,
-            status: 'active',
-            trips: 0,
-            distance: 0,
-            revenue: 0,
-            expense: 0
-        },
-        {
-            id: `ND-${String(storeId).slice(-4)}B`,
-            storeId,
-            name: `${storeName} Beta`,
-            status: 'active',
-            trips: 0,
-            distance: 0,
-            revenue: 0,
-            expense: 0
-        }
-    ];
-}
-
-function syncUserRole(email, role) {
-    const users = getUsers();
-    const userIndex = users.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
-    if (userIndex === -1) return;
-
-    if (role === 'owner' || role === 'operator' || role === 'client' || role === 'admin' || role === 'developer') {
-        users[userIndex].role = role;
-        localStorage.setItem(STORAGE_KEYS.users, JSON.stringify(users));
-    }
-}
-
-function logout() {
-    localStorage.removeItem('user');
-    window.location.href = '/index.html';
-}
-
-function formatEuro(value) {
-    return new Intl.NumberFormat('pt-PT', {
-        style: 'currency',
-        currency: 'EUR'
-    }).format(value);
-}
-
-// Make closeModal globally available for inline onclick handlers
-window.closeModal = closeModal;
-window.openModal = openModal;
-
 document.addEventListener('DOMContentLoaded', init);
 
