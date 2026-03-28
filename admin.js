@@ -63,7 +63,9 @@ function init() {
             .single();
         console.log('Profile:', profile, 'Error:', profileError);
         const role = profile?.role;
-        if (role !== 'developer') {
+        const normalizedRole = (role || '').toString().trim().toLowerCase();
+        console.log('Role normalizado:', normalizedRole);
+        if (normalizedRole !== 'developer') {
             console.log('Role não é developer, redirecionar para auth.html');
             if (!window.location.pathname.endsWith('auth.html')) {
                 window.location.href = '/auth.html';
