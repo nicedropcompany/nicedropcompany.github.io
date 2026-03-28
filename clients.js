@@ -32,7 +32,7 @@ function checkAuth() {
     
     if (!user) {
         console.log('⚠️  User not authenticated, redirecting to auth...');
-        window.location.href = '/teste.github.io/auth.html';
+        window.location.href = '/auth.html';
         return false;
     }
 
@@ -43,7 +43,7 @@ function checkAuth() {
         console.log('⚠️  User is not a store owner, access denied.');
         alert('Apenas proprietários de lojas podem aceder a esta página');
         clearSession();
-        window.location.href = '/teste.github.io/index.html';
+        window.location.href = '/index.html';
         return false;
     }
 
@@ -354,7 +354,7 @@ function setupEventListeners() {
 function logoutUser() {
     if (confirm('Tem certeza que deseja sair?')) {
         clearSession();
-        window.location.href = '/teste.github.io/index.html';
+        window.location.href = '/index.html';
     }
 }
 

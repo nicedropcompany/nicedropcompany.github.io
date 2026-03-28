@@ -5,17 +5,17 @@
 
 const user = JSON.parse(localStorage.getItem('user'));
 if (!user) {
-    window.location.href = '/teste.github.io/auth.html';
+    window.location.href = '/auth.html';
 }
 
 if (user && (user.role === 'developer' || user.role === 'admin')) {
-    window.location.href = '/teste.github.io/admin.html';
+    window.location.href = '/admin.html';
 }
 
 if (user && user.role === 'client') {
     alert('Conta cliente não pode aceder ao dashboard.');
     localStorage.removeItem('user');
-    window.location.href = '/teste.github.io/auth.html';
+    window.location.href = '/auth.html';
 }
 
 const STORAGE_KEYS = {
@@ -128,7 +128,7 @@ function renderSidebarStores() {
         const adminBtn = document.getElementById('adminSidebarBtn');
         if (adminBtn) {
             adminBtn.addEventListener('click', () => {
-                window.location.href = '/teste.github.io/admin.html';
+                window.location.href = '/admin.html';
             });
         }
     }
@@ -677,7 +677,7 @@ function syncUserRole(email, role) {
 
 function logout() {
     localStorage.removeItem('user');
-    window.location.href = '/teste.github.io/index.html';
+    window.location.href = '/index.html';
 }
 
 function formatEuro(value) {
