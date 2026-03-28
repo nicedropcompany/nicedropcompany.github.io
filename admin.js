@@ -135,7 +135,7 @@ async function createStore() {
     // Insert store and get new id
     const { data: newStore, error: storeError } = await adminSupabase
         .from('stores')
-        .insert({ name, latitude: parseFloat(lat), longitude: parseFloat(lng), service: false, owner_id: owner.id })
+        .insert({ name, latitude: parseFloat(lat), longitude: parseFloat(lng), service: false })
         .select('id')
         .single();
     if (storeError || !newStore) { alert('Erro ao criar loja: ' + (storeError?.message || '')); return; }
