@@ -32,7 +32,9 @@ function checkAuth() {
     
     if (!user) {
         console.log('⚠️  User not authenticated, redirecting to auth...');
-        window.location.href = '/auth.html';
+        if (!window.location.pathname.endsWith('auth.html')) {
+            window.location.href = '/auth.html';
+        }
         return false;
     }
 
