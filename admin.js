@@ -3,24 +3,24 @@ function waitForSupabase(cb) {
     else { setTimeout(() => waitForSupabase(cb), 50); }
 }
 
-let supabase = null;
+let adminSupabase = null;
 let currentUser = null;
 
 async function init() {
     waitForSupabase(async () => {
-        supabase = window.supabaseConfig.init();
-        if (!supabase) {
+        adminSupabase = window.supabaseConfig.init();
+        if (!adminSupabase) {
             console.error('Supabase null');
             return;
         }
 
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session } } = await adminSupabase.auth.getSession();
         if (!session) {
             window.location.href = '/auth.html';
             return;
         }
 
-        const { data: profile, error } = await supabase
+        const { data: profile, error } = await adminSupabase
             .from('profiles')
             .select('id, username, role')
             .eq('id', session.user.id)
@@ -47,7 +47,7 @@ async function init() {
 }
 
 async function loadUsers() {
-    const { data: users, error } = await supabase
+    const { data: users, error } = await adminSupabase
         .from('profiles')
         .select('id, username, role');
     if (error) { console.error('Erro users:', error.message); return; }
@@ -80,7 +80,7 @@ async function loadUsers() {
 }
 
 async function changeRole(userId, role) {
-    const { error } = await supabase
+    const { error } = await adminSupabase
         .from('profiles')
         .update({ role })
         .eq('id', userId);
@@ -89,12 +89,12 @@ async function changeRole(userId, role) {
 }
 
 async function loadStores() {
-    const { data: stores, error } = await supabase
+    const { data: stores, error } = await adminSupabase
         .from('stores')
         .select('id, name, service, latitude, longitude');
     if (error) { console.error('Erro stores:', error.message); return; }
 
-    const { data: drones } = await supabase.from('drones').select('id, store_id, status');
+    const { data: drones } = await adminSupabase.from('drones').select('id, store_id, status');
 
     document.getElementById('addDroneStore').innerHTML = stores.map(s =>
         `<option value="${s.id}">${s.name}</option>`).join('');
@@ -125,17 +125,17 @@ async function createStore() {
         alert('Preencha todos os campos e selecione a localização no mapa.');
         return;
     }
-    const { data: owner, error: ownerError } = await supabase
+    const { data: owner, error: ownerError } = await adminSupabase
         .from('profiles')
         .select('id')
         .eq('username', email)
         .single();
     if (ownerError || !owner) { alert('Owner não encontrado.'); return; }
-    const { error } = await supabase.from('stores').insert({
+    const { error } = await adminSupabase.from('stores').insert({
         name, latitude: parseFloat(lat), longitude: parseFloat(lng), service: false
     });
     if (error) { alert('Erro ao criar loja: ' + error.message); return; }
-    await supabase.from('profiles').update({ role: 'owner' }).eq('id', owner.id);
+    await adminSupabase.from('profiles').update({ role: 'owner' }).eq('id', owner.id);
     await loadStores();
     alert('Loja criada!');
 }
@@ -144,7 +144,7 @@ async function addDrone() {
     const storeId = document.getElementById('addDroneStore').value;
     const name = document.getElementById('addDroneName').value.trim();
     if (!storeId || !name) { alert('Escolha loja e nome do drone.'); return; }
-    const { error } = await supabase.from('drones').insert({
+    const { error } = await adminSupabase.from('drones').insert({
         name, store_id: parseInt(storeId), status: 'pending', capacity: 500, order_id: 0, servo_state: false
     });
     if (error) { alert('Erro ao adicionar drone: ' + error.message); return; }
@@ -154,7 +154,7 @@ async function addDrone() {
 
 function bindEvents() {
     document.getElementById('logoutBtn').addEventListener('click', async () => {
-        await supabase.auth.signOut();
+        await adminSupabase.auth.signOut();
         localStorage.removeItem('nicedrop_user');
         window.location.href = '/auth.html';
     });
