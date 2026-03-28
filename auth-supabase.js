@@ -72,9 +72,9 @@ async function handleLogin(e) {
         showMessage('success', 'Bem-vindo! A redirecionar...');
         setTimeout(() => {
             if (profile.role === 'developer') {
-                window.location.href = '/teste.github.io/admin.html';
+                window.location.href = '/admin.html';
             } else {
-                window.location.href = '/teste.github.io/dashboard.html';
+                window.location.href = '/dashboard.html';
             }
         }, 1500);
 
@@ -157,9 +157,9 @@ async function initAuth() {
                 .single();
 
             if (profile?.role === 'developer') {
-                window.location.href = '/teste.github.io/admin.html';
+                window.location.href = '/admin.html';
             } else if (profile?.role === 'owner') {
-                window.location.href = '/teste.github.io/dashboard.html';
+                window.location.href = '/dashboard.html';
             }
         }
 
