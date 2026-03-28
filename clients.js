@@ -15,16 +15,9 @@ function waitForSupabase(cb) {
 // ============================================
 
 function getStoredSession() {
-    const rawUser = localStorage.getItem('user');
-    if (rawUser) return rawUser;
 
-    // Backward compatibility: migrate old key to the active one.
-    const legacyUser = localStorage.getItem('nicedrop_user');
-    if (legacyUser) {
-        localStorage.setItem('user', legacyUser);
-        localStorage.removeItem('nicedrop_user');
-        return legacyUser;
-    }
+    const rawUser = localStorage.getItem('nicedrop_user');
+    if (rawUser) return rawUser;
 
     return null;
 }

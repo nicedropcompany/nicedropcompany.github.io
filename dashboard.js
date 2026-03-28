@@ -10,7 +10,7 @@ function waitForSupabase(cb) {
  * Two-column layout: dark sidebar + white card grid
  */
 
-const user = JSON.parse(localStorage.getItem('user'));
+const user = JSON.parse(localStorage.getItem('nicedrop_user'));
 if (!user) {
     if (!window.location.pathname.endsWith('auth.html')) {
         window.location.href = '/auth.html';
@@ -83,9 +83,9 @@ function init() {
         state.stores = getVisibleStoresForUser();
         
         // Setup user info
-        const letter = (state.user.name[0] || 'U').toUpperCase();
+        const letter = ((state.user.username || state.user.name || 'U')[0] || 'U').toUpperCase();
         userAvatar.textContent = letter;
-        userName.textContent = state.user.name;
+        userName.textContent = state.user.username || state.user.name;
         userRole.textContent = state.user.role.toUpperCase();
         
         // Show/hide developer actions

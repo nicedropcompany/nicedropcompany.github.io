@@ -9,6 +9,10 @@ let currentUser = null;
 async function init() {
     waitForSupabase(async () => {
         supabase = window.supabaseConfig.init();
+        if (!supabase) {
+            console.error('Supabase null');
+            return;
+        }
 
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
