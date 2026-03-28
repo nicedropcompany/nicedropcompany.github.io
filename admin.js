@@ -1,3 +1,10 @@
+function waitForSupabase(cb) {
+    if (window.supabase?.createClient) {
+        cb();
+    } else {
+        setTimeout(() => waitForSupabase(cb), 50);
+    }
+}
 const STORAGE_KEYS = {
     users: 'nd_users',
     stores: 'nd_stores',
@@ -33,7 +40,8 @@ const adminDashboardSection = document.getElementById('adminDashboardSection');
 const adminDashboardContainer = document.getElementById('adminDashboardContainer');
 
 function init() {
-    (async () => {
+    waitForSupabase(async () => {
+        window.supabaseConfig.init();
         if (!window.supabaseConfig || !window.supabaseConfig.getClient) {
             console.error('SupabaseConfig não encontrado!');
             return;
@@ -69,7 +77,7 @@ function init() {
         loadState();
         bindEvents();
         renderAll();
-    })();
+    });
 
     // Mapa Leaflet para localização da loja
     if (window.L && document.getElementById('map')) {

@@ -135,6 +135,12 @@ function setupEventListeners() {
 }
 
 async function initAuth() {
+    if (window.supabaseConfig && typeof window.supabaseConfig.init === 'function') {
+        authState.supabase = window.supabaseConfig.init();
+        console.log('authState.supabase:', authState.supabase);
+    } else {
+        console.error('window.supabaseConfig.init não está disponível!');
+    }
     setupEventListeners();
 }
 

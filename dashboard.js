@@ -1,3 +1,10 @@
+function waitForSupabase(cb) {
+    if (window.supabase?.createClient) {
+        cb();
+    } else {
+        setTimeout(() => waitForSupabase(cb), 50);
+    }
+}
 /**
  * NiceDrop Dashboard (SaaS Layout)
  * Two-column layout: dark sidebar + white card grid
@@ -68,29 +75,32 @@ const createStoreBtn = document.getElementById('createStoreBtn');
 const addDroneBtn = document.getElementById('addDroneBtn');
 
 function init() {
-    bootstrapStorage();
-    loadDataFromStorage();
-    
-    state.stores = getVisibleStoresForUser();
-    
-    // Setup user info
-    const letter = (state.user.name[0] || 'U').toUpperCase();
-    userAvatar.textContent = letter;
-    userName.textContent = state.user.name;
-    userRole.textContent = state.user.role.toUpperCase();
-    
-    // Show/hide developer actions
-    if (state.user.role === 'developer') {
-        actionLabel.style.display = 'block';
-        sidebarActions.style.display = 'flex';
-    }
-    
-    // Auto-select first store
-    state.currentStoreId = state.stores[0]?.id || null;
-    
-    renderSidebarStores();
-    renderMainContent();
-    bindEvents();
+    waitForSupabase(() => {
+        window.supabaseConfig.init();
+        bootstrapStorage();
+        loadDataFromStorage();
+        
+        state.stores = getVisibleStoresForUser();
+        
+        // Setup user info
+        const letter = (state.user.name[0] || 'U').toUpperCase();
+        userAvatar.textContent = letter;
+        userName.textContent = state.user.name;
+        userRole.textContent = state.user.role.toUpperCase();
+        
+        // Show/hide developer actions
+        if (state.user.role === 'developer') {
+            actionLabel.style.display = 'block';
+            sidebarActions.style.display = 'flex';
+        }
+        
+        // Auto-select first store
+        state.currentStoreId = state.stores[0]?.id || null;
+        
+        renderSidebarStores();
+        renderMainContent();
+        bindEvents();
+    });
 }
 
 function bindEvents() {

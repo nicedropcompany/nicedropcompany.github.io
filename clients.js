@@ -1,3 +1,10 @@
+function waitForSupabase(cb) {
+    if (window.supabase?.createClient) {
+        cb();
+    } else {
+        setTimeout(() => waitForSupabase(cb), 50);
+    }
+}
 /**
  * NiceDrop Clients Management
  * Gerenciamento de clientes
@@ -149,21 +156,24 @@ const clientStatus = document.getElementById('clientStatus');
 // ============================================
 
 function init() {
-    userEmail.textContent = currentUser.email;
-    
-    // Render stores
-    renderStores();
-    
-    // Populate store dropdown
-    populateStoreDropdown();
-    
-    // Load and render clients
-    loadClients();
-    
-    // Setup event listeners
-    setupEventListeners();
-    
-    console.log('✅ Clients page initialized');
+    waitForSupabase(() => {
+        window.supabaseConfig.init();
+        userEmail.textContent = currentUser.email;
+        
+        // Render stores
+        renderStores();
+        
+        // Populate store dropdown
+        populateStoreDropdown();
+        
+        // Load and render clients
+        loadClients();
+        
+        // Setup event listeners
+        setupEventListeners();
+        
+        console.log('✅ Clients page initialized');
+    });
 }
 
 // ============================================
