@@ -209,11 +209,11 @@ function init() {
         try {
             const sessionUser = JSON.parse(logged);
             if (sessionUser?.role === 'developer' || sessionUser?.role === 'admin') {
-                window.location.href = '/teste.github.io/admin.html';
+                window.location.href = '/admin.html';
                 return;
             }
             if (sessionUser?.role !== 'client') {
-                window.location.href = '/teste.github.io/dashboard.html';
+                window.location.href = '/dashboard.html';
                 return;
             }
         } catch {
