@@ -49,7 +49,7 @@ async function init() {
 async function loadUsers() {
     const { data: users, error } = await adminSupabase
         .from('users_with_email')
-        .select('id, username, role, store_id, email');
+        .select('id, username, role, email');
     if (error) { console.error('Erro users:', error.message); return; }
 
     const counts = { developer: 0, owner: 0, operator: 0, client: 0 };
