@@ -175,7 +175,6 @@ async function deleteDrone(droneId) {
     await adminSupabase.from('drones').delete().eq('id', droneId);
     await loadStores();
 }
-}
 
 async function createStore() {
     const ownerEmail = document.getElementById('ownerEmail').value.trim();
