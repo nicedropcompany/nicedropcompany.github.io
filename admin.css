@@ -1,600 +1,226 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sora:wght@300;400;500;600&display=swap');
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    font-family: 'Sora', -apple-system, sans-serif;
+    font-family: 'Sora', sans-serif;
     background: url('sky.png') center/cover no-repeat fixed;
     background-color: #87CEEB;
     min-height: 100vh;
     color: #0b0b0b;
 }
 
+/* ── TOPBAR ── */
 .topbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 16px 28px;
-    /* max-width removido */
-    /* margin removido */
+    width: 100%;
 }
-.brand-logo {
-    height: 40px;
-    width: auto;
-}
-.topbar-user {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-.user-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-.user-name {
-    font-size: 13px;
-    font-weight: 700;
-    color: white;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.2);
-}
-.user-role {
-    font-size: 10px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.75);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-}
+.brand-logo { height: 40px; width: auto; }
+.topbar-user { display: flex; align-items: center; gap: 16px; }
+.user-info { display: flex; flex-direction: column; align-items: flex-end; }
+.user-name { font-size: 13px; font-weight: 700; color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.2); line-height: 1.2; }
+.user-role { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.75); text-transform: uppercase; letter-spacing: 1.5px; }
+
 #logoutBtn {
     background: rgba(255,255,255,0.25);
     border: 1.5px solid rgba(255,255,255,0.5);
     color: white;
+    padding: 8px 18px;
     border-radius: 20px;
     font-family: 'Sora', sans-serif;
-    padding: 8px 18px;
+    font-size: 13px;
     font-weight: 600;
-    font-size: 14px;
     cursor: pointer;
     transition: background 0.2s;
+    white-space: nowrap;
 }
-#logoutBtn:hover {
-    background: rgba(255,255,255,0.4);
-}
+#logoutBtn:hover { background: rgba(255,255,255,0.4); }
+
+/* ── PAGE TITLE ── */
+.page-title { text-align: center; padding: 8px 0 18px; }
 .page-title h1 {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 38px;
     letter-spacing: 5px;
     color: white;
-    text-align: center;
-    margin: 0 0 18px 0;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.15);
 }
+
+/* ── MAIN ── */
 .main {
-    /* max-width removido */
-    /* margin removido */
     width: 100%;
-    padding: 0 28px 56px;
+    padding: 0 16px 56px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    /* max-width removido, coluna única */
+    gap: 18px;
 }
-.stats-row {
-    display: flex;
-    gap: 12px;
-}
+
+/* ── STATS ── */
+.stats-row { display: flex; gap: 12px; width: 100%; }
 .stat-card {
-        flex: 1 1 0%;
+    flex: 1;
     background: white;
     border-radius: 16px;
     padding: 16px 20px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
-.stat-number {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 40px;
-    padding: 0 28px 56px;
-    gap: 24px;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-}
+.stat-label { font-size: 10px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+.stat-number { font-family: 'Bebas Neue', sans-serif; font-size: 40px; color: #0b0b0b; line-height: 1; }
+
+/* ── CARD ── */
 .card {
     background: white;
     border-radius: 20px;
     padding: 22px 24px;
     box-shadow: 0 2px 16px rgba(0,0,0,0.09);
     width: 100%;
-    min-width: 0;
-    max-width: none;
-}
-.card-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    letter-spacing: 2px;
 }
 .card-header {
-    min-width: 0;
-    max-width: none;
-    border-bottom: 1.5px solid #f0f0f0;
-    padding-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1.5px solid #f0f0f0;
 }
-.form-row input, .form-row select {
+.card-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: #0b0b0b; }
+
+/* ── TOOLBAR ── */
+.toolbar { display: flex; gap: 8px; align-items: center; }
+.toolbar input {
+    padding: 8px 14px;
+    border: 1.5px solid #e8e8e8;
+    border-radius: 20px;
+    font-family: 'Sora', sans-serif;
+    font-size: 12px;
+    width: 210px;
+    outline: none;
+    transition: border 0.2s;
+}
+.toolbar input:focus { border-color: #333; }
+
+/* ── TABLE ── */
+.table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table th { text-align: left; font-size: 10px; font-weight: 600; color: #bbb; text-transform: uppercase; letter-spacing: 1px; padding: 0 12px 10px; }
+.table td { padding: 11px 12px; border-top: 1px solid #f5f5f5; vertical-align: middle; color: #333; }
+.table tr:hover td { background: #fafafa; }
+.table tr:last-child td { border-bottom: none; }
+
+/* ── BADGES ── */
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+.badge-developer { background: #0b0b0b; color: white; }
+.badge-owner     { background: #1a9fe0; color: white; }
+.badge-operator  { background: #dcfce7; color: #15803d; }
+.badge-client    { background: #f3f4f6; color: #6b7280; }
+.badge-active    { background: #dcfce7; color: #15803d; }
+.badge-inactive  { background: #fee2e2; color: #dc2626; }
+.badge-pending   { background: #fef9c3; color: #a16207; }
+.badge-shipping  { background: #dbeafe; color: #1d4ed8; }
+
+/* ── ROLE SELECT ── */
+.role-select { padding: 5px 10px; border: 1.5px solid #e8e8e8; border-radius: 20px; font-family: 'Sora', sans-serif; font-size: 12px; cursor: pointer; outline: none; }
+
+/* ── STORES GRID ── */
+.stores-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 14px; width: 100%; }
+.store-card { border: 1.5px solid #f0f0f0; border-radius: 16px; padding: 18px; transition: box-shadow 0.2s; }
+.store-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,0.08); }
+.store-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+.store-card-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: #0b0b0b; }
+.store-card-meta { font-size: 11px; color: #bbb; line-height: 1.8; margin-bottom: 12px; }
+.store-card-drones { border-top: 1px solid #f5f5f5; padding-top: 10px; }
+.drone-item { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; font-size: 12px; border-bottom: 1px solid #fafafa; color: #444; gap: 8px; }
+.store-card-actions { display: flex; gap: 8px; margin-top: 14px; }
+
+/* ── FORM ── */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.form-grid input {
+    padding: 10px 14px;
     border: 1.5px solid #e8e8e8;
     border-radius: 12px;
     font-family: 'Sora', sans-serif;
+    font-size: 13px;
     outline: none;
-    padding: 10px 14px;
-    font-size: 14px;
-    margin-bottom: 8px;
+    transition: border 0.2s;
 }
+.form-grid input:focus { border-color: #333; }
+
+.form-row-inline { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.form-row-inline input,
+.form-row-inline select {
+    padding: 10px 14px;
+    border: 1.5px solid #e8e8e8;
+    border-radius: 12px;
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    outline: none;
+    flex: 1;
+    min-width: 140px;
+}
+
+/* ── BUTTONS ── */
 .btn-primary {
     background: #0b0b0b;
     color: white;
+    border: none;
+    padding: 10px 22px;
     border-radius: 20px;
     font-family: 'Sora', sans-serif;
+    font-size: 12px;
     font-weight: 700;
-    padding: 10px 20px;
-    border: none;
     cursor: pointer;
-    margin-left: 8px;
-}
-.btn-danger {
-    background: #fee2e2;
-    color: #dc2626;
-    border-radius: 20px;
-    border: none;
-    padding: 8px 16px;
-    font-size: 13px;
-    cursor: pointer;
-}
-.badge, .badge-developer, .badge-owner, .badge-operator, .badge-client, .badge-active, .badge-inactive, .badge-pending, .badge-shipping {
-    border-radius: 20px !important;
-    padding: 3px 10px;
-    font-size: 11px;
-    font-weight: 600;
     letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
-.badge-developer { background: #0b0b0b; color: #fff; }
-.badge-owner { background: #dbeafe; color: #1d4ed8; }
-.badge-operator { background: #dcfce7; color: #15803d; }
-.badge-client { background: #f3f4f6; color: #6b7280; }
-.badge-active { background: #dcfce7; color: #15803d; }
-.badge-inactive { background: #fee2e2; color: #dc2626; }
-.badge-pending { background: #fef9c3; color: #a16207; }
-.badge-shipping { background: #dbeafe; color: #1d4ed8; }
-.stores-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-    gap: 14px;
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-    min-width: 0;
-    max-width: none;
-}
-.store-card {
-    border: 1.5px solid #f0f0f0;
-    border-radius: 16px;
-    padding: 18px;
-    transition: box-shadow 0.2s;
-}
-.store-card-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px;
-}
-#map {
-    height: 240px;
-    border-radius: 14px;
-    margin-top: 12px;
-    border: 1.5px solid #f0f0f0;
-}
-@media (max-width: 640px) {
-    .stats-row {
-        grid-template-columns: repeat(2,1fr);
-    }
-    .main {
-        padding: 0 6px 32px;
-    }
-    .form-row {
-        flex-direction: column;
-    }
-    .card-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
-    .table th:nth-child(4), .table td:nth-child(4) {
-        display: none;
-    }
-}
-
-
-.admin-layout {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    width: 100vw;
-    align-items: stretch;
-    justify-content: flex-start;
-}
-
-.logout-top-right {
-    position: fixed;
-    top: 24px;
-    right: 32px;
-    z-index: 1000;
-}
-
-/* SIDEBAR */
-.sidebar {
-    width: 220px;
-    min-height: 100vh;
-    background: rgba(10, 20, 35, 0.95);
-    display: flex;
-    flex-direction: column;
-    padding: 24px 0;
-    position: fixed;
-    top: 0; left: 0;
-    z-index: 100;
-}
-
-.sidebar-logo {
-    padding: 0 24px 24px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.sidebar-user {
-    padding: 20px 24px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.user-avatar {
-    width: 44px; height: 44px;
-    border-radius: 50%;
-    background: #1a9fe0;
-    color: white;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 18px;
-    margin-bottom: 8px;
-}
-
-.user-name {
-    color: white;
-    font-weight: 600;
-    font-size: 14px;
-}
-
-.user-role {
-    color: #1a9fe0;
-    font-size: 11px;
-    letter-spacing: 2px;
-    margin-top: 2px;
-}
-
-.sidebar-nav {
-    padding: 16px 0;
-    flex: 1;
-}
-
-.nav-link {
-    display: block;
-    padding: 12px 24px;
-    color: rgba(255,255,255,0.7);
-    text-decoration: none;
-    font-size: 13px;
-    transition: all 0.2s;
-}
-
-.nav-link:hover {
-    background: rgba(255,255,255,0.1);
-    color: white;
-}
-
-.sidebar-footer {
-    padding: 16px 24px;
-    border-top: 1px solid rgba(255,255,255,0.1);
-}
-
-.logout-btn {
-    background: none;
-    border: 1px solid rgba(255,255,255,0.3);
-    color: rgba(255,255,255,0.7);
-    padding: 8px 16px;
-    cursor: pointer;
-    font-size: 13px;
-    width: 100%;
-    text-align: left;
-    transition: all 0.2s;
-}
-
-.logout-btn:hover {
-    background: rgba(255,255,255,0.1);
-    color: white;
-}
-
-/* MAIN */
-.main {
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 24px 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.center-page {
-    justify-content: center;
-    align-items: center;
-}
-
-.center-bar {
-    justify-content: center !important;
-    align-items: center !important;
-    text-align: center;
-}
-
-/* TOPBAR */
-.topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.topbar h1 {
-    font-family: 'BebasNeue', sans-serif;
-    font-size: 32px;
-    letter-spacing: 2px;
-    color: white;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
-}
-
-#adminEmail {
-    color: rgba(255,255,255,0.8);
-    font-size: 13px;
-}
-
-/* STATS */
-.stats-row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 16px;
-    margin-bottom: 24px;
-}
-
-.stat-card {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-}
-
-.stat-label {
-    font-size: 12px;
-    color: #888;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
-}
-
-.stat-number {
-    font-size: 32px;
-    font-weight: 700;
-    font-family: 'BebasNeue', sans-serif;
-    color: #0a1a2a;
-}
-
-/* CARD */
-.card {
-    background: white;
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 24px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    width: 100%;
-    max-width: 700px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.card-header h2 {
-    font-family: 'BebasNeue', sans-serif;
-    font-size: 22px;
-    letter-spacing: 2px;
-    color: #0a1a2a;
-}
-
-/* TOOLBAR */
-.toolbar {
-    display: flex;
-    gap: 8px;
-}
-
-.toolbar input {
-    padding: 8px 14px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 13px;
-    width: 240px;
-}
-
-/* TABLE */
-.main {
-    width: 100%;
-    padding: 24px 32px;
-    min-height: 100vh;
-    /* grid removido, agora flex coluna única */
-}
-.center-page {
-    justify-content: flex-start;
-    align-items: flex-start;
-}
-}
-
-.table td {
-    padding: 12px;
-    border-bottom: 1px solid #f5f5f5;
-    vertical-align: middle;
-}
-
-.table tr:hover td { background: #fafafa; }
-
-.table tr:last-child td { border-bottom: none; }
-
-/* ROLE BADGES */
-.card {
-    background: white;
-    border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    width: 100%;
-    min-width: 320px;
-    max-width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-}
-.badge-operator { background: #dcfce7; color: #15803d; }
-.badge-client { background: #f3f4f6; color: #6b7280; }
-
-/* DRONE STATUS BADGES */
-.badge-pending { background: #fef9c3; color: #a16207; }
-.badge-active { background: #dcfce7; color: #15803d; }
-.badge-shipping { background: #dbeafe; color: #1d4ed8; }
-.badge-inactive { background: #fee2e2; color: #dc2626; }
-
-/* ROLE SELECT */
-.role-select {
-    padding: 6px 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 13px;
-    cursor: pointer;
-}
-
-/* STORES GRID */
-.stores-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 16px;
-}
-
-.store-card {
-    border: 1px solid #eee;
-    border-radius: 12px;
-    padding: 20px;
-}
-
-.store-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 12px;
-}
-
-.store-card-name {
-    font-family: 'BebasNeue', sans-serif;
-    font-size: 20px;
-    letter-spacing: 1px;
-}
-
-.store-card-meta {
-    font-size: 12px;
-    color: #888;
-    margin-bottom: 12px;
-}
-
-.store-card-drones {
-    border-top: 1px solid #f0f0f0;
-    padding-top: 12px;
-    margin-top: 8px;
-}
-
-.drone-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 6px 0;
-    font-size: 13px;
-    border-bottom: 1px solid #f9f9f9;
-}
-
-.store-card-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-}
-
-/* FORM */
-.form-row {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.form-row input, .form-row select {
-    padding: 10px 14px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
-    flex: 1;
-    min-width: 160px;
-}
-
-/* BUTTONS */
-.btn-primary {
-    background: #0a1a2a;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 13px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s;
+    transition: background 0.2s, transform 0.1s;
     white-space: nowrap;
 }
-
-.btn-primary:hover { background: #1a3a5a; }
+.btn-primary:hover  { background: #222; }
+.btn-primary:active { transform: scale(0.97); }
+.btn-full { width: 100%; padding: 12px; text-align: center; }
 
 .btn-danger {
     background: #fee2e2;
     color: #dc2626;
     border: none;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-family: 'Sora', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background 0.2s;
+    white-space: nowrap;
 }
-
 .btn-danger:hover { background: #fecaca; }
 
 .btn-secondary {
     background: #f3f4f6;
     color: #374151;
     border: none;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-family: 'Sora', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background 0.2s;
 }
-
 .btn-secondary:hover { background: #e5e7eb; }
 
-.message { font-size: 13px; color: #888; margin-bottom: 12px; }
+/* ── MAP ── */
+#map { height: 240px; border-radius: 14px; overflow: hidden; margin-top: 12px; border: 1.5px solid #f0f0f0; }
+
+/* ── MISC ── */
+.message { font-size: 13px; color: #bbb; margin-bottom: 8px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+    .stats-row { flex-wrap: wrap; }
+    .stat-card  { flex: 1 1 calc(50% - 6px); }
+    .form-grid  { grid-template-columns: 1fr; }
+    .main       { padding: 0 8px 40px; }
+    .topbar     { padding: 14px 16px; }
+    .table th:nth-child(4), .table td:nth-child(4) { display: none; }
+    .card-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
