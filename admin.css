@@ -76,14 +76,15 @@ body {
     padding: 0 28px 56px;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 24px;
+    /* max-width removido, coluna única */
 }
 .stats-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
     gap: 12px;
 }
 .stat-card {
+        flex: 1 1 0%;
     background: white;
     border-radius: 16px;
     padding: 16px 20px;
@@ -440,10 +441,7 @@ body {
     width: 100%;
     padding: 24px 32px;
     min-height: 100vh;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 32px;
-    align-items: flex-start;
+    /* grid removido, agora flex coluna única */
 }
 .center-page {
     justify-content: flex-start;
