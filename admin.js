@@ -67,11 +67,23 @@ async function loadUsers() {
     const totalUsers = users.length;
     const totalOperators = users.filter(u => u.role === 'operator').length;
     document.getElementById('userTypeSummary').innerHTML = `
-        <div style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:12px;">
-            <div class="user-type-summary"><b>Lojas:</b> ${totalStores}</div>
-            <div class="user-type-summary"><b>Drones:</b> ${totalDrones}</div>
-            <div class="user-type-summary"><b>Utilizadores:</b> ${totalUsers}</div>
-            <div class="user-type-summary"><b>Operadores:</b> ${totalOperators}</div>
+        <div class="stats-bar">
+            <div class="metric-card">
+                <div class="metric-label">Lojas</div>
+                <div class="metric-value">${totalStores}</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Drones</div>
+                <div class="metric-value">${totalDrones}</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Utilizadores</div>
+                <div class="metric-value">${totalUsers}</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Operadores</div>
+                <div class="metric-value">${totalOperators}</div>
+            </div>
         </div>
         <div style="display:flex;gap:18px;flex-wrap:wrap;">
             <div><b>Developer:</b> ${counts.developer}</div>
@@ -124,26 +136,31 @@ async function loadStores() {
         const storeDrones = (drones || []).filter(d => d.store_id === s.id);
         const hasCoords = s.latitude && s.longitude;
         const mapLink = hasCoords
-            ? `<a href="https://www.google.com/maps?q=${s.latitude},${s.longitude}" target="_blank">🗺️</a>`
+            ? `<a href="https://www.google.com/maps?q=${s.latitude},${s.longitude}" target="_blank" class="icon-map" title="Ver no mapa"></a>`
             : '-';
         // Owner
         const owner = (owners || []).find(o => o.store_id === s.id && o.role === 'owner');
         // Drones badge
-        let badgeColor = '#27ae60'; // green
-        if (storeDrones.some(d => d.status === 'inactive')) badgeColor = '#e74c3c';
-        else if (storeDrones.some(d => d.status === 'pending')) badgeColor = '#f1c40f';
+        let badgeClass = 'badge-drone-active';
+        if (storeDrones.some(d => d.status === 'inactive')) badgeClass = 'badge-drone-inactive';
+        else if (storeDrones.some(d => d.status === 'pending')) badgeClass = 'badge-drone-pending';
         // Drones list for delete
         const dronesList = storeDrones.length ? storeDrones.map(d => {
-            let color = d.status === 'active' ? '#27ae60' : d.status === 'pending' ? '#f1c40f' : '#e74c3c';
-            return `<span style="display:inline-block;margin-right:6px;">${d.name} <span style="background:${color};color:#fff;padding:2px 8px;border-radius:8px;font-size:0.9em;">${d.status}</span> <button class='btn-remove-drone' data-drone-id='${d.id}' style='background:none;border:none;color:#e74c3c;font-size:1.1em;cursor:pointer;' title='Apagar'>&times;</button></span>`;
+            let statusClass = d.status === 'active' ? 'badge-drone-active' : d.status === 'pending' ? 'badge-drone-pending' : d.status === 'shipping' ? 'badge-drone-shipping' : 'badge-drone-inactive';
+            return `<span style="display:inline-block;margin-right:6px;">${d.name} <span class="badge-pill ${statusClass}">${d.status}</span> <button class='btn-remove-drone' data-drone-id='${d.id}' style='background:none;border:none;color:#e74c3c;font-size:1.1em;cursor:pointer;' title='Apagar'>&times;</button></span>`;
         }).join('') : '-';
         return `<tr>
             <td>${s.name}</td>
             <td>${s.service ? 'Ativo' : 'Inativo'}</td>
             <td>${owner ? owner.username : '-'}</td>
-            <td><span style="background:${badgeColor};color:#fff;padding:2px 10px;border-radius:12px;">${storeDrones.length}</span></td>
+            <td><span class="badge-drone-count">${storeDrones.length}</span></td>
             <td>${dronesList}</td>
-            <td>${mapLink} <button class='btn-remove-store' data-store-id='${s.id}' style='background:none;border:none;color:#e74c3c;font-size:1.1em;cursor:pointer;' title='Apagar'>&times;</button></td>
+            <td>
+                ${mapLink}
+                <button class='btn-remove-store' data-store-id='${s.id}' title='Apagar' style='background:none;border:none;padding:0 6px;vertical-align:middle;'>
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="9" fill="#ffeaea"/><path d="M7 7L13 13M13 7L7 13" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+            </td>
         </tr>`;
     }).join('');
 

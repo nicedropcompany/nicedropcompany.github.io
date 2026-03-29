@@ -1,3 +1,42 @@
+.icon-map {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    background: url('data:image/svg+xml;utf8,<svg fill="%23007bff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>') no-repeat center center/contain;
+    vertical-align: middle;
+    margin-right: 2px;
+}
+/* Metric Cards (Stats Bar) */
+.stats-bar {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+.metric-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px 0 #0001;
+    padding: 16px 22px 10px 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 120px;
+    margin-bottom: 0;
+}
+.metric-label {
+    color: #888;
+    font-size: 0.98em;
+    font-weight: 500;
+    margin-bottom: 2px;
+    letter-spacing: 0.01em;
+}
+.metric-value {
+    color: #222;
+    font-size: 2.1em;
+    font-weight: 700;
+    line-height: 1.1;
+}
 .btn-remove-user, .btn-remove-store {
     background: none;
     border: none;
@@ -63,6 +102,11 @@
 }
 
 table {
+        font-size: 1em;
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px 0 #0001;
     width: 100%;
     border-collapse: collapse;
 }
@@ -70,8 +114,30 @@ table {
 th,
 td {
     text-align: left;
-    padding: 10px;
-    border-bottom: 1px solid #edf2f7;
+    padding: 13px 12px;
+    border-bottom: 1px solid #f2f4f8;
+}
+tbody tr:nth-child(even) {
+    background: #f8fafc;
+}
+tbody tr:hover {
+    background: #eaf3ff;
+    transition: background 0.2s;
+.badge-pill {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 2px 12px 2px 12px;
+    font-size: 0.98em;
+    font-weight: 600;
+    color: #fff;
+    margin-right: 4px;
+    min-width: 32px;
+    text-align: center;
+}
+.badge-drone-pending { background: #f1c40f; color: #fff; }
+.badge-drone-active { background: #27ae60; color: #fff; }
+.badge-drone-shipping { background: #2980ef; color: #fff; }
+.badge-drone-inactive { background: #e74c3c; color: #fff; }
 }
 
 .btn-dark {
