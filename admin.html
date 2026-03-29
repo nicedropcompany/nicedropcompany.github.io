@@ -5,17 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>NiceDrop | Administração</title>
     <link rel="stylesheet" href="/admin.css">
-    <link rel="stylesheet" href="/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
-<body class="dashboard-page">
-<div class="dashboard-container">
+<body>
+<div class="admin-layout">
+
     <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-logo">
-            <img src="/nicedrop.png" alt="NICEDROP" height="36">
+            <img src="/nicedrop.png" alt="NiceDrop" height="32">
         </div>
         <div class="sidebar-user">
             <div class="user-avatar" id="userAvatar">A</div>
@@ -23,74 +21,90 @@
             <div class="user-role" id="userRole">DEVELOPER</div>
         </div>
         <nav class="sidebar-nav">
-            <a href="#usersSection" class="sidebar-link active">Utilizadores</a>
-            <a href="#storesSection" class="sidebar-link">Lojas</a>
-            <a href="#dronesSection" class="sidebar-link">Drones</a>
+            <a href="#usersSection" class="nav-link">👥 Utilizadores</a>
+            <a href="#storesSection" class="nav-link">🏪 Lojas</a>
+            <a href="#dronesSection" class="nav-link">🚁 Drones</a>
         </nav>
-        <div class="sidebar-logout">
-            <button id="logoutBtn">← SAIR</button>
+        <div class="sidebar-footer">
+            <button id="logoutBtn" class="logout-btn">← Sair</button>
         </div>
     </aside>
-    <!-- MAIN AREA -->
-    <main class="main-area">
-        <div class="main-topbar">
-            <h1 class="page-title" id="pageTitle">Administração</h1>
-            <span id="adminEmail" class="admin-email"></span>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- TOP BAR -->
+        <div class="topbar">
+            <h1>Painel de Administração</h1>
+            <span id="adminEmail"></span>
         </div>
-        <div class="stats-bar" id="userTypeSummary"></div>
-        <!-- USERS SECTION -->
-        <section class="admin-card" id="usersSection">
-            <h2>Utilizadores</h2>
-            <div class="toolbar">
-                <input type="text" id="searchInput" placeholder="Procurar por nome ou email">
-                <button id="refreshBtn" class="btn-dark">Atualizar</button>
+
+        <!-- STATS -->
+        <div class="stats-row" id="userTypeSummary"></div>
+
+        <!-- USERS -->
+        <section class="card" id="usersSection">
+            <div class="card-header">
+                <h2>Utilizadores</h2>
+                <div class="toolbar">
+                    <input type="text" id="searchInput" placeholder="Procurar por nome ou email">
+                    <button id="refreshBtn" class="btn-primary">Atualizar</button>
+                </div>
             </div>
-            <div class="table-wrap">
-                <table class="users-table">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Nome</th>
-                            <th>Email</th>
-                            <th>Papel</th>
-                            <th>Loja</th>
-                            <th>Alterar Role</th>
-                        </tr>
-                    </thead>
-                    <tbody id="usersBody"></tbody>
-                </table>
+            <p id="message" class="message"></p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Papel</th>
+                        <th>Loja</th>
+                        <th>Alterar Role</th>
+                    </tr>
+                </thead>
+                <tbody id="usersBody"></tbody>
+            </table>
+        </section>
+
+        <!-- STORES -->
+        <section class="card" id="storesSection">
+            <div class="card-header">
+                <h2>Todas as Lojas</h2>
             </div>
+            <div class="stores-grid" id="storesBody"></div>
         </section>
-        <!-- STORES SECTION -->
-        <section class="admin-card" id="storesSection">
-            <h2>Lojas</h2>
-            <div class="stores-grid" id="storesGrid"></div>
-        </section>
-        <!-- CRIAR LOJA SECTION -->
-        <section class="admin-card" id="createStoreSection">
-            <h2>Criar Loja para Owner</h2>
-            <form class="store-form" onsubmit="return false;">
-                <input type="email" id="ownerEmail" placeholder="email do owner">
-                <input type="text" id="storeName" placeholder="nome da loja">
-                <input type="text" id="storeCity" placeholder="cidade">
+
+        <!-- CRIAR LOJA -->
+        <section class="card" id="createStoreSection">
+            <div class="card-header">
+                <h2>Criar Loja</h2>
+            </div>
+            <div class="form-row">
+                <input type="email" id="ownerEmail" placeholder="Email do owner">
+                <input type="text" id="storeName" placeholder="Nome da loja">
+                <input type="text" id="storeCity" placeholder="Cidade">
                 <input type="hidden" id="storeLat">
                 <input type="hidden" id="storeLng">
-                <button id="createStoreBtn" class="btn-dark">Criar Loja</button>
-            </form>
-            <div id="map" style="height: 260px; margin-top: 16px; border-radius: 12px; overflow: hidden;"></div>
+                <button id="createStoreBtn" class="btn-primary">Criar Loja</button>
+            </div>
+            <div id="map" style="height:260px;margin-top:16px;border-radius:12px;overflow:hidden;"></div>
         </section>
-        <!-- ADICIONAR DRONE SECTION -->
-        <section class="admin-card" id="dronesSection">
-            <h2>Adicionar Drone a Qualquer Loja</h2>
-            <form class="store-form" onsubmit="return false;">
+
+        <!-- ADICIONAR DRONE -->
+        <section class="card" id="dronesSection">
+            <div class="card-header">
+                <h2>Adicionar Drone</h2>
+            </div>
+            <div class="form-row">
                 <select id="addDroneStore"></select>
-                <input type="text" id="addDroneName" placeholder="nome do drone">
-                <button id="addDroneBtn" class="btn-dark">Adicionar Drone</button>
-            </form>
+                <input type="text" id="addDroneName" placeholder="Nome do drone">
+                <button id="addDroneBtn" class="btn-primary">Adicionar Drone</button>
+            </div>
         </section>
+
     </main>
 </div>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/supabase-config.js"></script>
