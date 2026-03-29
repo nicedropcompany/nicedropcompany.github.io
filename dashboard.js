@@ -167,6 +167,53 @@ function renderMain() {
 
 function bindEvents() {
     document.getElementById('logoutBtn').addEventListener('click', logout);
+
+    // Adicionar operador - abrir modal
+    const addOperatorBtn = document.getElementById('addOperatorBtn');
+    if (addOperatorBtn) {
+        addOperatorBtn.addEventListener('click', () => {
+            openModal('addOperatorModal');
+        });
+    }
+
+    // Submissão do formulário de operador
+    const addOperatorForm = document.getElementById('addOperatorForm');
+    if (addOperatorForm) {
+        addOperatorForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const emailInput = document.getElementById('addOperatorEmail');
+            const errorDiv = document.getElementById('addOperatorError');
+            errorDiv.textContent = '';
+            const email = emailInput.value.trim();
+            if (!email) {
+                errorDiv.textContent = 'Introduza o email.';
+                return;
+            }
+            // Procurar utilizador
+            const { data: user } = await supabaseClient
+                .from('users_with_email')
+                .select('id')
+                .eq('email', email)
+                .single();
+            if (!user) {
+                errorDiv.textContent = 'Utilizador não encontrado';
+                return;
+            }
+            // Atualizar perfil
+            const { error } = await supabaseClient
+                .from('profiles')
+                .update({ store_id: state.currentStoreId, role: 'operator' })
+                .eq('id', user.id);
+            if (error) {
+                errorDiv.textContent = 'Erro ao adicionar operador: ' + error.message;
+                return;
+            }
+            // Fechar modal, limpar campo e recarregar equipa
+            closeModal('addOperatorModal');
+            emailInput.value = '';
+            await loadStoreData(state.currentStoreId);
+        });
+    }
 }
 
 function openModal(modalId) {

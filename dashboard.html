@@ -33,6 +33,7 @@
             <div class="sidebar-actions" id="sidebarActions" style="display: none;">
                 <button class="action-btn" id="createStoreBtn">+ CRIAR LOJA</button>
                 <button class="action-btn" id="addDroneBtn">+ ADICIONAR DRONE</button>
+                <button class="action-btn" id="addOperatorBtn">+ ADICIONAR OPERADOR</button>
             </div>
             
             <!-- Logout -->
@@ -67,6 +68,22 @@
     
     <!-- MODALS -->
     <div class="modal-overlay" id="modalOverlay"></div>
+
+        <!-- Add Operator Modal -->
+        <div class="modal" id="addOperatorModal">
+            <h2>ADICIONAR OPERADOR</h2>
+            <form id="addOperatorForm">
+                <div class="form-group">
+                    <label>Email do operador</label>
+                    <input type="email" id="addOperatorEmail" placeholder="Ex: op@nicedrop.pt" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('addOperatorModal')">Cancelar</button>
+                    <button type="submit" class="btn-primary">Adicionar</button>
+                </div>
+                <div class="form-error" id="addOperatorError"></div>
+            </form>
+        </div>
     
     <!-- Create Store Modal -->
     <div class="modal" id="createStoreModal">
