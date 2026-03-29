@@ -116,12 +116,29 @@ function renderMain() {
 
     const store = state.stores.find(s => s.id === state.currentStoreId);
     document.getElementById('storeTitle').textContent = store?.name || '-';
-    document.getElementById('storeMeta').innerHTML = `<span class="status-active">ATIVA</span>`;
+    // Store status
+    const storeStatus = store?.service === false || store?.service === 0 ? 'INATIVA' : 'ATIVA';
+    const storeStatusColor = storeStatus === 'ATIVA' ? '#27ae60' : '#e74c3c';
+    document.getElementById('storeMeta').innerHTML = `<span class="status-active" style="background:${storeStatusColor};color:#fff;padding:2px 10px;border-radius:12px;">${storeStatus}</span>`;
 
+    // Stats
+    const totalDrones = state.drones.length;
+    const activeDrones = state.drones.filter(d => d.status === 'active' || d.status === 'shipping').length;
+    const totalTeam = state.team.length;
     document.getElementById('statsRow').innerHTML = `
-        <div class="stat-card"><div class="stat-label">Drones</div><div class="stat-number">${state.drones.length}</div></div>
-        <div class="stat-card"><div class="stat-label">Equipa</div><div class="stat-number">${state.team.length}</div></div>
+        <div class="stat-card"><div class="stat-label">Total Drones</div><div class="stat-number">${totalDrones}</div></div>
+        <div class="stat-card"><div class="stat-label">Drones Ativos</div><div class="stat-number">${activeDrones}</div></div>
+        <div class="stat-card"><div class="stat-label">Equipa</div><div class="stat-number">${totalTeam}</div></div>
+        <div class="stat-card"><div class="stat-label">Estado Loja</div><div class="stat-number" style="color:${storeStatusColor}">${storeStatus}</div></div>
     `;
+
+    // Drone status badge colors
+    const statusColors = {
+        pending: '#f1c40f',
+        shipping: '#2980ef',
+        active: '#27ae60',
+        inactive: '#e74c3c'
+    };
 
     document.getElementById('detailRow').innerHTML = `
         <div class="detail-card">
@@ -129,7 +146,7 @@ function renderMain() {
             ${state.drones.length ? state.drones.map(d => `
                 <div class="drone-row">
                     <div class="drone-name">${d.name}</div>
-                    <span class="drone-status-badge ${d.status}">${d.status.toUpperCase()}</span>
+                    <span class="drone-status-badge ${d.status}" style="background:${statusColors[d.status] || '#bbb'};color:#fff;padding:2px 10px;border-radius:12px;">${d.status.toUpperCase()}</span>
                     <div>${d.capacity} kg</div>
                 </div>`).join('') : '<div class="empty-state-text">SEM DRONES</div>'}
         </div>
@@ -151,7 +168,7 @@ function renderMain() {
                     <div class="member-name">${m.username || '-'}</div>
                 </div>
                 <span class="member-role-badge ${m.role}">${m.role.toUpperCase()}</span>
-                ${m.role !== 'owner' ? `<button class="make-owner-btn" data-member-id="${m.id}">Promover a OWNER</button>` : ''}
+                ${m.role !== 'owner' ? `<button class="make-owner-btn" data-member-id="${m.id}">Promover a OWNER</button> <button class="remove-member-btn" data-member-id="${m.id}" style="background:#e74c3c;color:#fff;border:none;border-radius:50%;width:28px;height:28px;font-size:18px;cursor:pointer;margin-left:8px;">&times;</button>` : ''}
             </div>`).join('') : '<div class="empty-state-text">SEM MEMBROS</div>';
     }
     // Add event for Adicionar Funcionário
@@ -204,7 +221,30 @@ function renderMain() {
                 renderMain();
             });
         });
+        // Add event para remover membro
+        teamListHtml.querySelectorAll('.remove-member-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const memberId = btn.getAttribute('data-member-id');
+                if (!memberId) return;
+                if (!confirm('Remover este membro da loja?')) return;
+                await removeMember(memberId);
+            });
+        });
     }
+
+// Função para remover membro da loja
+async function removeMember(userId) {
+    const { error } = await supabaseClient
+        .from('profiles')
+        .update({ store_id: null, role: 'client' })
+        .eq('id', userId);
+    if (error) {
+        alert('Erro ao remover membro: ' + error.message);
+        return;
+    }
+    await loadStoreData(state.currentStoreId);
+    renderMain();
+}
 }
 
 function bindEvents() {
