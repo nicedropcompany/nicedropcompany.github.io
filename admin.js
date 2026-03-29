@@ -49,13 +49,30 @@ async function init() {
 async function loadUsers() {
     const { data: users, error } = await adminSupabase
         .from('users_with_email')
-        .select('id, username, role, email');
+        .select('id, username, role, email, store_id');
     if (error) { console.error('Erro users:', error.message); return; }
+
+    // Carregar stores para mapear nomes
+    const { data: stores } = await adminSupabase.from('stores').select('id, name');
+    const storeMap = {};
+    (stores || []).forEach(s => { storeMap[s.id] = s.name; });
 
     const counts = { developer: 0, owner: 0, operator: 0, client: 0 };
     users.forEach(u => { if (counts[u.role] !== undefined) counts[u.role]++; });
 
+    // Stats bar
+    const { data: drones } = await adminSupabase.from('drones').select('id');
+    const totalStores = stores ? stores.length : 0;
+    const totalDrones = drones ? drones.length : 0;
+    const totalUsers = users.length;
+    const totalOperators = users.filter(u => u.role === 'operator').length;
     document.getElementById('userTypeSummary').innerHTML = `
+        <div style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:12px;">
+            <div class="user-type-summary"><b>Lojas:</b> ${totalStores}</div>
+            <div class="user-type-summary"><b>Drones:</b> ${totalDrones}</div>
+            <div class="user-type-summary"><b>Utilizadores:</b> ${totalUsers}</div>
+            <div class="user-type-summary"><b>Operadores:</b> ${totalOperators}</div>
+        </div>
         <div style="display:flex;gap:18px;flex-wrap:wrap;">
             <div><b>Developer:</b> ${counts.developer}</div>
             <div><b>Owner:</b> ${counts.owner}</div>
@@ -68,6 +85,7 @@ async function loadUsers() {
             <td>${u.username || '-'}</td>
             <td>${u.email || '-'}</td>
             <td>${u.role || '-'}</td>
+            <td>${u.store_id && storeMap[u.store_id] ? storeMap[u.store_id] : '-'}</td>
             <td>
                 <select onchange="changeRole('${u.id}', this.value)">
                     <option ${u.role === 'client' ? 'selected' : ''}>client</option>
@@ -94,7 +112,10 @@ async function loadStores() {
         .select('id, name, service, latitude, longitude');
     if (error) { console.error('Erro stores:', error.message); return; }
 
-    const { data: drones } = await adminSupabase.from('drones').select('id, store_id, status');
+    const { data: drones } = await adminSupabase.from('drones').select('id, store_id, status, name');
+
+    // Buscar owners para cada loja
+    const { data: owners } = await adminSupabase.from('profiles').select('id, username, store_id, role');
 
     document.getElementById('addDroneStore').innerHTML = stores.map(s =>
         `<option value="${s.id}">${s.name}</option>`).join('');
@@ -105,15 +126,55 @@ async function loadStores() {
         const mapLink = hasCoords
             ? `<a href="https://www.google.com/maps?q=${s.latitude},${s.longitude}" target="_blank">🗺️</a>`
             : '-';
+        // Owner
+        const owner = (owners || []).find(o => o.store_id === s.id && o.role === 'owner');
+        // Drones badge
+        let badgeColor = '#27ae60'; // green
+        if (storeDrones.some(d => d.status === 'inactive')) badgeColor = '#e74c3c';
+        else if (storeDrones.some(d => d.status === 'pending')) badgeColor = '#f1c40f';
+        // Drones list for delete
+        const dronesList = storeDrones.length ? storeDrones.map(d => {
+            let color = d.status === 'active' ? '#27ae60' : d.status === 'pending' ? '#f1c40f' : '#e74c3c';
+            return `<span style="display:inline-block;margin-right:6px;">${d.name} <span style="background:${color};color:#fff;padding:2px 8px;border-radius:8px;font-size:0.9em;">${d.status}</span> <button class='btn-remove-drone' data-drone-id='${d.id}' style='background:none;border:none;color:#e74c3c;font-size:1.1em;cursor:pointer;' title='Apagar'>&times;</button></span>`;
+        }).join('') : '-';
         return `<tr>
             <td>${s.name}</td>
             <td>${s.service ? 'Ativo' : 'Inativo'}</td>
-            <td>-</td>
-            <td>${storeDrones.length}</td>
-            <td>-</td>
-            <td>${mapLink}</td>
+            <td>${owner ? owner.username : '-'}</td>
+            <td><span style="background:${badgeColor};color:#fff;padding:2px 10px;border-radius:12px;">${storeDrones.length}</span></td>
+            <td>${dronesList}</td>
+            <td>${mapLink} <button class='btn-remove-store' data-store-id='${s.id}' style='background:none;border:none;color:#e74c3c;font-size:1.1em;cursor:pointer;' title='Apagar'>&times;</button></td>
         </tr>`;
     }).join('');
+
+    // Eventos apagar loja
+    document.querySelectorAll('.btn-remove-store').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const storeId = btn.getAttribute('data-store-id');
+            if (!confirm('Apagar esta loja?')) return;
+            await deleteStore(storeId);
+        });
+    });
+    // Eventos apagar drone
+    document.querySelectorAll('.btn-remove-drone').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const droneId = btn.getAttribute('data-drone-id');
+            if (!confirm('Apagar este drone?')) return;
+            await deleteDrone(droneId);
+        });
+    });
+}
+
+async function deleteStore(storeId) {
+    await adminSupabase.from('stores').delete().eq('id', storeId);
+    await loadStores();
+    await loadUsers();
+}
+
+async function deleteDrone(droneId) {
+    await adminSupabase.from('drones').delete().eq('id', droneId);
+    await loadStores();
+}
 }
 
 async function createStore() {
