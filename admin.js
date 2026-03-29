@@ -39,10 +39,10 @@ async function init() {
 
 
         currentUser = { ...profile, email: session.user.email };
-        const adminEmailElem = document.getElementById('adminEmail');
-        if (adminEmailElem) {
-            adminEmailElem.textContent = `${profile.username || profile.id} (developer)`;
-        }
+        const usernameEl = document.getElementById('adminUsername');
+        const roleEl = document.getElementById('adminRole');
+        if (usernameEl) usernameEl.textContent = profile.username || profile.id;
+        if (roleEl) roleEl.textContent = profile.role || 'developer';
 
         await loadUsers();
         await loadStores();

@@ -7,26 +7,25 @@
     <link rel="stylesheet" href="/admin.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
+
 <body>
 <div class="admin-layout">
-
-    <!-- BOTÃO SAIR -->
-    <div class="logout-top-right">
-        <button id="logoutBtn" class="logout-btn">← Sair</button>
-    </div>
-
-    <!-- MAIN -->
-    <main class="main center-page">
-        <!-- TOP BAR -->
-        <div class="topbar center-bar">
-            <h1>Painel de Administração</h1>
+    <div class="topbar">
+        <img src="nicedrop.png" class="brand-logo" alt="NiceDrop logo">
+        <div class="topbar-user">
+            <div class="user-info">
+                <span id="adminUsername" class="user-name"></span>
+                <span id="adminRole" class="user-role"></span>
+            </div>
+            <button id="logoutBtn">← Sair</button>
         </div>
-        <!-- STATS -->
+    </div>
+    <div class="page-title"><h1>PAINEL DE ADMINISTRAÇÃO</h1></div>
+    <main class="main">
         <div class="stats-row" id="userTypeSummary"></div>
-        <!-- USERS -->
         <section class="card">
             <div class="card-header">
-                <h2>Utilizadores</h2>
+                <h2 class="card-title">Utilizadores</h2>
                 <div class="toolbar">
                     <input type="text" id="searchInput" placeholder="Procurar por nome ou email">
                     <button id="refreshBtn" class="btn-primary">Atualizar</button>
@@ -46,19 +45,15 @@
                 <tbody id="usersBody"></tbody>
             </table>
         </section>
-
-        <!-- STORES -->
         <section class="card" id="storesSection">
             <div class="card-header">
-                <h2>Todas as Lojas</h2>
+                <h2 class="card-title">Todas as Lojas</h2>
             </div>
             <div class="stores-grid" id="storesBody"></div>
         </section>
-
-        <!-- CRIAR LOJA -->
         <section class="card" id="createStoreSection">
             <div class="card-header">
-                <h2>Criar Loja</h2>
+                <h2 class="card-title">Criar Loja</h2>
             </div>
             <div class="form-row">
                 <input type="email" id="ownerEmail" placeholder="Email do owner">
@@ -68,13 +63,11 @@
                 <input type="hidden" id="storeLng">
                 <button id="createStoreBtn" class="btn-primary">Criar Loja</button>
             </div>
-            <div id="map" style="height:260px;margin-top:16px;border-radius:12px;overflow:hidden;"></div>
+            <div id="map"></div>
         </section>
-
-        <!-- ADICIONAR DRONE -->
         <section class="card" id="dronesSection">
             <div class="card-header">
-                <h2>Adicionar Drone</h2>
+                <h2 class="card-title">Adicionar Drone</h2>
             </div>
             <div class="form-row">
                 <select id="addDroneStore"></select>
@@ -82,7 +75,6 @@
                 <button id="addDroneBtn" class="btn-primary">Adicionar Drone</button>
             </div>
         </section>
-
     </main>
 </div>
 

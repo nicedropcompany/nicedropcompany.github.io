@@ -1,15 +1,208 @@
-@font-face {
-    font-family: 'BebasNeue';
-    src: url('BebasNeue-Regular.ttf') format('truetype');
-}
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sora:wght@300;400;500;600&display=swap');
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     font-family: 'Sora', -apple-system, sans-serif;
     background: url('sky.png') center/cover no-repeat fixed;
+    background-color: #87CEEB;
     min-height: 100vh;
     color: #0b0b0b;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 28px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+.brand-logo {
+    height: 40px;
+    width: auto;
+}
+.topbar-user {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.user-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.user-role {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.75);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+#logoutBtn {
+    background: rgba(255,255,255,0.25);
+    border: 1.5px solid rgba(255,255,255,0.5);
+    color: white;
+    border-radius: 20px;
+    font-family: 'Sora', sans-serif;
+    padding: 8px 18px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+#logoutBtn:hover {
+    background: rgba(255,255,255,0.4);
+}
+.page-title h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px;
+    letter-spacing: 5px;
+    color: white;
+    text-align: center;
+    margin: 0 0 18px 0;
+}
+.main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px 56px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 12px;
+}
+.stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+.stat-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40px;
+    color: #0b0b0b;
+}
+.stat-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+.card {
+    background: white;
+    border-radius: 20px;
+    padding: 22px 24px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.09);
+}
+.card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+}
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1.5px solid #f0f0f0;
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+}
+.form-row input, .form-row select {
+    border: 1.5px solid #e8e8e8;
+    border-radius: 12px;
+    font-family: 'Sora', sans-serif;
+    outline: none;
+    padding: 10px 14px;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+.btn-primary {
+    background: #0b0b0b;
+    color: white;
+    border-radius: 20px;
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin-left: 8px;
+}
+.btn-danger {
+    background: #fee2e2;
+    color: #dc2626;
+    border-radius: 20px;
+    border: none;
+    padding: 8px 16px;
+    font-size: 13px;
+    cursor: pointer;
+}
+.badge, .badge-developer, .badge-owner, .badge-operator, .badge-client, .badge-active, .badge-inactive, .badge-pending, .badge-shipping {
+    border-radius: 20px !important;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+.badge-developer { background: #0b0b0b; color: #fff; }
+.badge-owner { background: #dbeafe; color: #1d4ed8; }
+.badge-operator { background: #dcfce7; color: #15803d; }
+.badge-client { background: #f3f4f6; color: #6b7280; }
+.badge-active { background: #dcfce7; color: #15803d; }
+.badge-inactive { background: #fee2e2; color: #dc2626; }
+.badge-pending { background: #fef9c3; color: #a16207; }
+.badge-shipping { background: #dbeafe; color: #1d4ed8; }
+.stores-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px,1fr));
+    gap: 14px;
+}
+.store-card {
+    border: 1.5px solid #f0f0f0;
+    border-radius: 16px;
+    padding: 18px;
+    transition: box-shadow 0.2s;
+}
+.store-card-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+}
+#map {
+    height: 240px;
+    border-radius: 14px;
+    margin-top: 12px;
+    border: 1.5px solid #f0f0f0;
+}
+@media (max-width: 640px) {
+    .stats-row {
+        grid-template-columns: repeat(2,1fr);
+    }
+    .main {
+        padding: 0 6px 32px;
+    }
+    .form-row {
+        flex-direction: column;
+    }
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .table th:nth-child(4), .table td:nth-child(4) {
+        display: none;
+    }
 }
 
 
