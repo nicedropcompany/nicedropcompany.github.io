@@ -124,17 +124,24 @@ function renderMain() {
         <div class="detail-card">
             <div class="detail-card-title">Equipa</div>
             <button id="addEmployeeBtn" class="add-member-btn">Adicionar Funcionário</button>
-            ${state.team.length ? state.team.map(m => `
-                <div class="team-member-row" data-member-id="${m.id}">
-                    <div class="member-avatar">${(m.username || 'U')[0].toUpperCase()}</div>
-                    <div class="member-info">
-                        <div class="member-name">${m.username || '-'}</div>
-                    </div>
-                    <span class="member-role-badge ${m.role}">${m.role.toUpperCase()}</span>
-                    ${m.role !== 'owner' ? `<button class="make-owner-btn" data-member-id="${m.id}">Tornar Owner</button>` : ''}
-                </div>`).join('') : '<div class="empty-state-text">SEM MEMBROS</div>'}
+            <!-- Lista de membros da equipa com botão para promover a owner -->
+            <div id="teamListHtml"></div>
         </div>
     `;
+
+    // Renderizar equipa no container dedicado
+    const teamListHtml = document.getElementById('teamListHtml');
+    if (teamListHtml) {
+        teamListHtml.innerHTML = state.team.length ? state.team.map(m => `
+            <div class="team-member-row" data-member-id="${m.id}">
+                <div class="member-avatar">${(m.username || 'U')[0].toUpperCase()}</div>
+                <div class="member-info">
+                    <div class="member-name">${m.username || '-'}</div>
+                </div>
+                <span class="member-role-badge ${m.role}">${m.role.toUpperCase()}</span>
+                ${m.role !== 'owner' ? `<button class="make-owner-btn" data-member-id="${m.id}">Promover a OWNER</button>` : ''}
+            </div>`).join('') : '<div class="empty-state-text">SEM MEMBROS</div>';
+    }
     // Add event for Adicionar Funcionário
     const addEmployeeBtn = document.getElementById('addEmployeeBtn');
     if (addEmployeeBtn) {
@@ -166,24 +173,26 @@ function renderMain() {
         });
     }
 
-    // Add event for Tornar Owner
-    document.querySelectorAll('.make-owner-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            const memberId = btn.getAttribute('data-member-id');
-            if (!memberId) return;
-            if (!confirm('Tem a certeza que deseja tornar este funcionário OWNER?')) return;
-            const { error } = await supabaseClient
-                .from('profiles')
-                .update({ role: 'owner' })
-                .eq('id', memberId);
-            if (error) {
-                alert('Erro ao mudar role: ' + error.message);
-                return;
-            }
-            await loadStoreData(state.currentStoreId);
-            renderMain();
+    // Add event para promover a owner
+    if (teamListHtml) {
+        teamListHtml.querySelectorAll('.make-owner-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const memberId = btn.getAttribute('data-member-id');
+                if (!memberId) return;
+                if (!confirm('Tem a certeza que deseja promover este funcionário a OWNER?')) return;
+                const { error } = await supabaseClient
+                    .from('profiles')
+                    .update({ role: 'owner' })
+                    .eq('id', memberId);
+                if (error) {
+                    alert('Erro ao mudar role: ' + error.message);
+                    return;
+                }
+                await loadStoreData(state.currentStoreId);
+                renderMain();
+            });
         });
-    });
+    }
 }
 
 function bindEvents() {
