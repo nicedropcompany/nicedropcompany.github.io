@@ -28,8 +28,20 @@ async function init() {
         if (!profile) { window.location.href = '/auth.html'; return; }
 
         const role = (profile.role || '').trim().toLowerCase();
-        if (role === 'client') { window.location.href = '/auth.html'; return; }
-        if (role === 'developer') { window.location.href = '/admin.html'; return; }
+        if (role === 'client' || role === 'operator') {
+            alert('Sem acesso ao painel web');
+            window.location.href = '/auth.html';
+            return;
+        }
+        if (role === 'developer') {
+            window.location.href = '/admin.html';
+            return;
+        }
+        // Só owner pode aceder ao dashboard
+        if (role !== 'owner') {
+            window.location.href = '/auth.html';
+            return;
+        }
 
         state.user = profile;
 

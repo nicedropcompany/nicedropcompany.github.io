@@ -51,19 +51,26 @@ async function handleLogin(e) {
         if (profileError) throw profileError;
         const role = (profile.role || '').trim().toLowerCase();
         if (role === 'client' || role === 'operator') {
-            showMessage('error', 'Sem permissão para aceder ao painel.');
+            showMessage('error', 'Sem acesso ao painel web. Use a app móvel.');
             await supabase.auth.signOut();
             return;
         }
-        setStoredSession({ id: profile.id, email: data.user.email, username: profile.username, role: profile.role, store_id: profile.store_id });
-        showMessage('success', 'Bem-vindo! A redirecionar...');
-        setTimeout(() => {
-            if (role === 'developer') {
-                window.location.href = '/admin.html';
-            } else {
+        if (role === 'owner') {
+            setStoredSession({ id: profile.id, email: data.user.email, username: profile.username, role: profile.role, store_id: profile.store_id });
+            showMessage('success', 'Bem-vindo! A redirecionar...');
+            setTimeout(() => {
                 window.location.href = '/dashboard.html';
-            }
-        }, 1500);
+            }, 1500);
+            return;
+        }
+        if (role === 'developer') {
+            setStoredSession({ id: profile.id, email: data.user.email, username: profile.username, role: profile.role, store_id: profile.store_id });
+            showMessage('success', 'Bem-vindo! A redirecionar...');
+            setTimeout(() => {
+                window.location.href = '/admin.html';
+            }, 1500);
+            return;
+        }
     } catch (error) {
         console.error('Erro login:', error.message);
         showMessage('error', 'Credenciais inválidas.');
