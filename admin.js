@@ -57,56 +57,42 @@ async function loadUsers() {
     const storeMap = {};
     (stores || []).forEach(s => { storeMap[s.id] = s.name; });
 
-    const counts = { developer: 0, owner: 0, operator: 0, client: 0 };
-    users.forEach(u => { if (counts[u.role] !== undefined) counts[u.role]++; });
-
-    // Stats bar
+    // Stats bar (4 stat-cards, sem breakdown)
     const { data: drones } = await adminSupabase.from('drones').select('id');
     const totalStores = stores ? stores.length : 0;
     const totalDrones = drones ? drones.length : 0;
     const totalUsers = users.length;
     const totalOperators = users.filter(u => u.role === 'operator').length;
     document.getElementById('userTypeSummary').innerHTML = `
-        <div class="stats-bar">
-            <div class="metric-card">
-                <div class="metric-label">Lojas</div>
-                <div class="metric-value">${totalStores}</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Drones</div>
-                <div class="metric-value">${totalDrones}</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Utilizadores</div>
-                <div class="metric-value">${totalUsers}</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Operadores</div>
-                <div class="metric-value">${totalOperators}</div>
-            </div>
-        </div>
-        <div style="display:flex;gap:18px;flex-wrap:wrap;">
-            <div><b>Developer:</b> ${counts.developer}</div>
-            <div><b>Owner:</b> ${counts.owner}</div>
-            <div><b>Operator:</b> ${counts.operator}</div>
-            <div><b>Cliente:</b> ${counts.client}</div>
-        </div>`;
+        <div class="stat-card"><div class="stat-label">Lojas</div><div class="stat-number">${totalStores}</div></div>
+        <div class="stat-card"><div class="stat-label">Drones</div><div class="stat-number">${totalDrones}</div></div>
+        <div class="stat-card"><div class="stat-label">Utilizadores</div><div class="stat-number">${totalUsers}</div></div>
+        <div class="stat-card"><div class="stat-label">Operadores</div><div class="stat-number">${totalOperators}</div></div>
+    `;
 
-    document.getElementById('usersBody').innerHTML = users.map(u => `
+    // Tabela de utilizadores com badges
+    document.getElementById('usersBody').innerHTML = users.map(u => {
+        let badgeClass = 'badge';
+        if (u.role === 'developer') badgeClass += ' badge-developer';
+        else if (u.role === 'owner') badgeClass += ' badge-owner';
+        else if (u.role === 'operator') badgeClass += ' badge-operator';
+        else badgeClass += ' badge-client';
+        return `
         <tr>
             <td>${u.username || '-'}</td>
             <td>${u.email || '-'}</td>
-            <td>${u.role || '-'}</td>
+            <td><span class="${badgeClass}">${u.role || '-'}</span></td>
             <td>${u.store_id && storeMap[u.store_id] ? storeMap[u.store_id] : '-'}</td>
             <td>
-                <select onchange="changeRole('${u.id}', this.value)">
-                    <option ${u.role === 'client' ? 'selected' : ''}>client</option>
-                    <option ${u.role === 'operator' ? 'selected' : ''}>operator</option>
-                    <option ${u.role === 'owner' ? 'selected' : ''}>owner</option>
-                    <option ${u.role === 'developer' ? 'selected' : ''}>developer</option>
+                <select class="role-select" onchange="changeRole('${u.id}', this.value)">
+                    <option value="client" ${u.role === 'client' ? 'selected' : ''}>client</option>
+                    <option value="operator" ${u.role === 'operator' ? 'selected' : ''}>operator</option>
+                    <option value="owner" ${u.role === 'owner' ? 'selected' : ''}>owner</option>
+                    <option value="developer" ${u.role === 'developer' ? 'selected' : ''}>developer</option>
                 </select>
             </td>
-        </tr>`).join('');
+        </tr>`;
+    }).join('');
 }
 
 async function changeRole(userId, role) {
@@ -125,61 +111,48 @@ async function loadStores() {
     if (error) { console.error('Erro stores:', error.message); return; }
 
     const { data: drones } = await adminSupabase.from('drones').select('id, store_id, status, name');
-
-    // Buscar owners para cada loja
     const { data: owners } = await adminSupabase.from('profiles').select('id, username, store_id, role');
 
     document.getElementById('addDroneStore').innerHTML = stores.map(s =>
         `<option value="${s.id}">${s.name}</option>`).join('');
 
+    // Renderizar cards na stores-grid (#storesBody)
     document.getElementById('storesBody').innerHTML = stores.map(s => {
         const storeDrones = (drones || []).filter(d => d.store_id === s.id);
         const hasCoords = s.latitude && s.longitude;
-        const mapLink = hasCoords
-            ? `<a href="https://www.google.com/maps?q=${s.latitude},${s.longitude}" target="_blank" class="icon-map" title="Ver no mapa"></a>`
-            : '-';
-        // Owner
+        const mapUrl = hasCoords ? `https://www.google.com/maps?q=${s.latitude},${s.longitude}` : null;
         const owner = (owners || []).find(o => o.store_id === s.id && o.role === 'owner');
-        // Drones badge
-        let badgeClass = 'badge-drone-active';
-        if (storeDrones.some(d => d.status === 'inactive')) badgeClass = 'badge-drone-inactive';
-        else if (storeDrones.some(d => d.status === 'pending')) badgeClass = 'badge-drone-pending';
-        // Drones list for delete
-        const dronesList = storeDrones.length ? storeDrones.map(d => {
-            let statusClass = d.status === 'active' ? 'badge-drone-active' : d.status === 'pending' ? 'badge-drone-pending' : d.status === 'shipping' ? 'badge-drone-shipping' : 'badge-drone-inactive';
-            return `<span style="display:inline-block;margin-right:6px;">${d.name} <span class="badge-pill ${statusClass}">${d.status}</span> <button class='btn-remove-drone' data-drone-id='${d.id}' style='background:none;border:none;color:#e74c3c;font-size:1.1em;cursor:pointer;' title='Apagar'>&times;</button></span>`;
-        }).join('') : '-';
-        return `<tr>
-            <td>${s.name}</td>
-            <td>${s.service ? 'Ativo' : 'Inativo'}</td>
-            <td>${owner ? owner.username : '-'}</td>
-            <td><span class="badge-drone-count">${storeDrones.length}</span></td>
-            <td>${dronesList}</td>
-            <td>
-                ${mapLink}
-                <button class='btn-remove-store' data-store-id='${s.id}' title='Apagar' style='background:none;border:none;padding:0 6px;vertical-align:middle;'>
-                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="9" fill="#ffeaea"/><path d="M7 7L13 13M13 7L7 13" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/></svg>
-                </button>
-            </td>
-        </tr>`;
+        // Status badge
+        const status = s.service ? 'ATIVA' : 'INATIVA';
+        const statusClass = s.service ? 'badge badge-active' : 'badge badge-inactive';
+        // Drones
+        const dronesHtml = storeDrones.length ? storeDrones.map(d => {
+            let droneStatusClass = 'badge';
+            if (d.status === 'active') droneStatusClass += ' badge-active';
+            else if (d.status === 'pending') droneStatusClass += ' badge-pending';
+            else if (d.status === 'shipping') droneStatusClass += ' badge-shipping';
+            else droneStatusClass += ' badge-inactive';
+            return `<div class="drone-item">
+                <span>${d.name}</span>
+                <span class="${droneStatusClass}">${d.status.toUpperCase()}</span>
+                <button class="btn-danger" onclick="deleteDrone('${d.id}')">×</button>
+            </div>`;
+        }).join('') : '<div class="drone-item">Nenhum drone</div>';
+        // Card
+        return `<div class="store-card">
+            <div class="store-card-header">
+                <div class="store-card-name">${s.name}</div>
+                <span class="${statusClass}">${status}</span>
+            </div>
+            <div class="store-card-meta">Owner: ${owner ? owner.username : '-'} • ${s.service ? 'Ativa' : 'Inativa'}</div>
+            <div class="store-card-meta">Cidade: ${s.city || '-'}</div>
+            <div class="store-card-drones">${dronesHtml}</div>
+            <div class="store-card-actions" style="margin-top:10px;display:flex;gap:10px;">
+                ${hasCoords ? `<button class="btn-secondary" onclick="window.open('${mapUrl}','_blank')">🗺 Mapa</button>` : ''}
+                <button class="btn-danger" onclick="deleteStore('${s.id}')">Apagar Loja</button>
+            </div>
+        </div>`;
     }).join('');
-
-    // Eventos apagar loja
-    document.querySelectorAll('.btn-remove-store').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const storeId = btn.getAttribute('data-store-id');
-            if (!confirm('Apagar esta loja?')) return;
-            await deleteStore(storeId);
-        });
-    });
-    // Eventos apagar drone
-    document.querySelectorAll('.btn-remove-drone').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const droneId = btn.getAttribute('data-drone-id');
-            if (!confirm('Apagar este drone?')) return;
-            await deleteDrone(droneId);
-        });
-    });
 }
 
 async function deleteStore(storeId) {
