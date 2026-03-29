@@ -1,101 +1,99 @@
 <!DOCTYPE html>
 <html lang="pt-PT">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>NiceDrop | Administração</title>
-    <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="/admin.css">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
-
 <body class="dashboard-page">
-    <main class="admin-wrap">
-        <header class="admin-header">
-            <h1>Painel de Administração</h1>
-            <div>
-                <span id="adminEmail"></span>
-                <button id="logoutBtn" class="btn-dark">Sair</button>
-            </div>
-        </header>
-
-        <section class="admin-card">
-            <h2>Resumo de Utilizadores</h2>
-            <div id="userTypeSummary" class="user-type-summary"></div>
+<div class="dashboard-container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="/nicedrop.png" alt="NICEDROP" height="36">
+        </div>
+        <div class="sidebar-user">
+            <div class="user-avatar" id="userAvatar">A</div>
+            <div class="user-name" id="userName">Admin</div>
+            <div class="user-role" id="userRole">DEVELOPER</div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#usersSection" class="sidebar-link active">Utilizadores</a>
+            <a href="#storesSection" class="sidebar-link">Lojas</a>
+            <a href="#dronesSection" class="sidebar-link">Drones</a>
+        </nav>
+        <div class="sidebar-logout">
+            <button id="logoutBtn">← SAIR</button>
+        </div>
+    </aside>
+    <!-- MAIN AREA -->
+    <main class="main-area">
+        <div class="main-topbar">
+            <h1 class="page-title" id="pageTitle">Administração</h1>
+            <span id="adminEmail" class="admin-email"></span>
+        </div>
+        <div class="stats-bar" id="userTypeSummary"></div>
+        <!-- USERS SECTION -->
+        <section class="admin-card" id="usersSection">
+            <h2>Utilizadores</h2>
             <div class="toolbar">
                 <input type="text" id="searchInput" placeholder="Procurar por nome ou email">
                 <button id="refreshBtn" class="btn-dark">Atualizar</button>
             </div>
-            <p id="message" class="message"></p>
             <div class="table-wrap">
-                <table>
+                <table class="users-table">
                     <thead>
                         <tr>
+                            <th></th>
                             <th>Nome</th>
                             <th>Email</th>
                             <th>Papel</th>
-                            <th></th>
+                            <th>Loja</th>
+                            <th>Alterar Role</th>
                         </tr>
                     </thead>
                     <tbody id="usersBody"></tbody>
                 </table>
             </div>
         </section>
-        <!-- Secção de dashboard para admin -->
-        <section class="admin-card" id="adminDashboardSection" style="display:none;">
-            <h2>Dashboard Admin</h2>
-            <div id="adminDashboardContainer"></div>
+        <!-- STORES SECTION -->
+        <section class="admin-card" id="storesSection">
+            <h2>Lojas</h2>
+            <div class="stores-grid" id="storesGrid"></div>
         </section>
-
-        <section class="admin-card">
+        <!-- CRIAR LOJA SECTION -->
+        <section class="admin-card" id="createStoreSection">
             <h2>Criar Loja para Owner</h2>
-            <p>Depois de promover para owner, cria a loja e associa o dono. Escolhe a localização no mapa.</p>
-            <div class="store-form">
+            <form class="store-form" onsubmit="return false;">
                 <input type="email" id="ownerEmail" placeholder="email do owner">
                 <input type="text" id="storeName" placeholder="nome da loja">
                 <input type="text" id="storeCity" placeholder="cidade">
                 <input type="hidden" id="storeLat">
                 <input type="hidden" id="storeLng">
                 <button id="createStoreBtn" class="btn-dark">Criar Loja</button>
-            </div>
+            </form>
             <div id="map" style="height: 260px; margin-top: 16px; border-radius: 12px; overflow: hidden;"></div>
         </section>
-
-        <section class="admin-card">
+        <!-- ADICIONAR DRONE SECTION -->
+        <section class="admin-card" id="dronesSection">
             <h2>Adicionar Drone a Qualquer Loja</h2>
-            <p>Developers/Admin têm acesso a todas as lojas e conseguem adicionar drones em qualquer uma.</p>
-            <div class="store-form">
+            <form class="store-form" onsubmit="return false;">
                 <select id="addDroneStore"></select>
                 <input type="text" id="addDroneName" placeholder="nome do drone">
                 <button id="addDroneBtn" class="btn-dark">Adicionar Drone</button>
-            </div>
-        </section>
-
-        <section class="admin-card">
-            <h2>Todas as Lojas</h2>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Loja</th>
-                            <th>Cidade</th>
-                            <th>Owner</th>
-                            <th>Drones</th>
-                            <th>Receita</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="storesBody"></tbody>
-                </table>
-            </div>
+            </form>
         </section>
     </main>
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/supabase-config.js"></script>
-    <script src="/admin.js"></script>
+</div>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script src="/admin.js"></script>
 </body>
-
 </html>
