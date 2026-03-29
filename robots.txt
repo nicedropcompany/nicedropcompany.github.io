@@ -1,0 +1,11 @@
+User-agent: *
+Disallow: /admin.html
+Disallow: /dashboard.html
+Disallow: /clients.html
+Disallow: /auth.html
+Disallow: /recovery.html
+Disallow: /pay_success.html
+Disallow: /*.js
+Disallow: /*.css
+Allow: /index.html
+Allow: /download.html
