@@ -37,8 +37,12 @@ async function init() {
             return;
         }
 
+
         currentUser = { ...profile, email: session.user.email };
-        document.getElementById('adminEmail').textContent = `${profile.username || profile.id} (developer)`;
+        const adminEmailElem = document.getElementById('adminEmail');
+        if (adminEmailElem) {
+            adminEmailElem.textContent = `${profile.username || profile.id} (developer)`;
+        }
 
         await loadUsers();
         await loadStores();
