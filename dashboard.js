@@ -81,6 +81,7 @@ async function loadStoreData(storeId) {
 
 function renderSidebar() {
     const el = document.getElementById('sidebarStores');
+    if (!el) return;
     el.innerHTML = state.stores.map(s => `
         <div class="sidebar-store-item ${s.id === state.currentStoreId ? 'active' : ''}" data-store-id="${s.id}">
             <span class="sidebar-store-icon">🏪</span>
