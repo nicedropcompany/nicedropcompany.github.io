@@ -193,10 +193,24 @@ async function createStore() {
         .select('id')
         .single();
     if (storeError || !newStore) { alert('Erro ao criar loja: ' + (storeError?.message || '')); return; }
-    // Update owner's profile
+    // Buscar perfil atual do owner para garantir array
+    const { data: ownerProfile } = await adminSupabase
+        .from('profiles')
+        .select('store_id')
+        .eq('id', owner.id)
+        .single();
+    let ids = [];
+    if (ownerProfile) {
+        if (Array.isArray(ownerProfile.store_id)) ids = ownerProfile.store_id;
+        else if (typeof ownerProfile.store_id === 'number') ids = [ownerProfile.store_id];
+        else if (typeof ownerProfile.store_id === 'string') {
+            try { const p = JSON.parse(ownerProfile.store_id); ids = Array.isArray(p) ? p : [p]; } catch { ids = []; }
+        }
+    }
+    if (!ids.includes(newStore.id)) ids.push(newStore.id);
     const { error: updateError } = await adminSupabase
         .from('profiles')
-        .update({ store_id: newStore.id, role: 'owner' })
+        .update({ store_id: ids, role: 'owner' })
         .eq('id', owner.id);
     if (updateError) { alert('Erro ao atualizar owner: ' + updateError.message); return; }
     alert('Loja criada com sucesso!');
