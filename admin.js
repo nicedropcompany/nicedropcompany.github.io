@@ -160,6 +160,9 @@ async function loadStores() {
 }
 
 async function deleteStore(storeId) {
+    // Apagar todos os drones associados à loja
+    await adminSupabase.from('drones').delete().eq('store_id', storeId);
+    // Apagar a loja
     await adminSupabase.from('stores').delete().eq('id', storeId);
     await loadStores();
     await loadUsers();
