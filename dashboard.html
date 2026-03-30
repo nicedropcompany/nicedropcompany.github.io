@@ -506,7 +506,18 @@
 
     async function promoteToOwner(memberId) {
         if (!confirm('Promover a Owner?')) return;
-        const { error } = await supabaseClient.from('profiles').update({role:'owner'}).eq('id',memberId);
+        // Buscar o perfil do membro para obter as lojas atuais
+        const { data: member, error: fetchError } = await supabaseClient.from('profiles').select('store_id').eq('id', memberId).single();
+        if (fetchError || !member) { alert('Erro ao buscar perfil: ' + (fetchError?.message || '')); return; }
+        let ids = [];
+        if (Array.isArray(member.store_id)) ids = member.store_id;
+        else if (typeof member.store_id === 'number') ids = [member.store_id];
+        else if (typeof member.store_id === 'string') {
+            try { const p = JSON.parse(member.store_id); ids = Array.isArray(p) ? p : [p]; } catch { ids = []; }
+        }
+        // Adiciona a loja atual se não existir
+        if (!ids.includes(state.currentStoreId)) ids.push(state.currentStoreId);
+        const { error } = await supabaseClient.from('profiles').update({store_id: ids, role: 'owner'}).eq('id', memberId);
         if (error) { alert('Erro: '+error.message); return; }
         await loadTeam(state.currentStoreId); renderTeam();
     }
