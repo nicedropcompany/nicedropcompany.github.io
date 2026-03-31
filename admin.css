@@ -2,7 +2,7 @@
 .table-vertical-scroll {
     max-height: 340px;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
     margin-bottom: 10px;
 }
 .table-vertical-scroll table {
