@@ -1,223 +1,139 @@
+delivery systems that delay orders and increase costs.
 <!DOCTYPE html>
 <html lang="pt-PT">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>NiceDrop | Autonomous Drone Delivery</title>
-
 <link rel="stylesheet" href="/style.css">
-
 </head>
-
 <body class="app-page">
 
 <a class="skip-link" href="#main">Skip to content</a>
 
 <header class="navbar">
+    <a href="#top" class="logo-wrap">
+        <img src="/nicedrop.png" class="logo" alt="NiceDrop logo">
+    </a>
 
-<a href="#top" class="logo-wrap">
-<img src="/nicedrop.png" class="logo" alt="NiceDrop logo">
-</a>
+    <nav class="nav-links" id="navLinks" aria-label="Primary">
+        <a href="#problem">Problem</a>
+        <a href="#solution">Solution</a>
+        <a href="#technology">Technology</a>
+        <a href="#future">Future</a>
+    </nav>
 
-<nav class="nav-links" aria-label="Primary">
+    <div class="navbar-actions">
+        <a class="btn-signup" href="auth.html">SIGN UP</a>
+        <a class="btn-dashboard" id="dashboardBtn" href="dashboard.html">DASHBOARD</a>
+        <a class="cta" href="download.html">DOWNLOAD APP</a>
+    </div>
 
-<a href="#problem">Problem</a>
-<a href="#solution">Solution</a>
-<a href="#technology">Technology</a>
-<a href="#future">Future</a>
-
-</nav>
-
-<div class="navbar-actions">
-
-<a class="btn-signup" href="auth.html">SIGN UP</a>
-<a class="btn-dashboard" id="dashboardBtn" href="dashboard.html">DASHBOARD</a>
-<a class="cta" href="download.html">DOWNLOAD APP</a>
-
-</div>
-
+    <!-- Hamburger (só mobile) -->
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
 </header>
-
 
 <main id="main">
 
 <section class="hero" id="top">
+    <div class="hero-left reveal reveal-left">
+        <p class="tag">AUTONOMOUS LOGISTICS NETWORK</p>
+        <h1>NICEDROP</h1>
+        <h2>Autonomous Drone Delivery Platform</h2>
+        <p class="hero-text">
+            NiceDrop is building the next generation of urban logistics.
+            Our autonomous VTOL drone network connects local businesses
+            with customers enabling ultra-fast aerial delivery.
+        </p>
+        <div class="buttons">
+            <a class="btn" href="#solution">LEARN MORE</a>
+            <a class="btn-outline" href="#future">FUTURE VISION</a>
+        </div>
+    </div>
 
-<div class="hero-left reveal reveal-left">
-
-<p class="tag">AUTONOMOUS LOGISTICS NETWORK</p>
-
-<h1>NICEDROP</h1>
-
-<h2>Autonomous Drone Delivery Platform</h2>
-
-<p class="hero-text">
-
-NiceDrop is building the next generation of urban logistics.
-Our autonomous VTOL drone network connects local businesses
-with customers enabling ultra-fast aerial delivery.
-
-</p>
-
-<div class="buttons">
-
-<a class="btn" href="#solution">LEARN MORE</a>
-<a class="btn-outline" href="#future">FUTURE VISION</a>
-
-</div>
-
-</div>
-
-
-<div class="hero-right reveal reveal-right">
-
-<div class="panel reveal" style="--delay:0.08s">
-
-<p>LIVE DELIVERY</p>
-<h3>12 MIN</h3>
-
-</div>
-
-<div class="panel reveal" style="--delay:0.16s">
-
-<p>CITY NETWORK</p>
-<h3>38 NODES</h3>
-
-</div>
-
-<div class="panel reveal" style="--delay:0.24s">
-
-<p>NETWORK STATUS</p>
-<h3>ACTIVE</h3>
-
-</div>
-
-</div>
-
+    <div class="hero-right reveal reveal-right">
+        <div class="panel reveal" style="--delay:0.08s">
+            <p>LIVE DELIVERY</p>
+            <h3>12 MIN</h3>
+        </div>
+        <div class="panel reveal" style="--delay:0.16s">
+            <p>CITY NETWORK</p>
+            <h3>38 NODES</h3>
+        </div>
+        <div class="panel reveal" style="--delay:0.24s">
+            <p>NETWORK STATUS</p>
+            <h3>ACTIVE</h3>
+        </div>
+    </div>
 </section>
-
 
 <section class="section fade-section" id="problem">
-
-<div class="split">
-
-<div class="left reveal reveal-left">
-
-<h2>
-
-URBAN DELIVERY TODAY IS
-SLOW, INEFFICIENT
-AND EXPENSIVE
-
-</h2>
-
-<p>
-
-Restaurants, cafes and pharmacies depend on traffic-limited
-delivery systems that delay orders and increase costs.
-
-</p>
-
-</div>
-
-<div class="right">
-
-<div class="card reveal reveal-right" style="--delay:0.08s">
-<h3>TRAFFIC BOTTLENECKS</h3>
-<p>Surface logistics choke peak-hour fulfilment.</p>
-</div>
-
-<br>
-
-<div class="card reveal reveal-right" style="--delay:0.16s">
-<h3>HIGH LABOR COSTS</h3>
-<p>Manual delivery models scale poorly.</p>
-</div>
-
-<br>
-
-<div class="card reveal reveal-right" style="--delay:0.24s">
-<h3>LIMITED REACH</h3>
-<p>Dense cities still suffer delivery gaps.</p>
-</div>
-
-</div>
-
-</div>
-
+    <div class="split">
+        <div class="left reveal reveal-left">
+            <h2>URBAN DELIVERY TODAY IS SLOW, INEFFICIENT AND EXPENSIVE</h2>
+            <p>Restaurants, cafes and pharmacies depend on traffic-limited
+            delivery systems that delay orders and increase costs.</p>
+        </div>
+        <div class="right">
+            <div class="card reveal reveal-right" style="--delay:0.08s">
+                <h3>TRAFFIC BOTTLENECKS</h3>
+                <p>Surface logistics choke peak-hour fulfilment.</p>
+            </div>
+            <br>
+            <div class="card reveal reveal-right" style="--delay:0.16s">
+                <h3>HIGH LABOR COSTS</h3>
+                <p>Manual delivery models scale poorly.</p>
+            </div>
+            <br>
+            <div class="card reveal reveal-right" style="--delay:0.24s">
+                <h3>LIMITED REACH</h3>
+                <p>Dense cities still suffer delivery gaps.</p>
+            </div>
+        </div>
+    </div>
 </section>
-
 
 <section class="section fade-section" id="solution">
-
-<h2 class="center reveal reveal-up">THE NICEDROP SOLUTION</h2>
-
-<div class="grid">
-
-<div class="card reveal reveal-up" style="--delay:0.08s">VTOL DRONES</div>
-<div class="card reveal reveal-up" style="--delay:0.16s">AI ROUTE OPTIMIZATION</div>
-<div class="card reveal reveal-up" style="--delay:0.24s">AUTONOMOUS NAVIGATION</div>
-<div class="card reveal reveal-up" style="--delay:0.32s">SMART LOGISTICS</div>
-
-</div>
-
+    <h2 class="center reveal reveal-up">THE NICEDROP SOLUTION</h2>
+    <div class="grid">
+        <div class="card reveal reveal-up" style="--delay:0.08s">VTOL DRONES</div>
+        <div class="card reveal reveal-up" style="--delay:0.16s">AI ROUTE OPTIMIZATION</div>
+        <div class="card reveal reveal-up" style="--delay:0.24s">AUTONOMOUS NAVIGATION</div>
+        <div class="card reveal reveal-up" style="--delay:0.32s">SMART LOGISTICS</div>
+    </div>
 </section>
-
 
 <section class="section fade-section" id="technology">
-
-<div class="split">
-
-<div class="left reveal reveal-right">
-
-<h2>TECHNOLOGY</h2>
-
-<p>
-
-NiceDrop operates a fully autonomous aerial logistics network
-using intelligent routing and real-time tracking.
-
-</p>
-
-</div>
-
-<div class="right grid">
-
-<div class="card reveal reveal-left" style="--delay:0.1s">AI FLIGHT SYSTEM</div>
-<div class="card reveal reveal-left" style="--delay:0.2s">REAL TIME TRACKING</div>
-<div class="card reveal reveal-left" style="--delay:0.3s">AUTONOMOUS LANDING</div>
-<div class="card reveal reveal-left" style="--delay:0.4s">SMART DELIVERY GRID</div>
-
-</div>
-
-</div>
-
+    <div class="split">
+        <div class="left reveal reveal-right">
+            <h2>TECHNOLOGY</h2>
+            <p>NiceDrop operates a fully autonomous aerial logistics network
+            using intelligent routing and real-time tracking.</p>
+        </div>
+        <div class="right grid">
+            <div class="card reveal reveal-left" style="--delay:0.1s">AI FLIGHT SYSTEM</div>
+            <div class="card reveal reveal-left" style="--delay:0.2s">REAL TIME TRACKING</div>
+            <div class="card reveal reveal-left" style="--delay:0.3s">AUTONOMOUS LANDING</div>
+            <div class="card reveal reveal-left" style="--delay:0.4s">SMART DELIVERY GRID</div>
+        </div>
+    </div>
 </section>
-
 
 <section class="section future fade-section" id="future">
-
-<h2 class="reveal reveal-left">THE FUTURE OF AUTONOMOUS DELIVERY</h2>
-
-<p class="reveal reveal-right" style="--delay:0.12s">
-
-NiceDrop will connect thousands of businesses and customers
-through a city-scale autonomous drone delivery network.
-
-</p>
-
+    <h2 class="reveal reveal-left">THE FUTURE OF AUTONOMOUS DELIVERY</h2>
+    <p class="reveal reveal-right" style="--delay:0.12s">
+        NiceDrop will connect thousands of businesses and customers
+        through a city-scale autonomous drone delivery network.
+    </p>
 </section>
 
-
 <footer>
-
-<img src="nicedrop.png" class="footer-logo" alt="NiceDrop logo">
-
-<p>NiceDrop © 2026 - Future Autonomous Delivery</p>
-
+    <img src="nicedrop.png" class="footer-logo" alt="NiceDrop logo">
+    <p>NiceDrop © 2026 - Future Autonomous Delivery</p>
 </footer>
 
 </main>
@@ -231,9 +147,23 @@ document.getElementById('dashboardBtn')?.addEventListener('click', function(e) {
         window.location.href = 'auth.html';
     }
 });
+
+// Hamburger menu
+const toggle = document.getElementById('navToggle');
+const navLinks = document.getElementById('navLinks');
+
+toggle?.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+});
+
+// Fechar menu ao clicar num link
+navLinks?.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+        navLinks.classList.remove('open');
+    });
+});
 </script>
 
 <script src="script.js"></script>
-
 </body>
 </html>
