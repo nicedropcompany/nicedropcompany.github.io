@@ -110,7 +110,7 @@ async function changeRole(userId, role) {
 async function loadStores() {
     const { data: stores, error } = await adminSupabase
         .from('stores')
-        .select('id, name, service, latitude, longitude, city');
+        .select('id, name, service, latitude, longitude');
     if (error) { console.error('Erro stores:', error.message); return; }
 
     const { data: drones } = await adminSupabase.from('drones').select('id, store_id, status, name');
