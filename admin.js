@@ -221,7 +221,6 @@ async function deleteDrone(droneId) {
 async function createStore() {
     const ownerEmail = document.getElementById('ownerEmail').value.trim();
     const name       = document.getElementById('storeName').value.trim();
-    const city       = document.getElementById('storeCity').value.trim();
     const lat        = document.getElementById('storeLat').value;
     const lng        = document.getElementById('storeLng').value;
 
@@ -241,7 +240,7 @@ async function createStore() {
     // 2. Criar a loja
     const { data: newStore, error: storeErr } = await adminSupabase
         .from('stores')
-        .insert({ name, city: city || null, latitude: parseFloat(lat), longitude: parseFloat(lng), service: false })
+        .insert({ name, latitude: parseFloat(lat), longitude: parseFloat(lng), service: false })
         .select('id')
         .single();
     if (storeErr || !newStore) { alert('Erro ao criar loja: ' + (storeErr?.message || '')); return; }
@@ -278,7 +277,6 @@ async function createStore() {
     // Limpar campos
     document.getElementById('ownerEmail').value = '';
     document.getElementById('storeName').value  = '';
-    document.getElementById('storeCity').value  = '';
     document.getElementById('storeLat').value   = '';
     document.getElementById('storeLng').value   = '';
 
