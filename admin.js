@@ -199,8 +199,10 @@ async function deleteStore(storeId) {
     }
 
     // 3. Apagar a loja
+    console.log('Antes do delete da loja stores', id);
     const { error: storeErr } = await adminSupabase.from('stores').delete().eq('id', id);
-    if (storeErr) { alert('Erro ao apagar loja: ' + storeErr.message); return; }
+    console.log('Depois do delete da loja stores', storeErr);
+    if (storeErr) { alert('Erro loja: ' + storeErr?.message); return; }
 
     await loadStores();
     await loadUsers();
