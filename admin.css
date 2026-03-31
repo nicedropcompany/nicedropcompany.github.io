@@ -1,3 +1,15 @@
+/* Scroll vertical para tabela de utilizadores */
+.table-vertical-scroll {
+    max-height: 340px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-bottom: 10px;
+}
+.table-vertical-scroll table {
+    min-width: 600px;
+    width: 100%;
+    border-collapse: collapse;
+}
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sora:wght@300;400;500;600&display=swap');
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
