@@ -21,16 +21,22 @@ delivery systems that delay orders and increase costs.
         <a href="#solution">Solution</a>
         <a href="#technology">Technology</a>
         <a href="#future">Future</a>
+        <div class="navbar-actions mobile-actions">
+            <a class="btn-signup" href="auth.html">SIGN UP</a>
+            <a class="btn-dashboard" id="dashboardBtnMobile" href="dashboard.html">DASHBOARD</a>
+            <a class="cta" href="download.html">DOWNLOAD APP</a>
+        </div>
+        <button class="nav-close" id="navClose" aria-label="Fechar Menu" type="button">&times;</button>
     </nav>
 
-    <div class="navbar-actions">
+    <div class="navbar-actions desktop-actions">
         <a class="btn-signup" href="auth.html">SIGN UP</a>
         <a class="btn-dashboard" id="dashboardBtn" href="dashboard.html">DASHBOARD</a>
         <a class="cta" href="download.html">DOWNLOAD APP</a>
     </div>
 
     <!-- Hamburger (só mobile) -->
-    <button class="nav-toggle" id="navToggle" aria-label="Menu">
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" type="button">
         <span></span>
         <span></span>
         <span></span>
@@ -139,8 +145,16 @@ delivery systems that delay orders and increase costs.
 </main>
 
 <script>
-// Dashboard button auth check
+// Dashboard button auth check (desktop)
 document.getElementById('dashboardBtn')?.addEventListener('click', function(e) {
+    const user = localStorage.getItem('user');
+    if (!user) {
+        e.preventDefault();
+        window.location.href = 'auth.html';
+    }
+});
+// Dashboard button auth check (mobile)
+document.getElementById('dashboardBtnMobile')?.addEventListener('click', function(e) {
     const user = localStorage.getItem('user');
     if (!user) {
         e.preventDefault();
@@ -151,12 +165,16 @@ document.getElementById('dashboardBtn')?.addEventListener('click', function(e) {
 // Hamburger menu
 const toggle = document.getElementById('navToggle');
 const navLinks = document.getElementById('navLinks');
+const navClose = document.getElementById('navClose');
 
 toggle?.addEventListener('click', () => {
-    navLinks.classList.toggle('open');
+    navLinks.classList.add('open');
+});
+navClose?.addEventListener('click', () => {
+    navLinks.classList.remove('open');
 });
 
-// Fechar menu ao clicar num link
+// Fechar menu ao clicar num link (mobile)
 navLinks?.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', () => {
         navLinks.classList.remove('open');

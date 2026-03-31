@@ -1,3 +1,15 @@
+/* Tabelas responsivas com scroll lateral */
+.table-responsive, .card, .dashboard-table-container {
+    overflow-x: auto;
+}
+table {
+    min-width: 600px;
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    white-space: nowrap;
+}
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&display=swap');
 
 @font-face {
