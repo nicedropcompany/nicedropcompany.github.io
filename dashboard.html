@@ -449,7 +449,7 @@
                     <tr>
                         <td class="drone-name-cell">✈️ ${d.name}</td>
                         <td><span class="badge ${sm[d.status]||'badge-pending'}">${(d.status||'pending').toUpperCase()}</span></td>
-                        <td><span class="km-chip">${d.capacity??'—'} kg</span></td>
+                        <td><span class="km-chip">${d.capacity??'—'} g</span></td>
                         <td><span class="badge ${d.servo_state?'badge-on':'badge-off'}">${d.servo_state?'ON':'OFF'}</span></td>
                         <td style="color:#bbb;font-size:.72rem;">#${d.id}</td>
                     </tr>`).join('')}
