@@ -9,16 +9,10 @@ let currentUser = null;
 async function init() {
     waitForSupabase(async () => {
         adminSupabase = window.supabaseConfig.init();
-        if (!adminSupabase) {
-            console.error('Supabase null');
-            return;
-        }
+        if (!adminSupabase) { console.error('Supabase null'); return; }
 
         const { data: { session } } = await adminSupabase.auth.getSession();
-        if (!session) {
-            window.location.href = '/auth.html';
-            return;
-        }
+        if (!session) { window.location.href = '/auth.html'; return; }
 
         const { data: profile, error } = await adminSupabase
             .from('profiles')
@@ -26,17 +20,10 @@ async function init() {
             .eq('id', session.user.id)
             .single();
 
-        if (error || !profile) {
-            window.location.href = '/auth.html';
-            return;
-        }
+        if (error || !profile) { window.location.href = '/auth.html'; return; }
 
         const role = (profile.role || '').trim().toLowerCase();
-        if (role !== 'developer') {
-            window.location.href = '/auth.html';
-            return;
-        }
-
+        if (role !== 'developer') { window.location.href = '/auth.html'; return; }
 
         currentUser = { ...profile, email: session.user.email };
         const usernameEl = document.getElementById('adminUsername');
@@ -50,23 +37,25 @@ async function init() {
     });
 }
 
+// ─────────────────────────────────────────────
+//  UTILIZADORES
+// ─────────────────────────────────────────────
 async function loadUsers() {
     const { data: users, error } = await adminSupabase
         .from('users_with_email')
         .select('id, username, role, email, store_id');
     if (error) { console.error('Erro users:', error.message); return; }
 
-    // Carregar stores para mapear nomes
     const { data: stores } = await adminSupabase.from('stores').select('id, name');
     const storeMap = {};
     (stores || []).forEach(s => { storeMap[s.id] = s.name; });
 
-    // Stats bar (4 stat-cards, sem breakdown)
     const { data: drones } = await adminSupabase.from('drones').select('id');
-    const totalStores = stores ? stores.length : 0;
-    const totalDrones = drones ? drones.length : 0;
-    const totalUsers = users.length;
+    const totalStores   = stores ? stores.length : 0;
+    const totalDrones   = drones ? drones.length : 0;
+    const totalUsers    = users.length;
     const totalOperators = users.filter(u => u.role === 'operator').length;
+
     document.getElementById('userTypeSummary').innerHTML = `
         <div class="stat-card"><div class="stat-label">Lojas</div><div class="stat-number">${totalStores}</div></div>
         <div class="stat-card"><div class="stat-label">Drones</div><div class="stat-number">${totalDrones}</div></div>
@@ -74,24 +63,34 @@ async function loadUsers() {
         <div class="stat-card"><div class="stat-label">Operadores</div><div class="stat-number">${totalOperators}</div></div>
     `;
 
-    // Tabela de utilizadores com badges
     document.getElementById('usersBody').innerHTML = users.map(u => {
+        // store_id pode ser array — mostrar nomes de todas as lojas
+        let storeNames = '-';
+        if (u.store_id) {
+            let ids = Array.isArray(u.store_id) ? u.store_id
+                : typeof u.store_id === 'number' ? [u.store_id]
+                : (() => { try { const p = JSON.parse(u.store_id); return Array.isArray(p) ? p : [p]; } catch { return []; } })();
+            const names = ids.map(id => storeMap[id]).filter(Boolean);
+            storeNames = names.length ? names.join(', ') : '-';
+        }
+
         let badgeClass = 'badge';
         if (u.role === 'developer') badgeClass += ' badge-developer';
-        else if (u.role === 'owner') badgeClass += ' badge-owner';
+        else if (u.role === 'owner')    badgeClass += ' badge-owner';
         else if (u.role === 'operator') badgeClass += ' badge-operator';
         else badgeClass += ' badge-client';
+
         return `
         <tr>
             <td>${u.username || '-'}</td>
             <td>${u.email || '-'}</td>
             <td><span class="${badgeClass}">${u.role || '-'}</span></td>
-            <td>${u.store_id && storeMap[u.store_id] ? storeMap[u.store_id] : '-'}</td>
+            <td>${storeNames}</td>
             <td>
                 <select class="role-select" onchange="changeRole('${u.id}', this.value)">
-                    <option value="client" ${u.role === 'client' ? 'selected' : ''}>client</option>
-                    <option value="operator" ${u.role === 'operator' ? 'selected' : ''}>operator</option>
-                    <option value="owner" ${u.role === 'owner' ? 'selected' : ''}>owner</option>
+                    <option value="client"    ${u.role === 'client'    ? 'selected' : ''}>client</option>
+                    <option value="operator"  ${u.role === 'operator'  ? 'selected' : ''}>operator</option>
+                    <option value="owner"     ${u.role === 'owner'     ? 'selected' : ''}>owner</option>
                     <option value="developer" ${u.role === 'developer' ? 'selected' : ''}>developer</option>
                 </select>
             </td>
@@ -100,138 +99,213 @@ async function loadUsers() {
 }
 
 async function changeRole(userId, role) {
-    const { error } = await adminSupabase
-        .from('profiles')
-        .update({ role })
-        .eq('id', userId);
+    const { error } = await adminSupabase.from('profiles').update({ role }).eq('id', userId);
     if (error) alert('Erro ao mudar role: ' + error.message);
     else await loadUsers();
 }
 
+// ─────────────────────────────────────────────
+//  LOJAS
+// ─────────────────────────────────────────────
 async function loadStores() {
     const { data: stores, error } = await adminSupabase
         .from('stores')
-        .select('id, name, service, latitude, longitude');
+        .select('id, name, service, latitude, longitude, city');
     if (error) { console.error('Erro stores:', error.message); return; }
 
     const { data: drones } = await adminSupabase.from('drones').select('id, store_id, status, name');
     const { data: owners } = await adminSupabase.from('profiles').select('id, username, store_id, role');
 
-    document.getElementById('addDroneStore').innerHTML = stores.map(s =>
+    document.getElementById('addDroneStore').innerHTML = (stores || []).map(s =>
         `<option value="${s.id}">${s.name}</option>`).join('');
 
-    // Renderizar cards na stores-grid (#storesBody)
-    document.getElementById('storesBody').innerHTML = stores.map(s => {
+    document.getElementById('storesBody').innerHTML = (stores || []).map(s => {
         const storeDrones = (drones || []).filter(d => d.store_id === s.id);
-        const hasCoords = s.latitude && s.longitude;
-        const mapUrl = hasCoords ? `https://www.google.com/maps?q=${s.latitude},${s.longitude}` : null;
-        const owner = (owners || []).find(o => o.store_id === s.id && o.role === 'owner');
-        // Status badge
-        const status = s.service ? 'ATIVA' : 'INATIVA';
+        const hasCoords   = s.latitude && s.longitude;
+        const mapUrl      = hasCoords ? `https://www.google.com/maps?q=${s.latitude},${s.longitude}` : null;
+
+        // Encontrar owners cujo store_id array contém este s.id
+        const storeOwners = (owners || []).filter(o => {
+            if (!o.store_id || o.role !== 'owner') return false;
+            let ids = Array.isArray(o.store_id) ? o.store_id
+                : typeof o.store_id === 'number' ? [o.store_id]
+                : (() => { try { const p = JSON.parse(o.store_id); return Array.isArray(p) ? p : [p]; } catch { return []; } })();
+            return ids.includes(s.id);
+        });
+        const ownerNames = storeOwners.length ? storeOwners.map(o => o.username).join(', ') : '-';
+
+        const status      = s.service ? 'ATIVA' : 'INATIVA';
         const statusClass = s.service ? 'badge badge-active' : 'badge badge-inactive';
-        // Drones
-        const dronesHtml = storeDrones.length ? storeDrones.map(d => {
-            let droneStatusClass = 'badge';
-            if (d.status === 'active') droneStatusClass += ' badge-active';
-            else if (d.status === 'pending') droneStatusClass += ' badge-pending';
-            else if (d.status === 'shipping') droneStatusClass += ' badge-shipping';
-            else droneStatusClass += ' badge-inactive';
-            return `<div class="drone-item">
-                <span>${d.name}</span>
-                <span class="${droneStatusClass}">${d.status.toUpperCase()}</span>
-                <button class="btn-danger" onclick="deleteDrone('${d.id}')">×</button>
-            </div>`;
-        }).join('') : '<div class="drone-item">Nenhum drone</div>';
-        // Card
+
+        const dronesHtml = storeDrones.length
+            ? storeDrones.map(d => {
+                let dc = 'badge';
+                if (d.status === 'active')   dc += ' badge-active';
+                else if (d.status === 'pending')  dc += ' badge-pending';
+                else if (d.status === 'shipping') dc += ' badge-shipping';
+                else dc += ' badge-inactive';
+                return `<div class="drone-item">
+                    <span>${d.name}</span>
+                    <span class="${dc}">${d.status.toUpperCase()}</span>
+                    <button class="btn-danger" onclick="deleteDrone(${d.id})">×</button>
+                </div>`;
+            }).join('')
+            : '<div class="drone-item" style="color:#bbb;">Nenhum drone</div>';
+
         return `<div class="store-card">
             <div class="store-card-header">
                 <div class="store-card-name">${s.name}</div>
                 <span class="${statusClass}">${status}</span>
             </div>
-            <div class="store-card-meta">Owner: ${owner ? owner.username : '-'} • ${s.service ? 'Ativa' : 'Inativa'}</div>
+            <div class="store-card-meta">Owner: ${ownerNames} • ${s.service ? 'Ativa' : 'Inativa'}</div>
             <div class="store-card-meta">Cidade: ${s.city || '-'}</div>
             <div class="store-card-drones">${dronesHtml}</div>
             <div class="store-card-actions" style="margin-top:10px;display:flex;gap:10px;">
                 ${hasCoords ? `<button class="btn-secondary" onclick="window.open('${mapUrl}','_blank')">🗺 Mapa</button>` : ''}
-                <button class="btn-danger" onclick="deleteStore('${s.id}')">Apagar Loja</button>
+                <button class="btn-danger" onclick="deleteStore(${s.id})">Apagar Loja</button>
             </div>
         </div>`;
     }).join('');
 }
 
+// ─────────────────────────────────────────────
+//  APAGAR LOJA — corrigido: usa número, não string
+// ─────────────────────────────────────────────
 async function deleteStore(storeId) {
-    // Apagar todos os drones associados à loja
-    await adminSupabase.from('drones').delete().eq('store_id', storeId);
-    // Apagar a loja
-    await adminSupabase.from('stores').delete().eq('id', storeId);
+    const id = Number(storeId);
+    if (!confirm(`Apagar loja #${id} e todos os seus drones?`)) return;
+
+    // 1. Apagar drones da loja
+    const { error: droneErr } = await adminSupabase.from('drones').delete().eq('store_id', id);
+    if (droneErr) { alert('Erro ao apagar drones: ' + droneErr.message); return; }
+
+    // 2. Remover store_id do array jsonb de todos os owners
+    const { data: affectedProfiles } = await adminSupabase
+        .from('profiles')
+        .select('id, store_id, role');
+
+    for (const profile of affectedProfiles || []) {
+        let ids = Array.isArray(profile.store_id) ? profile.store_id
+            : typeof profile.store_id === 'number' ? [profile.store_id]
+            : (() => { try { const p = JSON.parse(profile.store_id); return Array.isArray(p) ? p : [p]; } catch { return []; } })();
+
+        if (!ids.includes(id)) continue; // este profile não tinha esta loja
+
+        const newIds = ids.filter(i => i !== id);
+        await adminSupabase.from('profiles').update({
+            store_id: newIds.length ? newIds : null,
+            role: newIds.length ? profile.role : 'client'
+        }).eq('id', profile.id);
+    }
+
+    // 3. Apagar a loja
+    const { error: storeErr } = await adminSupabase.from('stores').delete().eq('id', id);
+    if (storeErr) { alert('Erro ao apagar loja: ' + storeErr.message); return; }
+
     await loadStores();
     await loadUsers();
 }
 
+// ─────────────────────────────────────────────
+//  APAGAR DRONE
+// ─────────────────────────────────────────────
 async function deleteDrone(droneId) {
-    await adminSupabase.from('drones').delete().eq('id', droneId);
+    const { error } = await adminSupabase.from('drones').delete().eq('id', Number(droneId));
+    if (error) { alert('Erro ao apagar drone: ' + error.message); return; }
     await loadStores();
 }
 
+// ─────────────────────────────────────────────
+//  CRIAR LOJA — faz append ao array, nunca substitui
+// ─────────────────────────────────────────────
 async function createStore() {
     const ownerEmail = document.getElementById('ownerEmail').value.trim();
-    const name = document.getElementById('storeName').value.trim();
-    const lat = document.getElementById('storeLat').value;
-    const lng = document.getElementById('storeLng').value;
+    const name       = document.getElementById('storeName').value.trim();
+    const city       = document.getElementById('storeCity').value.trim();
+    const lat        = document.getElementById('storeLat').value;
+    const lng        = document.getElementById('storeLng').value;
+
     if (!ownerEmail || !name || !lat || !lng) {
         alert('Preencha todos os campos e selecione a localização no mapa.');
         return;
     }
-    // Find owner by email
-    const { data: owner, error: ownerError } = await adminSupabase
+
+    // 1. Encontrar owner pelo email
+    const { data: ownerUser, error: ownerErr } = await adminSupabase
         .from('users_with_email')
         .select('id')
         .eq('email', ownerEmail)
         .single();
-    if (ownerError || !owner) { alert('Owner não encontrado.'); return; }
-    // Insert store and get new id
-    const { data: newStore, error: storeError } = await adminSupabase
+    if (ownerErr || !ownerUser) { alert('Owner não encontrado.'); return; }
+
+    // 2. Criar a loja
+    const { data: newStore, error: storeErr } = await adminSupabase
         .from('stores')
-        .insert({ name, latitude: parseFloat(lat), longitude: parseFloat(lng), service: false })
+        .insert({ name, city: city || null, latitude: parseFloat(lat), longitude: parseFloat(lng), service: false })
         .select('id')
         .single();
-    if (storeError || !newStore) { alert('Erro ao criar loja: ' + (storeError?.message || '')); return; }
-    // Buscar perfil atual do owner para garantir array
+    if (storeErr || !newStore) { alert('Erro ao criar loja: ' + (storeErr?.message || '')); return; }
+
+    // 3. Buscar perfil ATUAL do owner (para preservar lojas existentes)
     const { data: ownerProfile } = await adminSupabase
         .from('profiles')
-        .select('store_id')
-        .eq('id', owner.id)
+        .select('store_id, role')
+        .eq('id', ownerUser.id)
         .single();
+
+    // 4. Fazer APPEND ao array — nunca substituir
     let ids = [];
-    if (ownerProfile) {
-        if (Array.isArray(ownerProfile.store_id)) ids = ownerProfile.store_id;
-        else if (typeof ownerProfile.store_id === 'number') ids = [ownerProfile.store_id];
+    if (ownerProfile?.store_id) {
+        if (Array.isArray(ownerProfile.store_id))
+            ids = ownerProfile.store_id;
+        else if (typeof ownerProfile.store_id === 'number')
+            ids = [ownerProfile.store_id];
         else if (typeof ownerProfile.store_id === 'string') {
-            try { const p = JSON.parse(ownerProfile.store_id); ids = Array.isArray(p) ? p : [p]; } catch { ids = []; }
+            try { const p = JSON.parse(ownerProfile.store_id); ids = Array.isArray(p) ? p : [p]; }
+            catch { ids = []; }
         }
     }
+
+    // Adicionar nova loja ao array (sem duplicar)
     if (!ids.includes(newStore.id)) ids.push(newStore.id);
-    const { error: updateError } = await adminSupabase
+
+    const { error: updateErr } = await adminSupabase
         .from('profiles')
         .update({ store_id: ids, role: 'owner' })
-        .eq('id', owner.id);
-    if (updateError) { alert('Erro ao atualizar owner: ' + updateError.message); return; }
-    alert('Loja criada com sucesso!');
+        .eq('id', ownerUser.id);
+    if (updateErr) { alert('Erro ao atualizar owner: ' + updateErr.message); return; }
+
+    // Limpar campos
+    document.getElementById('ownerEmail').value = '';
+    document.getElementById('storeName').value  = '';
+    document.getElementById('storeCity').value  = '';
+    document.getElementById('storeLat').value   = '';
+    document.getElementById('storeLng').value   = '';
+
+    alert(`Loja "${name}" criada com sucesso!`);
     await loadStores();
+    await loadUsers();
 }
 
+// ─────────────────────────────────────────────
+//  ADICIONAR DRONE
+// ─────────────────────────────────────────────
 async function addDrone() {
     const storeId = document.getElementById('addDroneStore').value;
-    const name = document.getElementById('addDroneName').value.trim();
+    const name    = document.getElementById('addDroneName').value.trim();
     if (!storeId || !name) { alert('Escolha loja e nome do drone.'); return; }
     const { error } = await adminSupabase.from('drones').insert({
         name, store_id: parseInt(storeId), status: 'pending', capacity: 500, order_id: 0, servo_state: false
     });
     if (error) { alert('Erro ao adicionar drone: ' + error.message); return; }
+    document.getElementById('addDroneName').value = '';
     await loadStores();
     alert('Drone adicionado!');
 }
 
+// ─────────────────────────────────────────────
+//  EVENTOS
+// ─────────────────────────────────────────────
 function bindEvents() {
     document.getElementById('logoutBtn').addEventListener('click', async () => {
         await adminSupabase.auth.signOut();
@@ -246,11 +320,14 @@ function bindEvents() {
     });
     document.getElementById('searchInput').addEventListener('input', filterUsers);
 
+    // Mapa Leaflet
     if (window.L && document.getElementById('map')) {
         const map = L.map('map').setView([39.5, -8.0], 7);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
         let marker = null;
-        map.on('click', function(e) {
+        map.on('click', function (e) {
             document.getElementById('storeLat').value = e.latlng.lat;
             document.getElementById('storeLng').value = e.latlng.lng;
             if (marker) marker.setLatLng(e.latlng);
@@ -265,5 +342,10 @@ function filterUsers() {
         row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
     });
 }
+
+// Expor funções ao HTML inline
+window.deleteStore  = deleteStore;
+window.deleteDrone  = deleteDrone;
+window.changeRole   = changeRole;
 
 document.addEventListener('DOMContentLoaded', init);

@@ -6,8 +6,32 @@
     <title>NiceDrop | Administração</title>
     <link rel="stylesheet" href="/admin.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        /* Inputs arredondados iguais ao botão */
+        .form-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .form-row input,
+        .form-row select {
+            padding: 10px 18px;
+            border: 1.5px solid #e8e8e8;
+            border-radius: 20px;
+            font-family: 'Sora', sans-serif;
+            font-size: 13px;
+            outline: none;
+            flex: 1;
+            min-width: 140px;
+            transition: border 0.2s;
+        }
+        .form-row input:focus,
+        .form-row select:focus {
+            border-color: #333;
+        }
+    </style>
 </head>
-
 <body>
 <div class="admin-layout">
     <div class="topbar">
@@ -57,8 +81,8 @@
             </div>
             <div class="form-row">
                 <input type="email" id="ownerEmail" placeholder="Email do owner">
-                <input type="text" id="storeName" placeholder="Nome da loja">
-                <input type="text" id="storeCity" placeholder="Cidade">
+                <input type="text"  id="storeName"  placeholder="Nome da loja">
+                <input type="text"  id="storeCity"  placeholder="Cidade">
                 <input type="hidden" id="storeLat">
                 <input type="hidden" id="storeLng">
                 <button id="createStoreBtn" class="btn-primary">Criar Loja</button>
