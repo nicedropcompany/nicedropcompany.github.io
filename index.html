@@ -15,25 +15,23 @@
         <img src="/nicedrop.png" class="logo" alt="NiceDrop logo">
     </a>
 
-    <nav class="nav-links" id="navLinks" aria-label="Primary">
-        <a href="#problem">Problem</a>
-        <a href="#solution">Solution</a>
-        <a href="#technology">Technology</a>
-        <a href="#future">Future</a>
-    </nav>
-
     <div class="navbar-actions">
         <a class="btn-signup" href="auth.html">SIGN UP</a>
         <a class="btn-dashboard" id="dashboardBtn" href="dashboard.html">DASHBOARD</a>
         <a class="cta" href="download.html">DOWNLOAD APP</a>
     </div>
 
-    <!-- Hamburger (só mobile) -->
     <button class="nav-toggle" id="navToggle" aria-label="Menu">
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
     </button>
+
+    <nav class="nav-links" id="navLinks" aria-label="Primary">
+        <button class="nav-close" id="navClose">✕</button>
+        <a href="#problem">Problem</a>
+        <a href="#solution">Solution</a>
+        <a href="#technology">Technology</a>
+        <a href="#future">Future</a>
+    </nav>
 </header>
 
 <main id="main">
@@ -138,28 +136,19 @@
 </main>
 
 <script>
-// Dashboard button auth check
 document.getElementById('dashboardBtn')?.addEventListener('click', function(e) {
     const user = localStorage.getItem('user');
-    if (!user) {
-        e.preventDefault();
-        window.location.href = 'auth.html';
-    }
+    if (!user) { e.preventDefault(); window.location.href = 'auth.html'; }
 });
 
-// Hamburger menu
 const toggle = document.getElementById('navToggle');
 const navLinks = document.getElementById('navLinks');
+const navClose = document.getElementById('navClose');
 
-toggle?.addEventListener('click', () => {
-    navLinks.classList.toggle('open');
-});
-
-// Fechar menu ao clicar num link
+toggle?.addEventListener('click', () => navLinks.classList.add('open'));
+navClose?.addEventListener('click', () => navLinks.classList.remove('open'));
 navLinks?.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-        navLinks.classList.remove('open');
-    });
+    link.addEventListener('click', () => navLinks.classList.remove('open'));
 });
 </script>
 
