@@ -4,7 +4,10 @@
       "WebSearch",
       "WebFetch(domain:www.ln4.com)",
       "WebFetch(domain:landonorris.com)",
-      "WebFetch(domain:www.itsoffbrand.com)"
+      "WebFetch(domain:www.itsoffbrand.com)",
+      "WebFetch(domain:zerasoftwarestudio.com)",
+      "WebFetch(domain:portfolio3.zerasoftwarestudio.com)",
+      "WebFetch(domain:portfolio6.zerasoftwarestudio.com)"
     ]
   }
 }
