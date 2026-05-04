@@ -541,6 +541,98 @@ a{ text-decoration:none; color:inherit; }
 
 
 /* ══════════════════════════════════════════
+   DRONE STORY — scroll journey
+══════════════════════════════════════════ */
+.drone-story{
+  background:#060F1E;
+}
+.ds-sticky{
+  position:relative;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background:#060F1E;
+}
+
+/* Drone */
+.ds-drone-wrap{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:2;
+  pointer-events:none;
+}
+.ds-drone{
+  width:260px;
+  height:260px;
+  will-change:transform,filter;
+  transform-origin:center center;
+  filter:drop-shadow(0 0 30px rgba(14,165,233,0.3));
+}
+
+/* Text panels */
+.ds-panel{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  opacity:0;
+  pointer-events:none;
+  z-index:3;
+  will-change:opacity;
+  max-width:280px;
+}
+.ds-panel-1{ left:7%; }
+.ds-panel-2{ right:7%; text-align:right; }
+
+.ds-eyebrow{
+  font-family:'Manrope',sans-serif;
+  font-size:9px; font-weight:700; letter-spacing:3.5px;
+  text-transform:uppercase; color:var(--accent);
+  display:block; margin-bottom:14px;
+}
+.ds-heading{
+  font-family:'BebasNeue',sans-serif;
+  font-size:clamp(46px,5.5vw,76px);
+  line-height:1; letter-spacing:2px;
+  color:#FFFFFF; margin-bottom:16px;
+}
+.ds-body{
+  font-family:'Manrope',sans-serif;
+  font-size:13px; line-height:1.85;
+  color:rgba(255,255,255,0.48);
+}
+
+/* Progress dots */
+.ds-progress{
+  position:absolute; bottom:38px; left:50%;
+  transform:translateX(-50%);
+  display:flex; gap:10px; z-index:4;
+}
+.ds-pd{
+  width:6px; height:6px; border-radius:50%;
+  background:rgba(255,255,255,0.18);
+  transition:background .3s ease, box-shadow .3s ease;
+}
+.ds-pd.on{
+  background:var(--accent);
+  box-shadow:0 0 8px rgba(14,165,233,0.7);
+}
+
+@media(max-width:768px){
+  .ds-panel-1,.ds-panel-2{
+    left:50%; right:auto;
+    transform:translate(-50%,-50%);
+    text-align:center; width:88%;
+    max-width:300px;
+  }
+  .ds-drone{ width:180px; height:180px; }
+}
+
+/* ══════════════════════════════════════════
    MARQUEE
 ══════════════════════════════════════════ */
 .marquee-strip{
