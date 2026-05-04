@@ -7,7 +7,10 @@
       "WebFetch(domain:www.itsoffbrand.com)",
       "WebFetch(domain:zerasoftwarestudio.com)",
       "WebFetch(domain:portfolio3.zerasoftwarestudio.com)",
-      "WebFetch(domain:portfolio6.zerasoftwarestudio.com)"
+      "WebFetch(domain:portfolio6.zerasoftwarestudio.com)",
+      "PowerShell(Test-Path \"C:\\\\Users\\\\diogo\\\\Downloads\\\\vtol.obj\"; \\(Get-Item \"C:\\\\Users\\\\diogo\\\\Downloads\\\\vtol.obj\" -ErrorAction SilentlyContinue\\).Length)",
+      "PowerShell(Test-Path \"C:\\\\Users\\\\diogo\\\\Downloads\\\\vtol.mtl\"; \\(Get-Item \"C:\\\\Users\\\\diogo\\\\Downloads\\\\vtol.mtl\" -ErrorAction SilentlyContinue\\).Length)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\diogo\\\\Desktop\\\\teste voo autonomo drone\\\\drone-viewer\" -Recurse -File | ForEach-Object { \"$\\($_.Length.ToString\\(\\).PadLeft\\(8\\)\\) bytes  $\\($_.FullName.Replace\\('C:\\\\Users\\\\diogo\\\\Desktop\\\\teste voo autonomo drone\\\\drone-viewer\\\\',''\\)\\)\" })"
     ]
   }
 }
