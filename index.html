@@ -3,349 +3,141 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NiceDrop | Autonomous Drone Delivery</title>
+<title>NiceDrop | Entrega Autónoma por Drone</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/style.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="index.css">
 </head>
-<body class="app-page">
+<body>
 
-<!-- Curtain page reveal -->
-<div id="pageLoader" aria-hidden="true">
-  <div class="pl-panel pl-top"></div>
-  <div class="pl-panel pl-bot"></div>
+<!-- LOADER -->
+<div id="loader">
+  <div class="ld-top"></div>
+  <div class="ld-bot"></div>
 </div>
 
-<a class="skip-link" href="#main">Skip to content</a>
-
-<header class="navbar" id="navbar">
-  <a href="#top" class="logo-wrap">
-    <img src="/nicedrop.png" class="logo" alt="NiceDrop logo">
+<!-- NAVBAR -->
+<header id="navbar" class="nav">
+  <a href="#" class="nav-logo">
+    <img src="nicedrop.png" alt="NiceDrop">
   </a>
-
-  <nav class="nav-links" id="navLinks" aria-label="Primary">
-    <button class="nav-close" id="navClose">✕</button>
-    <a href="#problem"><span class="nav-num">01</span>Problem</a>
-    <a href="#solution"><span class="nav-num">02</span>Solution</a>
-    <a href="#technology"><span class="nav-num">03</span>Technology</a>
-    <a href="#future"><span class="nav-num">04</span>Future</a>
-  </nav>
-
-  <div class="navbar-actions">
-    <a class="btn-nav-ghost" href="auth.html">SIGN UP</a>
-    <a class="btn-nav-ghost" id="dashboardBtn" href="dashboard.html">DASHBOARD</a>
-    <a class="btn-nav-cta" href="download.html">DOWNLOAD APP</a>
+  <div class="nav-btns">
+    <button class="nav-theme-btn" id="themeToggle" aria-label="Alternar tema" title="Alternar tema claro/escuro">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"/>
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+      </svg>
+    </button>
+    <a href="auth.html" class="btn-sq">ENTRAR</a>
+    <a href="download.html" class="btn-sq btn-sq-inv">APP</a>
   </div>
-
-  <button class="nav-toggle" id="navToggle" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
 </header>
 
-<main id="main">
+<!-- HERO -->
+<section class="s-hero">
+  <!-- drone floating bg -->
+  <img src="drone.svg" alt="" class="hero-drone-bg" aria-hidden="true">
 
-<!-- ══ HERO ══ -->
-<section class="hero" id="top">
-
-  <!-- Background glows + grid -->
-  <div class="hero-bg" aria-hidden="true">
-    <div class="bg-glow bg-glow-1"></div>
-    <div class="bg-glow bg-glow-2"></div>
-    <div class="bg-glow bg-glow-3"></div>
-    <div class="bg-grid"></div>
-  </div>
-
-  <!-- Orbital system (cards + decorative dots) -->
-  <div class="orbital-wrap" id="orbitalWrap" aria-hidden="true">
-
-    <div class="orbit-card oc-1" id="oc1" data-depth="0.40">
-      <div class="oc-inner">
-        <span class="oc-label">LIVE DELIVERY</span>
-        <span class="oc-value">12<small>MIN</small></span>
-        <span class="oc-sub">Average citywide</span>
-      </div>
-    </div>
-
-    <div class="orbit-card oc-2" id="oc2" data-depth="0.65">
-      <div class="oc-inner">
-        <span class="oc-label">CITY NETWORK</span>
-        <span class="oc-value">38<small>NODES</small></span>
-        <span class="oc-sub">Active endpoints</span>
-      </div>
-    </div>
-
-    <div class="orbit-card oc-3" id="oc3" data-depth="0.30">
-      <div class="oc-inner">
-        <span class="oc-label">SYSTEM STATUS</span>
-        <span class="oc-value oc-live">LIVE</span>
-        <div class="oc-indicator"><span class="live-dot"></span>All systems nominal</div>
-      </div>
-    </div>
-
-    <div class="orbit-card oc-4" id="oc4" data-depth="0.55">
-      <div class="oc-inner">
-        <span class="oc-label">MAX SPEED</span>
-        <span class="oc-value">120<small>KM/H</small></span>
-        <span class="oc-sub">Per drone unit</span>
-      </div>
-    </div>
-
-    <!-- Decorative floating dots -->
-    <div class="float-dot fd-1" data-depth="0.80"></div>
-    <div class="float-dot fd-2" data-depth="0.50"></div>
-    <div class="float-dot fd-3" data-depth="0.90"></div>
-    <div class="float-ring fr-1" data-depth="0.20"></div>
-
-  </div>
-
-  <!-- Central Stage -->
-  <div class="hero-stage" id="heroStage">
-    <div class="stage-inner">
-
-      <div class="stage-eyebrow reveal-hero" style="--i:0">
-        <span class="eyebrow-dot"></span>
-        <span class="eyebrow-text">AUTONOMOUS LOGISTICS NETWORK</span>
-        <span class="eyebrow-badge">EST. 2024</span>
-      </div>
-
-      <h1 class="hero-title" id="heroTitle">
-        <span class="ht-line reveal-hero" style="--i:1"><span class="ht-line-inner">NICE</span></span>
-        <span class="ht-line ht-accent reveal-hero" style="--i:2"><span class="ht-line-inner">DROP</span></span>
-      </h1>
-
-      <div class="stage-sub reveal-hero" style="--i:3">
-        <p class="stage-text">
-          NiceDrop is building the next generation of urban logistics.
-          Our autonomous VTOL drone network connects local businesses with
-          customers enabling ultra-fast aerial delivery.
-        </p>
-        <div class="stage-ctas">
-          <a class="btn-primary" href="#solution">
-            EXPLORE
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M2.5 7H11.5M8 3.5L11.5 7L8 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
-          <a class="btn-ghost" href="#future">FUTURE VISION</a>
-        </div>
-      </div>
-
+  <div class="hero-inner">
+    <div class="hero-eyebrow">ENTREGA AUTÓNOMA POR DRONE — EST. 2024</div>
+    <h1 class="hero-title">
+      <span class="word-wrap"><span class="hn">NICE</span></span><span class="word-wrap"><span class="hd">DROP</span></span>
+    </h1>
+    <p class="hero-desc">
+      O futuro da logística urbana. Entregas em&nbsp;12&nbsp;minutos por drone VTOL autónomo — sem trânsito, sem atrasos.
+    </p>
+    <div class="hero-actions">
+      <a href="auth.html" class="btn-sq btn-sq-lg">COMEÇAR</a>
+      <a href="download.html" class="btn-sq btn-sq-lg btn-sq-inv">DESCARREGAR APP</a>
     </div>
   </div>
-
-  <a href="#problem" class="scroll-hint" aria-label="Scroll down">
+  <div class="hero-scroll-hint">
     <span>SCROLL</span>
-    <div class="scroll-line"></div>
-  </a>
-
-</section>
-
-<!-- ══ DRONE STORY (scroll journey) ══ -->
-<section class="drone-story" id="droneStory">
-  <div class="ds-sticky" id="dsSticky">
-
-    <div class="ds-drone-wrap">
-      <img src="/drone.svg" alt="NiceDrop autonomous drone" class="ds-drone" id="dsDrone">
-    </div>
-
-    <!-- Text shown on first zoom-in -->
-    <div class="ds-panel ds-panel-1" id="dsPanel1">
-      <span class="ds-eyebrow">AUTONOMOUS DELIVERY</span>
-      <h2 class="ds-heading">THE FUTURE<br>ARRIVES<br>FROM ABOVE</h2>
-      <p class="ds-body">Our VTOL drones navigate the urban sky, delivering in 12 minutes or less.</p>
-    </div>
-
-    <!-- Text shown on second zoom-in -->
-    <div class="ds-panel ds-panel-2" id="dsPanel2">
-      <span class="ds-eyebrow">PRECISION TECHNOLOGY</span>
-      <h2 class="ds-heading">AUTONOMOUS.<br>FAST.<br>PRECISE.</h2>
-      <p class="ds-body">AI-powered navigation and real-time routing make every delivery perfect.</p>
-    </div>
-
-    <div class="ds-progress" aria-hidden="true">
-      <div class="ds-pd" id="dsPd1"></div>
-      <div class="ds-pd" id="dsPd2"></div>
-    </div>
-
+    <div class="scroll-bar"></div>
   </div>
 </section>
 
-<!-- ══ MARQUEE ══ -->
-<div class="marquee-strip">
-  <div class="marquee-track">
-    <span>NICEDROP</span><span class="m-dot">·</span>
-    <span>AUTONOMOUS DELIVERY</span><span class="m-dot">·</span>
-    <span>12 MIN</span><span class="m-dot">·</span>
-    <span>38 NODES</span><span class="m-dot">·</span>
-    <span>URBAN LOGISTICS</span><span class="m-dot">·</span>
-    <span>VTOL TECHNOLOGY</span><span class="m-dot">·</span>
-    <span>AI ROUTING</span><span class="m-dot">·</span>
-    <span>NICEDROP</span><span class="m-dot">·</span>
-    <span>AUTONOMOUS DELIVERY</span><span class="m-dot">·</span>
-    <span>12 MIN</span><span class="m-dot">·</span>
-    <span>38 NODES</span><span class="m-dot">·</span>
-    <span>URBAN LOGISTICS</span><span class="m-dot">·</span>
-    <span>VTOL TECHNOLOGY</span><span class="m-dot">·</span>
-    <span>AI ROUTING</span><span class="m-dot">·</span>
+<!-- STATS -->
+<div class="s-stats">
+  <div class="stat">
+    <b class="stat-n" data-to="12">0</b>
+    <span class="stat-u">MIN</span>
+    <span class="stat-l">Entrega Média</span>
+  </div>
+  <div class="stat">
+    <b class="stat-n" data-to="38">0</b>
+    <span class="stat-u">NODES</span>
+    <span class="stat-l">Rede Ativa</span>
+  </div>
+  <div class="stat">
+    <b class="stat-n" data-to="120">0</b>
+    <span class="stat-u">KM/H</span>
+    <span class="stat-l">Velocidade Máxima</span>
   </div>
 </div>
 
-<!-- ══ PROBLEM ══ -->
-<section class="section fade-section" id="problem">
-  <div class="section-header reveal reveal-up">
-    <span class="section-num">01</span>
-    <span class="section-tag">THE PROBLEM</span>
+<!-- ABOUT -->
+<section class="s-about">
+  <div class="wrap">
+    <span class="s-tag">SOBRE A NICEDROP</span>
+    <h2 class="s-title">A NOVA GERAÇÃO<br>DA LOGÍSTICA URBANA</h2>
+    <p class="s-body">
+      A NiceDrop está a construir uma rede de drones VTOL autónomos que conecta negócios locais com clientes, permitindo entregas ultra-rápidas pelo ar. Conectamos restaurantes, farmácias e lojas diretamente aos seus clientes — em minutos.
+    </p>
   </div>
-  <div class="split">
-    <div class="left reveal reveal-left">
-      <h2>URBAN DELIVERY TODAY IS BROKEN</h2>
-      <p>Restaurants, cafes and pharmacies depend on traffic-limited delivery systems that delay orders and increase costs.</p>
-    </div>
-    <div class="problem-cards">
-      <div class="card reveal reveal-right" style="--delay:0.08s">
-        <span class="card-num">01</span>
-        <h3>TRAFFIC BOTTLENECKS</h3>
-        <p>Surface logistics choke peak-hour fulfilment across every major city.</p>
+</section>
+
+<!-- FEATURES -->
+<section class="s-feat">
+  <div class="wrap">
+    <span class="s-tag">TECNOLOGIA</span>
+    <h2 class="s-title">COMO FUNCIONA</h2>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <span class="feat-n">01</span>
+        <h3>VTOL DRONES</h3>
+        <p>Descolagem e aterragem vertical, desenhados para o ambiente urbano denso.</p>
       </div>
-      <div class="card reveal reveal-right" style="--delay:0.16s">
-        <span class="card-num">02</span>
-        <h3>HIGH LABOR COSTS</h3>
-        <p>Manual delivery models scale poorly as demand increases.</p>
+      <div class="feat-card">
+        <span class="feat-n">02</span>
+        <h3>ROTA COM IA</h3>
+        <p>Algoritmos inteligentes calculam o trajeto aéreo mais rápido em tempo real.</p>
       </div>
-      <div class="card reveal reveal-right" style="--delay:0.24s">
-        <span class="card-num">03</span>
-        <h3>LIMITED REACH</h3>
-        <p>Dense cities still suffer critical delivery gaps.</p>
+      <div class="feat-card">
+        <span class="feat-n">03</span>
+        <h3>VOO AUTÓNOMO</h3>
+        <p>Voo completamente autónomo — zero intervenção humana, 100% de precisão.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══ SOLUTION ══ -->
-<section class="section fade-section" id="solution">
-  <div class="section-header reveal reveal-up">
-    <span class="section-num">02</span>
-    <span class="section-tag">THE SOLUTION</span>
-  </div>
-  <h2 class="center reveal reveal-up" style="--delay:0.1s">THE NICEDROP SOLUTION</h2>
-  <div class="grid">
-    <div class="card reveal reveal-up" style="--delay:0.08s">
-      <span class="card-num">01</span>
-      <h3>VTOL DRONES</h3>
-      <p>Vertical takeoff and landing aircraft designed for dense urban environments.</p>
-    </div>
-    <div class="card reveal reveal-up" style="--delay:0.16s">
-      <span class="card-num">02</span>
-      <h3>AI ROUTE OPTIMIZATION</h3>
-      <p>Intelligent routing algorithms compute the fastest aerial path in real time.</p>
-    </div>
-    <div class="card reveal reveal-up" style="--delay:0.24s">
-      <span class="card-num">03</span>
-      <h3>AUTONOMOUS NAVIGATION</h3>
-      <p>Fully autonomous flight with zero human intervention required.</p>
-    </div>
-    <div class="card reveal reveal-up" style="--delay:0.32s">
-      <span class="card-num">04</span>
-      <h3>SMART LOGISTICS</h3>
-      <p>End-to-end supply chain automation from pickup to delivery.</p>
-    </div>
+<!-- CTA -->
+<section class="s-cta">
+  <div class="wrap cta-wrap">
+    <h2 class="cta-title">PRONTO PARA<br>O FUTURO?</h2>
+    <p class="cta-sub">Junta-te à rede NiceDrop e transforma a tua logística.</p>
+    <a href="auth.html" class="btn-sq btn-sq-lg btn-sq-white">CRIAR CONTA</a>
   </div>
 </section>
 
-<!-- ══ QUOTE BREAK ══ -->
-<section class="quote-section">
-  <div class="quote-inner reveal reveal-up">
-    <p class="quote-text">12 MINUTES.<br>EVERY DELIVERY.<br>EVERY TIME.</p>
-    <span class="quote-sub">The new standard for urban autonomous logistics.</span>
-  </div>
-</section>
-
-<!-- ══ TECHNOLOGY ══ -->
-<section class="section fade-section" id="technology">
-  <div class="section-header reveal reveal-up">
-    <span class="section-num">03</span>
-    <span class="section-tag">TECHNOLOGY</span>
-  </div>
-  <div class="split">
-    <div class="left reveal reveal-right">
-      <h2>BUILT FOR THE FUTURE</h2>
-      <p>NiceDrop operates a fully autonomous aerial logistics network using intelligent routing and real-time tracking.</p>
-    </div>
-    <div class="right grid">
-      <div class="card reveal reveal-left" style="--delay:0.1s">
-        <span class="card-num">01</span>
-        <h3>AI FLIGHT SYSTEM</h3>
-        <p>Neural network flight control for precision delivery.</p>
-      </div>
-      <div class="card reveal reveal-left" style="--delay:0.2s">
-        <span class="card-num">02</span>
-        <h3>REAL TIME TRACKING</h3>
-        <p>Live GPS tracking across the entire delivery network.</p>
-      </div>
-      <div class="card reveal reveal-left" style="--delay:0.3s">
-        <span class="card-num">03</span>
-        <h3>AUTONOMOUS LANDING</h3>
-        <p>Precision landing on any compatible surface.</p>
-      </div>
-      <div class="card reveal reveal-left" style="--delay:0.4s">
-        <span class="card-num">04</span>
-        <h3>SMART DELIVERY GRID</h3>
-        <p>City-wide network of 38+ autonomous nodes.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══ FUTURE ══ -->
-<section class="section future fade-section" id="future">
-  <div class="section-header reveal reveal-up" style="justify-content:center">
-    <span class="section-num">04</span>
-    <span class="section-tag">THE FUTURE</span>
-  </div>
-  <h2 class="reveal reveal-left" style="--delay:0.1s">THE FUTURE OF<br>AUTONOMOUS DELIVERY</h2>
-  <p class="reveal reveal-right" style="--delay:0.2s">
-    NiceDrop will connect thousands of businesses and customers through a city-scale autonomous drone delivery network.
-  </p>
-  <div class="future-cta reveal reveal-up" style="--delay:0.3s">
-    <a class="btn" href="auth.html">GET STARTED</a>
-    <a class="btn-outline" href="download.html">DOWNLOAD APP</a>
-  </div>
-</section>
-
-<!-- ══ FOOTER ══ -->
-<footer>
-  <div class="footer-top">
-    <div class="footer-brand">
-      <img src="nicedrop.png" class="footer-logo" alt="NiceDrop logo">
-      <p class="footer-tagline">Future Autonomous Delivery</p>
-    </div>
-    <nav class="footer-nav">
-      <div class="footer-col">
-        <span class="footer-col-title">PLATFORM</span>
-        <a href="#problem">Problem</a>
-        <a href="#solution">Solution</a>
-        <a href="#technology">Technology</a>
-        <a href="#future">Future</a>
-      </div>
-      <div class="footer-col">
-        <span class="footer-col-title">ACCESS</span>
-        <a href="auth.html">Sign Up</a>
-        <a href="auth.html">Login</a>
-        <a href="dashboard.html">Dashboard</a>
-        <a href="download.html">Download App</a>
-      </div>
+<!-- FOOTER -->
+<footer class="s-footer">
+  <div class="wrap foot-inner">
+    <img src="nicedrop.png" alt="NiceDrop" class="foot-logo">
+    <p class="foot-copy">Future Autonomous Delivery &copy; 2026</p>
+    <nav class="foot-nav">
+      <a href="auth.html">Entrar</a>
+      <a href="download.html">App</a>
+      <a href="dashboard.html">Dashboard</a>
     </nav>
-  </div>
-  <div class="footer-bottom">
-    <p>NiceDrop © 2026</p>
-    <p>Building the autonomous future of urban logistics.</p>
   </div>
 </footer>
 
-</main>
+<!-- TOAST CONTAINER -->
+<div id="toast-container" aria-live="polite"></div>
 
-<!-- GSAP 3 + ScrollTrigger via CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="script.js"></script>
