@@ -4,10 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NiceDrop | Entrega Autónoma por Drone</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="index.css">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
 </head>
 <body>
 
@@ -21,26 +19,46 @@
 <header class="topbar">
   <img src="nicedrop.png" alt="NiceDrop" class="brand-logo">
   <div class="topbar-right">
-    <a href="auth.html" class="btn-primary">ENTRAR</a>
-    <a href="download.html" class="btn-secondary-nav">APP</a>
+    <a href="auth.html" class="btn-primary">Entrar</a>
+    <a href="download.html" class="btn-secondary">App</a>
   </div>
 </header>
 
 <!-- HERO: sky.png full background + centered card -->
-<main class="hero">
-  <div class="hero-card">
-    <img src="nicedrop.png" alt="NiceDrop" class="card-logo">
-    <div class="card-divider"></div>
-    <p class="card-label">ENTREGA AUTÓNOMA POR DRONE</p>
-    <p class="card-desc">Entregas em 12 minutos por drone VTOL autónomo — sem trânsito, sem atrasos.</p>
-    <div class="card-actions">
-      <a href="auth.html" class="btn-primary btn-full-card">COMEÇAR</a>
-      <a href="download.html" class="btn-outline btn-full-card">DESCARREGAR APP</a>
+<main class="hero" id="top">
+  <div class="hero-grid">
+    <div class="glass-card hero-copy" data-aos="fade-up">
+      <span class="hero-eyebrow">Entrega autonoma por drone</span>
+      <h1 class="hero-title">NiceDrop Sky-Mode</h1>
+      <p class="hero-text">
+        Entregas em 12 minutos por drone VTOL autonomo. Sem transito, sem atrasos,
+        com tracking em tempo real e rota otimizada pela nuvem.
+      </p>
+      <div class="hero-actions">
+        <a href="auth.html" class="btn-primary">Comecar</a>
+        <a href="download.html" class="btn-outline">Descarregar app</a>
+      </div>
+    </div>
+    <div class="hero-stack">
+      <div class="glass-card hero-panel" data-aos="fade-left" data-aos-delay="100">
+        <h3>12 min</h3>
+        <p>Media de entrega na area urbana.</p>
+      </div>
+      <div class="glass-card hero-panel" data-aos="fade-left" data-aos-delay="200">
+        <h3>+120 drones</h3>
+        <p>Frota com rotas dinamicas e redundantes.</p>
+      </div>
+      <div class="glass-card hero-panel" data-aos="fade-left" data-aos-delay="300">
+        <h3>Sky Control</h3>
+        <p>Monitorizacao em tempo real para lojas e operadores.</p>
+      </div>
     </div>
   </div>
 </main>
 
 <div id="toast-container" aria-live="polite"></div>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script src="app.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

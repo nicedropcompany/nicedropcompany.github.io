@@ -4,179 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>NiceDrop | Dashboard</title>
-    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
-    <style>
-        input[type="text"],
-        input[type="email"],
-        input[type="password"],
-        input[type="number"],
-        select,
-        textarea {
-            border-radius: 32px !important;
-            border: 1.5px solid #eee;
-            padding: 14px 22px;
-            font-family: 'Sora', sans-serif;
-            font-size: 1rem;
-            background: #fafbfc;
-            transition: border-color .2s, box-shadow .2s;
-            outline: none;
-            box-shadow: 2px 2px 0 rgba(0,0,0,.06);
-            margin-bottom: 10px;
-            appearance: none;
-            -webkit-appearance: none;
-        }
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="password"]:focus,
-        input[type="number"]:focus,
-        select:focus,
-        textarea:focus {
-            border-color: #2980b9;
-            box-shadow: 0 0 0 2px #eaf6fb;
-            background: #fff;
-        }
-        .kpi-bar {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 12px;
-            padding: 20px 28px 0;
-        }
-        .kpi-card {
-            background: #fff;
-            border: 1.5px solid #eee;
-            padding: 20px 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            box-shadow: 3px 3px 0 rgba(0,0,0,.06);
-        }
-        .kpi-label {
-            font-family: 'BebasNeue', sans-serif;
-            font-size: .62rem;
-            letter-spacing: .22em;
-            text-transform: uppercase;
-            color: #888;
-        }
-        .kpi-value {
-            font-family: 'BebasNeue', sans-serif;
-            font-size: 2rem;
-            color: #111;
-            line-height: 1;
-        }
-        .kpi-sub { font-family:'Sora',sans-serif; font-size:.7rem; color:#aaa; }
-        .kpi-card.green .kpi-value { color:#27ae60; }
-        .kpi-card.red   .kpi-value { color:#e74c3c; }
-        .kpi-card.blue  .kpi-value { color:#2980b9; }
-
-        .section-block {
-            background:#fff; border:1.5px solid #eee;
-            box-shadow:3px 3px 0 rgba(0,0,0,.06);
-            padding:24px; display:flex; flex-direction:column;
-        }
-        .section-title {
-            font-family:'BebasNeue',sans-serif; font-size:1.1rem;
-            letter-spacing:.1em; text-transform:uppercase; color:#111;
-            padding-bottom:14px; border-bottom:1.5px solid #f0f0f0;
-            margin-bottom:16px; display:flex; align-items:center;
-            justify-content:space-between;
-        }
-        .section-title span { font-size:.75rem; color:#aaa; letter-spacing:.05em; font-family:'Sora',sans-serif; }
-
-        .drone-table { width:100%; border-collapse:collapse; }
-        .drone-table th {
-            font-family:'BebasNeue',sans-serif; font-size:.6rem;
-            letter-spacing:.2em; text-transform:uppercase; color:#aaa;
-            text-align:left; padding:0 10px 10px 0; border-bottom:1.5px solid #f0f0f0;
-        }
-        .drone-table td {
-            font-family:'Sora',sans-serif; font-size:.82rem; color:#222;
-            padding:11px 10px 11px 0; border-bottom:1px solid #f7f7f7; vertical-align:middle;
-        }
-        .drone-table tr:last-child td { border-bottom:none; }
-        .drone-name-cell { font-weight:600; }
-
-        .badge {
-            display:inline-block; padding:3px 10px;
-            font-family:'BebasNeue',sans-serif; font-size:.6rem;
-            letter-spacing:.08em; text-transform:uppercase; border-radius:2px;
-        }
-        .badge-active   { background:#27ae60; color:#fff; }
-        .badge-pending  { background:#f1c40f; color:#111; }
-        .badge-shipping { background:#2980b9; color:#fff; }
-        .badge-inactive { background:#e74c3c; color:#fff; }
-        .badge-on       { background:#111; color:#fff; }
-        .badge-off      { background:#eee; color:#999; }
-
-        .team-table { width:100%; border-collapse:collapse; }
-        .team-table th {
-            font-family:'BebasNeue',sans-serif; font-size:.6rem; letter-spacing:.2em;
-            text-transform:uppercase; color:#aaa; text-align:left;
-            padding:0 10px 10px 0; border-bottom:1.5px solid #f0f0f0;
-        }
-        .team-table td {
-            font-family:'Sora',sans-serif; font-size:.82rem; color:#222;
-            padding:10px 10px 10px 0; border-bottom:1px solid #f7f7f7; vertical-align:middle;
-        }
-        .team-table tr:last-child td { border-bottom:none; }
-        .member-av {
-            width:30px; height:30px; background:#111; color:#fff; border-radius:2px;
-            display:inline-flex; align-items:center; justify-content:center;
-            font-family:'BebasNeue',sans-serif; font-size:.85rem; margin-right:8px; flex-shrink:0;
-        }
-        .member-cell { display:flex; align-items:center; }
-
-        .btn-danger {
-            background:transparent; border:1.5px solid #e74c3c; color:#e74c3c;
-            font-family:'BebasNeue',sans-serif; font-size:.6rem; letter-spacing:.08em;
-            text-transform:uppercase; padding:3px 10px; cursor:pointer; border-radius:2px;
-            transition:background .15s;
-        }
-        .btn-danger:hover { background:#e74c3c; color:#fff; }
-        .btn-promote {
-            background:transparent; border:1.5px solid #111; color:#111;
-            font-family:'BebasNeue',sans-serif; font-size:.6rem; letter-spacing:.08em;
-            text-transform:uppercase; padding:3px 10px; cursor:pointer; border-radius:2px;
-            margin-right:6px; transition:background .15s;
-        }
-        .btn-promote:hover { background:#111; color:#fff; }
-
-        .km-chip {
-            display:inline-block; background:#f0f0f0; color:#555;
-            font-family:'BebasNeue',sans-serif; font-size:.65rem;
-            letter-spacing:.08em; padding:2px 8px; border-radius:2px;
-        }
-        .btn-add-employee {
-            background:#111; color:#fff; border:none;
-            font-family:'BebasNeue',sans-serif; font-size:.65rem; letter-spacing:.1em;
-            text-transform:uppercase; padding:8px 16px; cursor:pointer;
-            box-shadow:2px 2px 0 rgba(0,0,0,.15); transition:opacity .2s;
-        }
-        .btn-add-employee:hover { opacity:.85; }
-
-        .dash-grid {
-            display:grid; grid-template-columns:1.6fr 1fr;
-            gap:14px; padding:16px 28px 28px;
-        }
-        .dash-grid .full-width { grid-column:1 / -1; }
-
-        .no-data {
-            font-family:'Sora',sans-serif; font-size:.82rem; color:#bbb;
-            text-align:center; padding:28px 0;
-        }
-        .spinner {
-            width:20px; height:20px; border:2px solid #eee; border-top-color:#111;
-            border-radius:50%; animation:spin .6s linear infinite; margin:24px auto; display:block;
-        }
-        @keyframes spin { to { transform:rotate(360deg); } }
-
-        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-        .modal-header h2 { margin:0; }
-        .modal-close { background:none; border:none; font-size:1.4rem; cursor:pointer; color:#aaa; line-height:1; }
-        .modal-close:hover { color:#111; }
-        .topbar-meta { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
-    </style>
 </head>
 <body class="dashboard-page">
 
@@ -193,7 +24,7 @@
             <label for="addOperatorEmail">Email do Funcionário</label>
             <input type="email" id="addOperatorEmail" placeholder="email@exemplo.com" autocomplete="off">
         </div>
-        <div id="addOperatorError" style="color:#e74c3c;margin-top:8px;font-family:'Sora',sans-serif;font-size:.82rem;display:none;"></div>
+        <div id="addOperatorError" class="form-error is-hidden"></div>
         <div class="form-actions">
             <button class="btn-secondary" onclick="closeModal('addOperatorModal')">Cancelar</button>
             <button class="btn-primary" id="addOperatorBtn">Adicionar</button>
@@ -208,7 +39,7 @@
             <div class="sidebar-logo">
                 <img src="logo.png" alt="NiceDrop"
                      onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-                <span style="display:none;font-family:'BebasNeue',sans-serif;font-size:1.4rem;letter-spacing:.1em;">NICEDROP</span>
+                <span class="logo-text is-hidden">NICEDROP</span>
             </div>
 
             <div class="sidebar-user">
@@ -222,7 +53,7 @@
                 <div class="spinner"></div>
             </div>
 
-            <div style="flex:1;"></div>
+            <div class="sidebar-spacer"></div>
 
             <div class="sidebar-logout">
                 <button id="logoutBtn">⎋ &nbsp;Sair</button>
@@ -233,7 +64,7 @@
         <div class="main-area">
 
             <!-- TOPBAR -->
-            <div id="mainTopbar" class="main-topbar" style="display:none;">
+            <div id="mainTopbar" class="main-topbar is-hidden">
                 <div>
                     <h1 id="storeTitle" class="store-title">—</h1>
                     <div id="storeMeta" class="topbar-meta store-meta"></div>
@@ -242,14 +73,14 @@
 
             <!-- EMPTY STATE -->
             <div id="emptyState" class="empty-state show">
-                <div style="text-align:center;">
-                    <div style="font-size:2.5rem;margin-bottom:12px;">🏪</div>
+                <div class="empty-state-content">
+                    <div class="empty-state-icon">🏪</div>
                     <div>Seleccione uma loja na sidebar</div>
                 </div>
             </div>
 
             <!-- CONTEÚDO -->
-            <div id="mainContent" style="display:none;flex:1;overflow-y:auto;">
+            <div id="mainContent" class="main-content is-hidden">
 
                 <div class="kpi-bar" id="kpiBar"></div>
 
