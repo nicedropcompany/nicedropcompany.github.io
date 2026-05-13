@@ -6,63 +6,138 @@
     <title>NiceDrop | Next-Gen Drone Delivery</title>
     
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* Correção de alinhamento do Logo à Esquerda */
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px; /* Mais espaço nas laterais */
+        }
+
+        .section-spacer {
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .glass-panel-large {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 30px;
+            padding: 60px;
+            color: #1a3a5c;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        /* Animação suave para o fundo sky.png */
+        body {
+            background-attachment: fixed;
+        }
+    </style>
 </head>
 <body class="sky-mode">
 
-    <nav class="navbar glass-panel" style="position: fixed; top: 0; width: 100%; z-index: 1000; border-radius: 0; border-top: none; border-left: none; border-right: none;">
-        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
-            <a href="index.html">
-                <img src="nicedrop.png" alt="NiceDrop" style="height: 35px; filter: contrast(1.2);">
+    <nav class="navbar glass-panel" style="position: fixed; top: 0; width: 100%; z-index: 1000; border-radius: 0; border: none; background: transparent;">
+        <div class="navbar-content">
+            <a href="index.html" style="display: flex; align-items: center;">
+                <img src="nicedrop.png" alt="NiceDrop" style="height: 40px; filter: contrast(1.1);">
             </a>
-            <div style="display: flex; gap: 30px; align-items: center;">
-                <a href="index.html" style="text-decoration: none; color: #1a3a5c; font-weight: 500; font-size: 0.9rem;">INÍCIO</a>
-                <a href="download.html" style="text-decoration: none; color: #1a3a5c; font-weight: 500; font-size: 0.9rem;">APP</a>
-                <a href="auth.html" class="btn-primary" style="padding: 8px 25px; font-size: 0.8rem;">ENTRAR</a>
+            <div style="display: flex; gap: 40px; align-items: center;">
+                <a href="index.html" style="text-decoration: none; color: #1a3a5c; font-weight: 700; font-size: 0.85rem; letter-spacing: 1px;">INÍCIO</a>
+                <a href="download.html" style="text-decoration: none; color: #1a3a5c; font-weight: 700; font-size: 0.85rem; letter-spacing: 1px;">APP</a>
+                <a href="auth.html" class="btn-primary" style="padding: 10px 30px; font-size: 0.8rem; border-radius: 50px;">ENTRAR</a>
             </div>
         </div>
     </nav>
 
     <main style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding-top: 80px;">
-        <div style="max-width: 1100px; width: 100%; padding: 0 20px; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 60px; align-items: center;">
+        <div style="max-width: 1200px; width: 100%; padding: 0 40px; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 60px; align-items: center;">
             
             <div data-aos="fade-right" data-aos-duration="1200">
-                <span style="font-family: 'DM Sans'; font-weight: 700; letter-spacing: 3px; color: #00d4ff; text-transform: uppercase; font-size: 0.8rem;">
+                <span style="font-family: 'DM Sans'; font-weight: 700; letter-spacing: 4px; color: #00d4ff; text-transform: uppercase; font-size: 0.8rem;">
                     Infrastructure for the next generation
                 </span>
-                <h1 style="font-family: 'Bebas Neue', sans-serif; font-size: clamp(4rem, 8vw, 6.5rem); line-height: 0.9; color: #1a3a5c; margin: 20px 0;">
+                <h1 style="font-family: 'Bebas Neue', sans-serif; font-size: clamp(4.5rem, 9vw, 7.5rem); line-height: 0.85; color: #1a3a5c; margin: 25px 0;">
                     NICEDROP <br>SKY-MODE
                 </h1>
-                <p style="font-family: 'DM Sans', sans-serif; font-size: 1.1rem; line-height: 1.6; color: rgba(26, 58, 92, 0.8); max-width: 500px; margin-bottom: 40px;">
-                    Entregas em 12 minutos por drone VTOL autónomo. O futuro da logística urbana, agora disponível na sua cidade.
+                <p style="font-family: 'DM Sans', sans-serif; font-size: 1.2rem; line-height: 1.7; color: rgba(26, 58, 92, 0.8); max-width: 550px; margin-bottom: 45px;">
+                    A primeira rede de logística autónoma por drone VTOL. Entregas ultra-rápidas, tracking em tempo real e emissões zero.
                 </p>
-                <div style="display: flex; gap: 20px;">
-                    <a href="auth.html" class="btn-primary" style="padding: 15px 40px; font-size: 1rem;">COMEÇAR</a>
-                    <a href="download.html" style="text-decoration: none; border-bottom: 2px solid #00d4ff; color: #1a3a5c; font-weight: 700; display: flex; align-items: center; font-size: 0.9rem;">DESCARREGAR APP</a>
+                <div style="display: flex; gap: 25px; align-items: center;">
+                    <a href="auth.html" class="btn-primary" style="padding: 18px 45px; font-size: 1rem; border-radius: 50px;">COMEÇAR AGORA</a>
+                    <a href="#about" style="text-decoration: none; color: #1a3a5c; font-weight: 700; font-size: 0.9rem; border-bottom: 2px solid #00d4ff; padding-bottom: 5px;">SABER MAIS</a>
                 </div>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 20px;">
-                <div class="glass-panel" data-aos="fade-up" data-aos-delay="200" style="padding: 25px;">
-                    <h3 style="margin: 0; color: #00d4ff; font-size: 2rem;">12 min</h3>
-                    <p style="margin: 5px 0 0; opacity: 0.7; font-size: 0.9rem;">Média de entrega urbana.</p>
+            <div style="display: flex; flex-direction: column; gap: 25px;">
+                <div class="glass-panel" data-aos="zoom-in-left" data-aos-delay="200" style="padding: 30px; border-radius: 20px;">
+                    <h3 style="margin: 0; color: #00d4ff; font-family: 'Bebas Neue'; font-size: 2.5rem;">12 min</h3>
+                    <p style="margin: 5px 0 0; opacity: 0.7; font-size: 0.9rem; font-weight: 500;">Média de entrega em áreas urbanas densas.</p>
                 </div>
-                <div class="glass-panel" data-aos="fade-up" data-aos-delay="400" style="padding: 25px;">
-                    <h3 style="margin: 0; color: #00d4ff; font-size: 2rem;">38 Nodes</h3>
-                    <p style="margin: 5px 0 0; opacity: 0.7; font-size: 0.9rem;">Sistema operacional ativo.</p>
-                </div>
-                <div class="glass-panel" data-aos="fade-up" data-aos-delay="600" style="padding: 25px;">
-                    <h3 style="margin: 0; color: #00d4ff; font-size: 2rem;">Sky Control</h3>
-                    <p style="margin: 5px 0 0; opacity: 0.7; font-size: 0.9rem;">Monitorização via WebSockets.</p>
+                <div class="glass-panel" data-aos="zoom-in-left" data-aos-delay="400" style="padding: 30px; border-radius: 20px;">
+                    <h3 style="margin: 0; color: #00d4ff; font-family: 'Bebas Neue'; font-size: 2.5rem;">38 Nodes</h3>
+                    <p style="margin: 5px 0 0; opacity: 0.7; font-size: 0.9rem; font-weight: 500;">Estações de lançamento e carga ativas.</p>
                 </div>
             </div>
-
         </div>
     </main>
 
-    <div id="toast-container" aria-live="polite"></div>
+    <section id="about" class="section-spacer">
+        <div class="glass-panel-large" data-aos="fade-up">
+            <div style="max-width: 800px;">
+                <h2 style="font-family: 'Bebas Neue'; font-size: 3.5rem; margin-bottom: 30px; letter-spacing: 2px;">O FUTURO É AÉREO</h2>
+                <p style="font-size: 1.2rem; line-height: 1.8; opacity: 0.9;">
+                    A NiceDrop não é apenas uma empresa de entregas; somos uma infraestrutura tecnológica. Através da nossa rede de drones autónomos e algoritmos de rota otimizados, eliminamos o trânsito terrestre e reduzimos a pegada de carbono da logística urbana em 90%.
+                </p>
+                <p style="font-size: 1.2rem; line-height: 1.8; opacity: 0.9; margin-top: 20px;">
+                    Desde pequenos lojistas a grandes centros de distribuição, a nossa plataforma permite que qualquer negócio envie produtos em minutos, não em horas.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-spacer">
+        <h2 style="font-family: 'Bebas Neue'; font-size: 3rem; color: #1a3a5c; text-align: center; margin-bottom: 10px;">A NOSSA TECNOLOGIA</h2>
+        <p style="text-align: center; color: #1a3a5c; opacity: 0.7; font-weight: 500;">Sistemas embarcados e monitorização global.</p>
+
+        <div class="tech-grid">
+            <div class="glass-panel" data-aos="fade-up" data-aos-delay="100" style="padding: 40px; border-radius: 25px; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 20px;">🛰️</div>
+                <h4 style="font-family: 'Bebas Neue'; font-size: 1.8rem; margin-bottom: 15px;">WebSockets Real-time</h4>
+                <p style="font-size: 0.9rem; opacity: 0.8;">Monitorização instantânea de telemetria, bateria e posição GPS de cada unidade na rede.</p>
+            </div>
+
+            <div class="glass-panel" data-aos="fade-up" data-aos-delay="200" style="padding: 40px; border-radius: 25px; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 20px;">🤖</div>
+                <h4 style="font-family: 'Bebas Neue'; font-size: 1.8rem; margin-bottom: 15px;">ESP32 & State Machines</h4>
+                <p style="font-size: 0.9rem; opacity: 0.8;">Módulo embarcado inteligente que gere a libertação automática de carga com precisão milimétrica.</p>
+            </div>
+
+            <div class="glass-panel" data-aos="fade-up" data-aos-delay="300" style="padding: 40px; border-radius: 25px; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 20px;">☁️</div>
+                <h4 style="font-family: 'Bebas Neue'; font-size: 1.8rem; margin-bottom: 15px;">Cloud Logistics</h4>
+                <p style="font-size: 0.9rem; opacity: 0.8;">Integração total com Supabase para gestão de inventário, lojistas e histórico de voos.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer style="padding: 60px 20px; text-align: center; color: #1a3a5c; opacity: 0.6; font-size: 0.8rem; font-weight: 700; letter-spacing: 1px;">
+        <img src="nicedrop.png" style="height: 30px; margin-bottom: 20px; filter: grayscale(1); opacity: 0.5;"><br>
+        &copy; 2026 NICEDROP COMPANY. TODOS OS DIREITOS RESERVADOS.
+    </footer>
 
     <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
     <script>
@@ -72,14 +147,15 @@
             easing: 'ease-out-quad'
         });
 
-        // Efeito na Navbar ao fazer Scroll
         window.addEventListener('scroll', () => {
             const nav = document.querySelector('.navbar');
             if (window.scrollY > 50) {
                 nav.style.background = 'rgba(255, 255, 255, 0.8)';
+                nav.style.backdropFilter = 'blur(15px)';
                 nav.style.boxShadow = '0 10px 30px rgba(0,0,0,0.05)';
             } else {
                 nav.style.background = 'transparent';
+                nav.style.backdropFilter = 'none';
                 nav.style.boxShadow = 'none';
             }
         });
