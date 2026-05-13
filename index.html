@@ -11,9 +11,13 @@
 </head>
 <body>
 
-<!-- LOADER -->
+<!-- LOADER: split-panel -->
 <div id="loader">
-  <div class="ld-top"></div>
+  <div class="ld-top">
+    <div class="ld-brand">
+      <span class="ld-brand-n">NICE</span><span class="ld-brand-d">DROP</span>
+    </div>
+  </div>
   <div class="ld-bot"></div>
 </div>
 
@@ -35,12 +39,25 @@
 </header>
 
 <!-- HERO -->
-<section class="s-hero">
-  <!-- drone floating bg -->
-  <img src="drone.svg" alt="" class="hero-drone-bg" aria-hidden="true">
+<section class="s-hero" id="hero">
+  <!-- sky.png parallax layer -->
+  <div class="hero-sky" id="heroSky"></div>
+  <!-- particle network canvas -->
+  <canvas class="hero-canvas" id="heroCanvas" aria-hidden="true"></canvas>
+  <!-- animated grid overlay -->
+  <div class="hero-grid" aria-hidden="true"></div>
+  <!-- dark overlay / vignette -->
+  <div class="hero-vignette" aria-hidden="true"></div>
 
-  <div class="hero-inner">
-    <div class="hero-eyebrow">ENTREGA AUTÓNOMA POR DRONE — EST. 2024</div>
+  <!-- floating drone -->
+  <img src="drone.svg" alt="" class="hero-drone-bg" id="heroDrone" aria-hidden="true">
+
+  <!-- hero content -->
+  <div class="hero-inner" id="heroInner">
+    <div class="hero-eyebrow">
+      <span class="eyebrow-dot"></span>
+      ENTREGA AUTÓNOMA POR DRONE — EST. 2024
+    </div>
     <h1 class="hero-title">
       <span class="word-wrap"><span class="hn">NICE</span></span><span class="word-wrap"><span class="hd">DROP</span></span>
     </h1>
@@ -52,7 +69,8 @@
       <a href="download.html" class="btn-sq btn-sq-lg btn-sq-inv">DESCARREGAR APP</a>
     </div>
   </div>
-  <div class="hero-scroll-hint">
+
+  <div class="hero-scroll-hint" id="heroScrollHint">
     <span>SCROLL</span>
     <div class="scroll-bar"></div>
   </div>
@@ -60,22 +78,76 @@
 
 <!-- STATS -->
 <div class="s-stats">
-  <div class="stat">
-    <b class="stat-n" data-to="12">0</b>
-    <span class="stat-u">MIN</span>
-    <span class="stat-l">Entrega Média</span>
-  </div>
-  <div class="stat">
-    <b class="stat-n" data-to="38">0</b>
-    <span class="stat-u">NODES</span>
-    <span class="stat-l">Rede Ativa</span>
-  </div>
-  <div class="stat">
-    <b class="stat-n" data-to="120">0</b>
-    <span class="stat-u">KM/H</span>
-    <span class="stat-l">Velocidade Máxima</span>
+  <div class="s-stats-inner">
+    <div class="stat">
+      <b class="stat-n" data-to="12">0</b>
+      <span class="stat-u">MIN</span>
+      <span class="stat-l">Entrega Média</span>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="stat">
+      <b class="stat-n" data-to="38">0</b>
+      <span class="stat-u">NODES</span>
+      <span class="stat-l">Rede Ativa</span>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="stat">
+      <b class="stat-n" data-to="120">0</b>
+      <span class="stat-u">KM/H</span>
+      <span class="stat-l">Velocidade Máxima</span>
+    </div>
   </div>
 </div>
+
+<!-- DRONE JOURNEY: scroll-triggered storytelling -->
+<section class="s-drone-journey" id="droneJourney">
+  <div class="dj-sticky" id="djSticky">
+
+    <!-- ambient glow that intensifies with scroll -->
+    <div class="dj-glow" id="djGlow"></div>
+
+    <!-- the drone: starts tiny, grows as user scrolls -->
+    <img src="drone.svg" id="djDrone" class="dj-drone" alt="NiceDrop drone" aria-hidden="true">
+
+    <!-- story panels -->
+    <div class="dj-panel" id="djPanel1">
+      <div class="dj-panel-inner">
+        <span class="dj-label">01 — VTOL TECHNOLOGY</span>
+        <h2 class="dj-title">LIFT OFF<br>ANYWHERE</h2>
+        <p class="dj-body">Descolagem e aterragem vertical de qualquer ponto da cidade — telhados, plataformas e nós logísticos.</p>
+      </div>
+    </div>
+
+    <div class="dj-panel dj-panel--right" id="djPanel2">
+      <div class="dj-panel-inner">
+        <span class="dj-label">02 — AI ROUTING</span>
+        <h2 class="dj-title">OPTIMAL<br>PATH</h2>
+        <p class="dj-body">IA calcula em tempo real o trajeto aéreo mais rápido, evitando obstáculos e zonas restritas.</p>
+      </div>
+    </div>
+
+    <div class="dj-panel dj-panel--center" id="djPanel3">
+      <div class="dj-panel-inner dj-panel-inner--center">
+        <span class="dj-label">03 — PRECISION DROP</span>
+        <h2 class="dj-title">12 MIN<br>ENTREGA</h2>
+        <p class="dj-body">Precisão milimétrica. A sua encomenda na sua porta em minutos, não horas.</p>
+      </div>
+    </div>
+
+    <!-- progress bar -->
+    <div class="dj-progress">
+      <div class="dj-progress-fill" id="djProgressFill"></div>
+    </div>
+
+    <!-- step dots -->
+    <div class="dj-steps">
+      <span class="dj-step" id="djStep1"></span>
+      <span class="dj-step" id="djStep2"></span>
+      <span class="dj-step" id="djStep3"></span>
+    </div>
+
+  </div>
+</section>
 
 <!-- ABOUT -->
 <section class="s-about">
@@ -135,7 +207,6 @@
   </div>
 </footer>
 
-<!-- TOAST CONTAINER -->
 <div id="toast-container" aria-live="polite"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>

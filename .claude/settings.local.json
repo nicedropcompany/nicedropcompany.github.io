@@ -10,7 +10,25 @@
       "WebFetch(domain:portfolio6.zerasoftwarestudio.com)",
       "PowerShell(Test-Path \"C:\\\\Users\\\\diogo\\\\Downloads\\\\vtol.obj\"; \\(Get-Item \"C:\\\\Users\\\\diogo\\\\Downloads\\\\vtol.obj\" -ErrorAction SilentlyContinue\\).Length)",
       "PowerShell(Test-Path \"C:\\\\Users\\\\diogo\\\\Downloads\\\\vtol.mtl\"; \\(Get-Item \"C:\\\\Users\\\\diogo\\\\Downloads\\\\vtol.mtl\" -ErrorAction SilentlyContinue\\).Length)",
-      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\diogo\\\\Desktop\\\\teste voo autonomo drone\\\\drone-viewer\" -Recurse -File | ForEach-Object { \"$\\($_.Length.ToString\\(\\).PadLeft\\(8\\)\\) bytes  $\\($_.FullName.Replace\\('C:\\\\Users\\\\diogo\\\\Desktop\\\\teste voo autonomo drone\\\\drone-viewer\\\\',''\\)\\)\" })"
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\diogo\\\\Desktop\\\\teste voo autonomo drone\\\\drone-viewer\" -Recurse -File | ForEach-Object { \"$\\($_.Length.ToString\\(\\).PadLeft\\(8\\)\\) bytes  $\\($_.FullName.Replace\\('C:\\\\Users\\\\diogo\\\\Desktop\\\\teste voo autonomo drone\\\\drone-viewer\\\\',''\\)\\)\" })",
+      "PowerShell(Get-ChildItem \"$env:USERPROFILE\\\\.claude\" -ErrorAction SilentlyContinue | Select-Object Name, FullName)",
+      "PowerShell(Test-Path \"$env:USERPROFILE\\\\.claude\")",
+      "PowerShell(Get-ChildItem \"$env:USERPROFILE\\\\.claude\" -Force | Select-Object Name, PSIsContainer)",
+      "PowerShell(ls -Force \"$env:USERPROFILE\\\\.claude\")",
+      "PowerShell(git clone https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git \"$env:TEMP\\\\ui-ux-pro-max-skill\" 2>&1)",
+      "PowerShell(Get-ChildItem \"$env:TEMP\\\\ui-ux-pro-max-skill\" -Recurse | Select-Object FullName, Length)",
+      "PowerShell(ls -Force \"$env:TEMP\\\\ui-ux-pro-max-skill\")",
+      "PowerShell(ls -Force \"$env:TEMP\\\\ui-ux-pro-max-skill\\\\.claude\")",
+      "PowerShell(ls -Force \"$env:TEMP\\\\ui-ux-pro-max-skill\\\\.claude-plugin\")",
+      "PowerShell(ls -Force \"$env:TEMP\\\\ui-ux-pro-max-skill\\\\.claude\\\\skills\")",
+      "PowerShell(ls -Recurse \"$env:TEMP\\\\ui-ux-pro-max-skill\\\\.claude\\\\skills\" | Select-Object Name, FullName)",
+      "PowerShell(Get-ChildItem -Path \"$env:TEMP\\\\ui-ux-pro-max-skill\\\\.claude\\\\skills\" -Recurse | Select-Object Name, FullName, Extension)",
+      "Bash(find \"/mnt/c/Users/diogo/AppData/Local/Temp/ui-ux-pro-max-skill/.claude/skills\" -type f 2>/dev/null | head -30)",
+      "Read(//mnt/c/Users/diogo/AppData/Local/Temp/ui-ux-pro-max-skill/.claude/**)",
+      "PowerShell(npx uipro-cli init --ai claude 2>&1)",
+      "PowerShell(node --version)",
+      "PowerShell(npm --version 2>&1)",
+      "PowerShell(ls \"$env:USERPROFILE\\\\.claude\\\\skills\")"
     ]
   }
 }
