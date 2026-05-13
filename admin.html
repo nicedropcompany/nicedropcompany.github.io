@@ -6,7 +6,7 @@
     <title>NiceDrop | Admin Panel</title>
     
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
@@ -25,7 +25,6 @@
             padding: 40px 20px;
         }
 
-        /* Tabela Estilo Glass */
         .table-container {
             background: rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(20px);
@@ -57,17 +56,12 @@
             font-size: 0.9rem;
         }
 
-        tr:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        /* Mapa - Importante: Altura Fixa */
         #map {
             height: 400px;
             width: 100%;
             border-radius: 20px;
             border: 2px solid rgba(255, 255, 255, 0.5);
-            z-index: 1; /* Garante que o mapa não fica por cima de menus */
+            z-index: 1;
         }
 
         .minimal-input {
@@ -76,6 +70,8 @@
             border-radius: 10px;
             padding: 12px;
             outline: none;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .grid-forms {
@@ -92,6 +88,10 @@
             border-radius: 20px;
             padding: 30px;
         }
+
+        @media (max-width: 900px) {
+            .grid-forms { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -105,9 +105,8 @@
     </nav>
 
     <div class="admin-container">
-        
         <h1 style="font-family: 'Bebas Neue'; font-size: 3.5rem; margin-bottom: 10px;">Network Users</h1>
-        <input type="text" id="searchInput" class="minimal-input" placeholder="Filtrar utilizadores..." style="width: 300px; margin-bottom: 20px;">
+        <input type="text" id="searchInput" class="minimal-input" placeholder="Filtrar utilizadores..." style="max-width: 300px; margin-bottom: 20px;">
 
         <div class="table-container" data-aos="fade-up">
             <table>
@@ -135,8 +134,8 @@
             <div style="display: flex; flex-direction: column; gap: 30px;">
                 <div class="glass-card" data-aos="fade-left">
                     <h3 style="font-family: 'Bebas Neue'; margin-top: 0;">Detalhes da Loja</h3>
-                    <input type="email" id="ownerEmail" placeholder="Email do Owner" class="minimal-input" style="width: 100%; margin-bottom: 15px;">
-                    <input type="text" id="storeName" placeholder="Nome da Loja" class="minimal-input" style="width: 100%; margin-bottom: 15px;">
+                    <input type="email" id="ownerEmail" placeholder="Email do Owner" class="minimal-input" style="margin-bottom: 15px;">
+                    <input type="text" id="storeName" placeholder="Nome da Loja" class="minimal-input" style="margin-bottom: 15px;">
                     <input type="hidden" id="storeLat">
                     <input type="hidden" id="storeLng">
                     <button id="createStoreBtn" class="btn-primary" style="width: 100%; padding: 15px;">CRIAR LOJA</button>
@@ -144,8 +143,8 @@
 
                 <div class="glass-card" data-aos="fade-left" data-aos-delay="200">
                     <h3 style="font-family: 'Bebas Neue'; margin-top: 0;">Adicionar Drone</h3>
-                    <select id="addDroneStore" class="minimal-input" style="width: 100%; margin-bottom: 15px;"></select>
-                    <input type="text" id="addDroneName" placeholder="Nome/ID do Drone" class="minimal-input" style="width: 100%; margin-bottom: 15px;">
+                    <select id="addDroneStore" class="minimal-input" style="margin-bottom: 15px;"></select>
+                    <input type="text" id="addDroneName" placeholder="Nome/ID do Drone" class="minimal-input" style="margin-bottom: 15px;">
                     <button id="addDroneBtn" class="btn-primary" style="width: 100%; padding: 15px;">ADICIONAR HARDWARE</button>
                 </div>
             </div>
@@ -155,20 +154,20 @@
             <h2 style="font-family: 'Bebas Neue';">Lojas Ativas</h2>
             <div id="storesBody" class="stores-grid"></div>
         </section>
-
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/supabase-config.js"></script>
+    <script src="supabase-config.js"></script>
     <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-    <script src="/admin.js"></script>
+    <script src="admin.js" defer></script>
+    
     <script>
-        AOS.init({ duration: 800 });
-        
-        // Garante que o mapa faz resize corretamente se a janela mudar
-        window.addEventListener('resize', () => {
-            if(window.mapInstance) window.mapInstance.invalidateSize();
+        document.addEventListener('DOMContentLoaded', () => {
+            AOS.init({ duration: 800 });
+            window.addEventListener('resize', () => {
+                if(window.mapInstance) window.mapInstance.invalidateSize();
+            });
         });
     </script>
 </body>
