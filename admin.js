@@ -320,21 +320,6 @@ function bindEvents() {
         await loadStores();
     });
     document.getElementById('searchInput').addEventListener('input', filterUsers);
-
-    // Mapa Leaflet
-    if (window.L && document.getElementById('map')) {
-        const map = L.map('map').setView([39.5, -8.0], 7);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
-        let marker = null;
-        map.on('click', function (e) {
-            document.getElementById('storeLat').value = e.latlng.lat;
-            document.getElementById('storeLng').value = e.latlng.lng;
-            if (marker) marker.setLatLng(e.latlng);
-            else marker = L.marker(e.latlng).addTo(map);
-        });
-    }
 }
 
 function filterUsers() {
@@ -344,9 +329,72 @@ function filterUsers() {
     });
 }
 
+// ─────────────────────────────────────────────
+//  MAPA LEAFLET (com inicialização garantida)
+// ─────────────────────────────────────────────
+let leafletMap = null;
+let mapMarker = null;
+
+function initLeafletMap() {
+    if (!window.L) {
+        console.warn('Leaflet library not loaded yet, retrying...');
+        setTimeout(initLeafletMap, 500);
+        return;
+    }
+
+    const mapEl = document.getElementById('map');
+    if (!mapEl) {
+        console.warn('Map element not found');
+        return;
+    }
+
+    // Se já foi inicializado, não refaz
+    if (leafletMap) return;
+
+    try {
+        // Criar mapa
+        leafletMap = L.map('map').setView([39.5, -8.0], 7);
+        
+        // Adicionar tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(leafletMap);
+
+        // Forçar redraw (importante!)
+        setTimeout(() => {
+            if (leafletMap) leafletMap.invalidateSize();
+        }, 100);
+
+        // Event listener para cliques
+        leafletMap.on('click', function (e) {
+            const lat = e.latlng.lat;
+            const lng = e.latlng.lng;
+            document.getElementById('storeLat').value = lat;
+            document.getElementById('storeLng').value = lng;
+            
+            if (mapMarker) {
+                mapMarker.setLatLng(e.latlng);
+            } else {
+                mapMarker = L.marker(e.latlng).addTo(leafletMap);
+            }
+            
+            console.log('Localização marcada:', lat, lng);
+        });
+
+        console.log('✅ Mapa Leaflet inicializado com sucesso');
+    } catch (err) {
+        console.error('❌ Erro ao inicializar mapa:', err);
+    }
+}
+
 // Expor funções ao HTML inline
 window.deleteStore  = deleteStore;
 window.deleteDrone  = deleteDrone;
 window.changeRole   = changeRole;
 
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', function () {
+    init();
+    // Inicializar mapa após um pequeno delay para garantir que tudo está pronto
+    setTimeout(initLeafletMap, 500);
+});
