@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>NiceDrop | Administração Sky-Mode</title>
+    <title>NiceDrop | Admin Infrastructure</title>
     
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
@@ -11,145 +11,174 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
-        /* Sobrescrita para garantir o fundo sky.png sem filtros */
+        /* Fundo fixo e limpo */
         body {
             background: url('sky.png') no-repeat center center fixed !important;
             background-size: cover !important;
+            margin: 0;
+            color: #1a3a5c;
         }
 
-        /* Grid de utilizadores em Cards */
-        .users-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .user-card {
-            padding: 25px;
-            transition: transform 0.3s ease;
-        }
-
-        .user-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .user-info-header {
+        /* Navbar sem azul e transparente */
+        .navbar-admin {
+            padding: 20px 40px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .avatar-main {
-            width: 50px;
-            height: 50px;
-            background: #00d4ff;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        /* Estilização do Mapa */
-        #map {
-            height: 350px;
-            border-radius: 15px;
-            margin-top: 20px;
-            border: 2px solid rgba(255,255,255,0.5);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .page-header {
             text-align: center;
-            padding: 60px 0 40px;
+            padding: 80px 0 60px;
         }
 
         .page-header h1 {
             font-family: 'Bebas Neue';
-            font-size: 4rem;
-            color: #1a3a5c;
+            font-size: clamp(3rem, 8vw, 5rem);
             letter-spacing: 4px;
+            margin: 0;
+            line-height: 1;
+        }
+
+        /* Grid de utilizadores corrigida */
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            padding: 20px 0;
+        }
+
+        .user-card {
+            background: rgba(255, 255, 255, 0.25) !important;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5) !important;
+            border-radius: 25px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            word-break: break-word; /* Impede o texto de sair da caixa */
+        }
+
+        /* Mapa de alta definição */
+        #map {
+            height: 450px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            margin: 20px 0;
+        }
+
+        .minimal-input {
+            background: rgba(255, 255, 255, 0.4) !important;
+            border: 1px solid rgba(255, 255, 255, 0.5) !important;
+            border-radius: 12px;
+            padding: 15px;
+            outline: none;
+            color: #1a3a5c;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .minimal-input:focus {
+            background: rgba(255, 255, 255, 0.8) !important;
+            border-color: #00d4ff !important;
+        }
+
+        /* Estilo dos Selects no Card */
+        .card-select {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(0,0,0,0.05);
+            padding: 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            margin-top: 15px;
+        }
+
+        section {
+            margin-bottom: 120px;
         }
     </style>
 </head>
 <body class="sky-mode">
 
-<div class="admin-layout">
-    
-    <nav class="navbar glass-panel" style="position: sticky; top: 0; z-index: 1000; border-radius: 0;">
-        <div style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
-            <img src="nicedrop.png" style="height: 35px;" alt="NiceDrop">
-            <div style="display: flex; align-items: center; gap: 20px;">
-                <div class="user-info" style="text-align: right;">
-                    <span id="adminUsername" style="display: block; font-weight: 700; color: #1a3a5c;"></span>
-                    <span id="adminRole" style="font-size: 0.7rem; color: #00d4ff; font-weight: 700; text-transform: uppercase;"></span>
-                </div>
-                <button id="logoutBtn" class="btn-outline" style="padding: 5px 15px;">SAIR</button>
+    <nav class="navbar-admin">
+        <img src="nicedrop.png" style="height: 35px;" alt="NiceDrop">
+        <div style="display: flex; gap: 30px; align-items: center;">
+            <div style="text-align: right;">
+                <span id="adminUsername" style="display: block; font-weight: 700;">---</span>
+                <span id="adminRole" style="font-size: 0.7rem; color: #00d4ff; font-weight: 700;">INFRASTRUCTURE OPS</span>
             </div>
+            <button id="logoutBtn" class="btn-primary" style="padding: 10px 25px; border-radius: 50px;">SAIR</button>
         </div>
     </nav>
 
-    <header class="page-header">
-        <h1 data-aos="zoom-in">CONTROL INFRASTRUCTURE</h1>
-    </header>
-
-    <main class="main" style="max-width: 1400px; margin: 0 auto; padding: 0 20px 60px;">
+    <main style="max-width: 1400px; margin: 0 auto; padding: 0 40px;">
         
-        <div class="stats-row" id="userTypeSummary" style="margin-bottom: 40px;"></div>
+        <header class="page-header">
+            <span style="letter-spacing: 5px; color: #00d4ff; font-weight: 700; font-size: 0.8rem;">NETWORK OVERVIEW</span>
+            <h1 data-aos="fade-up">CONTROL INFRASTRUCTURE</h1>
+        </header>
 
-        <section style="margin-bottom: 50px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="font-family: 'Bebas Neue'; font-size: 2rem; color: #1a3a5c;">Utilizadores Registados</h2>
-                <input type="text" id="searchInput" class="minimal-input" placeholder="Filtrar por nome ou email..." style="width: 300px; padding: 10px 20px; border-radius: 50px; background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.1);">
+        <div id="userTypeSummary" style="margin-bottom: 60px;"></div>
+
+        <section>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
+                <h2 style="font-family: 'Bebas Neue'; font-size: 2.5rem; margin: 0;">NETWORK USERS</h2>
+                <input type="text" id="searchInput" class="minimal-input" placeholder="Pesquisar utilizadores..." style="width: 350px;">
             </div>
-            
             <div id="usersBody" class="users-grid">
                 </div>
         </section>
 
-        <section id="storesSection" style="margin-bottom: 50px;">
-            <h2 style="font-family: 'Bebas Neue'; font-size: 2rem; color: #1a3a5c; margin-bottom: 20px;">Ecossistema de Lojas</h2>
+        <section id="storesSection">
+            <h2 style="font-family: 'Bebas Neue'; font-size: 2.5rem; margin-bottom: 30px;">NODES OPERACIONAIS</h2>
             <div class="stores-grid" id="storesBody"></div>
         </section>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 50px; align-items: start;">
             
-            <section class="glass-panel" id="createStoreSection" data-aos="fade-right">
-                <h2 style="font-family: 'Bebas Neue'; font-size: 1.8rem; color: #1a3a5c;">Registar Nova Loja</h2>
-                <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+            <section class="user-card" id="createStoreSection" data-aos="fade-right">
+                <h2 style="font-family: 'Bebas Neue'; font-size: 2rem; margin: 0;">REGISTAR NOVO NODE</h2>
+                <p style="opacity: 0.6; margin-bottom: 25px;">Defina a localização GPS e o proprietário da unidade.</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 15px;">
                     <input type="email" id="ownerEmail" placeholder="Email do Proprietário" class="minimal-input">
-                    <input type="text" id="storeName" placeholder="Nome Comercial da Loja" class="minimal-input">
+                    <input type="text" id="storeName" placeholder="Nome da Loja / Identificador" class="minimal-input">
                     <input type="hidden" id="storeLat">
                     <input type="hidden" id="storeLng">
                     <div id="map"></div>
-                    <button id="createStoreBtn" class="btn-primary" style="width: 100%; margin-top: 10px;">CRIAR INFRAESTRUTURA</button>
+                    <button id="createStoreBtn" class="btn-primary" style="padding: 20px; border-radius: 15px;">DEPLOY NODE</button>
                 </div>
             </section>
 
-            <section class="glass-panel" id="dronesSection" data-aos="fade-left">
-                <h2 style="font-family: 'Bebas Neue'; font-size: 1.8rem; color: #1a3a5c;">Adicionar Drone (ESP32)</h2>
-                <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
-                    <label style="font-size: 0.8rem; font-weight: 700; opacity: 0.6;">SELECIONAR LOJA DESTINO</label>
+            <section class="user-card" id="dronesSection" data-aos="fade-left">
+                <h2 style="font-family: 'Bebas Neue'; font-size: 2rem; margin: 0;">HARDWARE DEPLOY</h2>
+                <p style="opacity: 0.6; margin-bottom: 25px;">Vincular novo drone ESP32 a um Node ativo.</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <label style="font-size: 0.7rem; font-weight: 700; opacity: 0.5;">SELECIONAR NODE DESTINO</label>
                     <select id="addDroneStore" class="minimal-input" style="width: 100%;"></select>
-                    <input type="text" id="addDroneName" placeholder="Identificador do Drone (ex: ND-01)" class="minimal-input">
-                    <button id="addDroneBtn" class="btn-primary" style="width: 100%; margin-top: 10px;">REGISTAR HARDWARE</button>
+                    <input type="text" id="addDroneName" placeholder="ID do Hardware (ex: ND-01)" class="minimal-input">
+                    <button id="addDroneBtn" class="btn-primary" style="padding: 20px; border-radius: 15px;">ACTIVAR HARDWARE</button>
                 </div>
             </section>
 
         </div>
-    </main>
-</div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/supabase-config.js"></script>
-<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-<script>
-    AOS.init({ duration: 1000, once: true });
-</script>
-<script src="/admin.js"></script>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/supabase-config.js"></script>
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: true });
+    </script>
+    <script src="/admin.js"></script>
 </body>
 </html>
