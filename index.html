@@ -6,211 +6,41 @@
 <title>NiceDrop | Entrega Autónoma por Drone</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="index.css">
 </head>
 <body>
 
-<!-- LOADER: split-panel -->
+<!-- LOADER -->
 <div id="loader">
-  <div class="ld-top">
-    <div class="ld-brand">
-      <span class="ld-brand-n">NICE</span><span class="ld-brand-d">DROP</span>
-    </div>
-  </div>
+  <div class="ld-top"></div>
   <div class="ld-bot"></div>
 </div>
 
 <!-- NAVBAR -->
-<header id="navbar" class="nav">
-  <a href="#" class="nav-logo">
-    <img src="nicedrop.png" alt="NiceDrop">
-  </a>
-  <div class="nav-btns">
-    <button class="nav-theme-btn" id="themeToggle" aria-label="Alternar tema" title="Alternar tema claro/escuro">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="5"/>
-        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-      </svg>
-    </button>
-    <a href="auth.html" class="btn-sq">ENTRAR</a>
-    <a href="download.html" class="btn-sq btn-sq-inv">APP</a>
+<header class="topbar">
+  <img src="nicedrop.png" alt="NiceDrop" class="brand-logo">
+  <div class="topbar-right">
+    <a href="auth.html" class="btn-primary">ENTRAR</a>
+    <a href="download.html" class="btn-secondary-nav">APP</a>
   </div>
 </header>
 
-<!-- HERO -->
-<section class="s-hero" id="hero">
-  <!-- sky.png parallax layer -->
-  <div class="hero-sky" id="heroSky"></div>
-  <!-- particle network canvas -->
-  <canvas class="hero-canvas" id="heroCanvas" aria-hidden="true"></canvas>
-  <!-- animated grid overlay -->
-  <div class="hero-grid" aria-hidden="true"></div>
-  <!-- dark overlay / vignette -->
-  <div class="hero-vignette" aria-hidden="true"></div>
-
-  <!-- floating drone -->
-  <img src="drone.svg" alt="" class="hero-drone-bg" id="heroDrone" aria-hidden="true">
-
-  <!-- hero content -->
-  <div class="hero-inner" id="heroInner">
-    <div class="hero-eyebrow">
-      <span class="eyebrow-dot"></span>
-      ENTREGA AUTÓNOMA POR DRONE — EST. 2024
-    </div>
-    <h1 class="hero-title">
-      <span class="word-wrap"><span class="hn">NICE</span></span><span class="word-wrap"><span class="hd">DROP</span></span>
-    </h1>
-    <p class="hero-desc">
-      O futuro da logística urbana. Entregas em&nbsp;12&nbsp;minutos por drone VTOL autónomo — sem trânsito, sem atrasos.
-    </p>
-    <div class="hero-actions">
-      <a href="auth.html" class="btn-sq btn-sq-lg">COMEÇAR</a>
-      <a href="download.html" class="btn-sq btn-sq-lg btn-sq-inv">DESCARREGAR APP</a>
+<!-- HERO: sky.png full background + centered card -->
+<main class="hero">
+  <div class="hero-card">
+    <img src="nicedrop.png" alt="NiceDrop" class="card-logo">
+    <div class="card-divider"></div>
+    <p class="card-label">ENTREGA AUTÓNOMA POR DRONE</p>
+    <p class="card-desc">Entregas em 12 minutos por drone VTOL autónomo — sem trânsito, sem atrasos.</p>
+    <div class="card-actions">
+      <a href="auth.html" class="btn-primary btn-full-card">COMEÇAR</a>
+      <a href="download.html" class="btn-outline btn-full-card">DESCARREGAR APP</a>
     </div>
   </div>
-
-  <div class="hero-scroll-hint" id="heroScrollHint">
-    <span>SCROLL</span>
-    <div class="scroll-bar"></div>
-  </div>
-</section>
-
-<!-- STATS -->
-<div class="s-stats">
-  <div class="s-stats-inner">
-    <div class="stat">
-      <b class="stat-n" data-to="12">0</b>
-      <span class="stat-u">MIN</span>
-      <span class="stat-l">Entrega Média</span>
-    </div>
-    <div class="stat-sep"></div>
-    <div class="stat">
-      <b class="stat-n" data-to="38">0</b>
-      <span class="stat-u">NODES</span>
-      <span class="stat-l">Rede Ativa</span>
-    </div>
-    <div class="stat-sep"></div>
-    <div class="stat">
-      <b class="stat-n" data-to="120">0</b>
-      <span class="stat-u">KM/H</span>
-      <span class="stat-l">Velocidade Máxima</span>
-    </div>
-  </div>
-</div>
-
-<!-- DRONE JOURNEY: scroll-triggered storytelling -->
-<section class="s-drone-journey" id="droneJourney">
-  <div class="dj-sticky" id="djSticky">
-
-    <!-- ambient glow that intensifies with scroll -->
-    <div class="dj-glow" id="djGlow"></div>
-
-    <!-- the drone: starts tiny, grows as user scrolls -->
-    <img src="drone.svg" id="djDrone" class="dj-drone" alt="NiceDrop drone" aria-hidden="true">
-
-    <!-- story panels -->
-    <div class="dj-panel" id="djPanel1">
-      <div class="dj-panel-inner">
-        <span class="dj-label">01 — VTOL TECHNOLOGY</span>
-        <h2 class="dj-title">LIFT OFF<br>ANYWHERE</h2>
-        <p class="dj-body">Descolagem e aterragem vertical de qualquer ponto da cidade — telhados, plataformas e nós logísticos.</p>
-      </div>
-    </div>
-
-    <div class="dj-panel dj-panel--right" id="djPanel2">
-      <div class="dj-panel-inner">
-        <span class="dj-label">02 — AI ROUTING</span>
-        <h2 class="dj-title">OPTIMAL<br>PATH</h2>
-        <p class="dj-body">IA calcula em tempo real o trajeto aéreo mais rápido, evitando obstáculos e zonas restritas.</p>
-      </div>
-    </div>
-
-    <div class="dj-panel dj-panel--center" id="djPanel3">
-      <div class="dj-panel-inner dj-panel-inner--center">
-        <span class="dj-label">03 — PRECISION DROP</span>
-        <h2 class="dj-title">12 MIN<br>ENTREGA</h2>
-        <p class="dj-body">Precisão milimétrica. A sua encomenda na sua porta em minutos, não horas.</p>
-      </div>
-    </div>
-
-    <!-- progress bar -->
-    <div class="dj-progress">
-      <div class="dj-progress-fill" id="djProgressFill"></div>
-    </div>
-
-    <!-- step dots -->
-    <div class="dj-steps">
-      <span class="dj-step" id="djStep1"></span>
-      <span class="dj-step" id="djStep2"></span>
-      <span class="dj-step" id="djStep3"></span>
-    </div>
-
-  </div>
-</section>
-
-<!-- ABOUT -->
-<section class="s-about">
-  <div class="wrap">
-    <span class="s-tag">SOBRE A NICEDROP</span>
-    <h2 class="s-title">A NOVA GERAÇÃO<br>DA LOGÍSTICA URBANA</h2>
-    <p class="s-body">
-      A NiceDrop está a construir uma rede de drones VTOL autónomos que conecta negócios locais com clientes, permitindo entregas ultra-rápidas pelo ar. Conectamos restaurantes, farmácias e lojas diretamente aos seus clientes — em minutos.
-    </p>
-  </div>
-</section>
-
-<!-- FEATURES -->
-<section class="s-feat">
-  <div class="wrap">
-    <span class="s-tag">TECNOLOGIA</span>
-    <h2 class="s-title">COMO FUNCIONA</h2>
-    <div class="feat-grid">
-      <div class="feat-card">
-        <span class="feat-n">01</span>
-        <h3>VTOL DRONES</h3>
-        <p>Descolagem e aterragem vertical, desenhados para o ambiente urbano denso.</p>
-      </div>
-      <div class="feat-card">
-        <span class="feat-n">02</span>
-        <h3>ROTA COM IA</h3>
-        <p>Algoritmos inteligentes calculam o trajeto aéreo mais rápido em tempo real.</p>
-      </div>
-      <div class="feat-card">
-        <span class="feat-n">03</span>
-        <h3>VOO AUTÓNOMO</h3>
-        <p>Voo completamente autónomo — zero intervenção humana, 100% de precisão.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="s-cta">
-  <div class="wrap cta-wrap">
-    <h2 class="cta-title">PRONTO PARA<br>O FUTURO?</h2>
-    <p class="cta-sub">Junta-te à rede NiceDrop e transforma a tua logística.</p>
-    <a href="auth.html" class="btn-sq btn-sq-lg btn-sq-white">CRIAR CONTA</a>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer class="s-footer">
-  <div class="wrap foot-inner">
-    <img src="nicedrop.png" alt="NiceDrop" class="foot-logo">
-    <p class="foot-copy">Future Autonomous Delivery &copy; 2026</p>
-    <nav class="foot-nav">
-      <a href="auth.html">Entrar</a>
-      <a href="download.html">App</a>
-      <a href="dashboard.html">Dashboard</a>
-    </nav>
-  </div>
-</footer>
+</main>
 
 <div id="toast-container" aria-live="polite"></div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
