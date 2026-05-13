@@ -1,64 +1,89 @@
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NiceDrop | Entrega Autónoma por Drone</title>
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NiceDrop | Next-Gen Drone Delivery</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="sky-mode">
 
-<!-- LOADER -->
-<div id="loader">
-  <div class="ld-top"></div>
-  <div class="ld-bot"></div>
-</div>
+    <nav class="navbar glass-panel" style="position: fixed; top: 0; width: 100%; z-index: 1000; border-radius: 0; border-top: none; border-left: none; border-right: none;">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
+            <a href="index.html">
+                <img src="nicedrop.png" alt="NiceDrop" style="height: 35px; filter: contrast(1.2);">
+            </a>
+            <div style="display: flex; gap: 30px; align-items: center;">
+                <a href="index.html" style="text-decoration: none; color: #1a3a5c; font-weight: 500; font-size: 0.9rem;">INÍCIO</a>
+                <a href="download.html" style="text-decoration: none; color: #1a3a5c; font-weight: 500; font-size: 0.9rem;">APP</a>
+                <a href="auth.html" class="btn-primary" style="padding: 8px 25px; font-size: 0.8rem;">ENTRAR</a>
+            </div>
+        </div>
+    </nav>
 
-<!-- NAVBAR -->
-<header class="topbar">
-  <img src="nicedrop.png" alt="NiceDrop" class="brand-logo">
-  <div class="topbar-right">
-    <a href="auth.html" class="btn-primary">Entrar</a>
-    <a href="download.html" class="btn-secondary">App</a>
-  </div>
-</header>
+    <main style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding-top: 80px;">
+        <div style="max-width: 1100px; width: 100%; padding: 0 20px; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 60px; align-items: center;">
+            
+            <div data-aos="fade-right" data-aos-duration="1200">
+                <span style="font-family: 'DM Sans'; font-weight: 700; letter-spacing: 3px; color: #00d4ff; text-transform: uppercase; font-size: 0.8rem;">
+                    Infrastructure for the next generation
+                </span>
+                <h1 style="font-family: 'Bebas Neue', sans-serif; font-size: clamp(4rem, 8vw, 6.5rem); line-height: 0.9; color: #1a3a5c; margin: 20px 0;">
+                    NICEDROP <br>SKY-MODE
+                </h1>
+                <p style="font-family: 'DM Sans', sans-serif; font-size: 1.1rem; line-height: 1.6; color: rgba(26, 58, 92, 0.8); max-width: 500px; margin-bottom: 40px;">
+                    Entregas em 12 minutos por drone VTOL autónomo. O futuro da logística urbana, agora disponível na sua cidade.
+                </p>
+                <div style="display: flex; gap: 20px;">
+                    <a href="auth.html" class="btn-primary" style="padding: 15px 40px; font-size: 1rem;">COMEÇAR</a>
+                    <a href="download.html" style="text-decoration: none; border-bottom: 2px solid #00d4ff; color: #1a3a5c; font-weight: 700; display: flex; align-items: center; font-size: 0.9rem;">DESCARREGAR APP</a>
+                </div>
+            </div>
 
-<!-- HERO: sky.png full background + centered card -->
-<main class="hero" id="top">
-  <div class="hero-grid">
-    <div class="glass-card hero-copy" data-aos="fade-up">
-      <span class="hero-eyebrow">Entrega autonoma por drone</span>
-      <h1 class="hero-title">NiceDrop Sky-Mode</h1>
-      <p class="hero-text">
-        Entregas em 12 minutos por drone VTOL autonomo. Sem transito, sem atrasos,
-        com tracking em tempo real e rota otimizada pela nuvem.
-      </p>
-      <div class="hero-actions">
-        <a href="auth.html" class="btn-primary">Comecar</a>
-        <a href="download.html" class="btn-outline">Descarregar app</a>
-      </div>
-    </div>
-    <div class="hero-stack">
-      <div class="glass-card hero-panel" data-aos="fade-left" data-aos-delay="100">
-        <h3>12 min</h3>
-        <p>Media de entrega na area urbana.</p>
-      </div>
-      <div class="glass-card hero-panel" data-aos="fade-left" data-aos-delay="200">
-        <h3>+120 drones</h3>
-        <p>Frota com rotas dinamicas e redundantes.</p>
-      </div>
-      <div class="glass-card hero-panel" data-aos="fade-left" data-aos-delay="300">
-        <h3>Sky Control</h3>
-        <p>Monitorizacao em tempo real para lojas e operadores.</p>
-      </div>
-    </div>
-  </div>
-</main>
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="glass-panel" data-aos="fade-up" data-aos-delay="200" style="padding: 25px;">
+                    <h3 style="margin: 0; color: #00d4ff; font-size: 2rem;">12 min</h3>
+                    <p style="margin: 5px 0 0; opacity: 0.7; font-size: 0.9rem;">Média de entrega urbana.</p>
+                </div>
+                <div class="glass-panel" data-aos="fade-up" data-aos-delay="400" style="padding: 25px;">
+                    <h3 style="margin: 0; color: #00d4ff; font-size: 2rem;">38 Nodes</h3>
+                    <p style="margin: 5px 0 0; opacity: 0.7; font-size: 0.9rem;">Sistema operacional ativo.</p>
+                </div>
+                <div class="glass-panel" data-aos="fade-up" data-aos-delay="600" style="padding: 25px;">
+                    <h3 style="margin: 0; color: #00d4ff; font-size: 2rem;">Sky Control</h3>
+                    <p style="margin: 5px 0 0; opacity: 0.7; font-size: 0.9rem;">Monitorização via WebSockets.</p>
+                </div>
+            </div>
 
-<div id="toast-container" aria-live="polite"></div>
-<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-<script src="app.js"></script>
-<script src="script.js"></script>
+        </div>
+    </main>
+
+    <div id="toast-container" aria-live="polite"></div>
+
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            once: true,
+            easing: 'ease-out-quad'
+        });
+
+        // Efeito na Navbar ao fazer Scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                nav.style.background = 'rgba(255, 255, 255, 0.8)';
+                nav.style.boxShadow = '0 10px 30px rgba(0,0,0,0.05)';
+            } else {
+                nav.style.background = 'transparent';
+                nav.style.boxShadow = 'none';
+            }
+        });
+    </script>
+    <script src="app.js"></script>
 </body>
 </html>
