@@ -50,11 +50,18 @@ async function init() {
         document.getElementById('userRole').textContent = role.toUpperCase();
 
         if (role === 'owner' && profile.store_id) {
-            const { data: stores } = await supabaseClient
-                .from('stores')
-                .select('id, name, service')
-                .eq('id', profile.store_id);
-            state.stores = stores || [];
+            // store_id é um array JSONB — normalizar antes de usar
+            let ids = Array.isArray(profile.store_id) ? profile.store_id
+                : typeof profile.store_id === 'number' ? [profile.store_id]
+                : (() => { try { const p = JSON.parse(profile.store_id); return Array.isArray(p) ? p : [p]; } catch { return []; } })();
+
+            if (ids.length > 0) {
+                const { data: stores } = await supabaseClient
+                    .from('stores')
+                    .select('id, name, service')
+                    .in('id', ids);
+                state.stores = stores || [];
+            }
         }
 
         state.currentStoreId = state.stores[0]?.id || null;
