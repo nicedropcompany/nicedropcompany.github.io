@@ -191,8 +191,6 @@ function renderMain() {
         </div>
         <div class="detail-card">
             <div class="detail-card-title">Equipa</div>
-            <button id="addEmployeeBtn" class="add-member-btn">Adicionar Funcionário</button>
-            <!-- Lista de membros da equipa com botão para promover a owner -->
             <div id="teamListHtml"></div>
         </div>
     `;
@@ -210,36 +208,6 @@ function renderMain() {
                 ${m.role !== 'owner' ? `<button class="make-owner-btn" data-member-id="${m.id}">Promover a OWNER</button> <button class="remove-member-btn" data-member-id="${m.id}" style="background:#e74c3c;color:#fff;border:none;border-radius:50%;width:28px;height:28px;font-size:18px;cursor:pointer;margin-left:8px;">&times;</button>` : ''}
             </div>`).join('') : '<div class="empty-state-text">SEM MEMBROS</div>';
     }
-    // Add event for Adicionar Funcionário
-    const addEmployeeBtn = document.getElementById('addEmployeeBtn');
-    if (addEmployeeBtn) {
-        addEmployeeBtn.addEventListener('click', async () => {
-            const email = prompt('Email do funcionário a adicionar:');
-            if (!email) return;
-            // Search user by email
-            const { data: user } = await supabaseClient
-                .from('users_with_email')
-                .select('id')
-                .eq('email', email)
-                .single();
-            if (!user) {
-                alert('Utilizador não encontrado');
-                return;
-            }
-            const ids = await appendStoreId(user.id, state.currentStoreId);
-            const { error } = await supabaseClient
-                .from('profiles')
-                .update({ store_id: ids, role: 'operator' })
-                .eq('id', user.id);
-            if (error) {
-                alert('Erro ao adicionar funcionário: ' + error.message);
-                return;
-            }
-            await loadStoreData(state.currentStoreId);
-            renderMain();
-        });
-    }
-
     // Add event para promover a owner
     if (teamListHtml) {
         teamListHtml.querySelectorAll('.make-owner-btn').forEach(btn => {
