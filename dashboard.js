@@ -96,12 +96,21 @@ async function loadStoreData(storeId) {
         .from('drones')
         .select('id, name, status, capacity')
         .eq('store_id', storeId);
-    const { data: team } = await supabaseClient
+
+    // store_id é JSONB e pode ser scalar (37) ou array ([37,2])
+    // .eq() não faz match em arrays, por isso filtramos no cliente
+    const { data: allProfiles } = await supabaseClient
         .from('profiles')
-        .select('id, username, role')
-        .eq('store_id', storeId);
+        .select('id, username, role, store_id')
+        .in('role', ['operator', 'owner']);
+
+    const team = (allProfiles || []).filter(p => {
+        const ids = parseStoreIds(p.store_id);
+        return ids.includes(storeId);
+    });
+
     state.drones = drones || [];
-    state.team = team || [];
+    state.team = team;
 }
 
 function renderSidebar() {
@@ -323,6 +332,7 @@ function bindEvents() {
             closeModal('addOperatorModal');
             emailInput.value = '';
             await loadStoreData(state.currentStoreId);
+            renderMain();
         });
     }
 }
