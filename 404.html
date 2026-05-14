@@ -4,186 +4,126 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NiceDrop | 404 — Entrega Perdida</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 <style>
-@font-face {
-  font-family: 'BebasNeue';
-  src: url('BebasNeue-Regular.ttf') format('truetype');
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; }
-
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: #0a0c10;
-  color: #f0f4ff;
+.page-404-wrap {
   min-height: 100vh;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  overflow: hidden;
+  padding: 40px 20px;
   position: relative;
+  z-index: 1;
 }
 
-/* grid */
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background-image:
-    linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
-  background-size: 60px 60px;
-  -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 0%, transparent 100%);
-  mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 0%, transparent 100%);
-  pointer-events: none;
+.card-404 {
+  text-align: center;
+  padding: 52px 44px 44px;
+  max-width: 500px;
+  width: 100%;
 }
 
-/* radial glow */
-body::after {
-  content: '';
-  position: fixed; inset: 0;
-  background: radial-gradient(ellipse 65% 55% at 50% 50%, rgba(0,212,255,0.07) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.page-404 {
-  position: relative; z-index: 1;
-  display: flex; flex-direction: column;
-  align-items: center; gap: 0;
-  padding: 24px;
-}
-
-/* floating drone */
 .drone-404 {
-  width: 200px;
-  opacity: 0.22;
+  width: 150px;
+  opacity: 0.55;
   animation: float404 5s ease-in-out infinite;
-  margin-bottom: 32px;
-  filter: drop-shadow(0 0 30px rgba(0,212,255,0.3));
-}
-@keyframes float404 {
-  0%,100% { transform: translateY(0) rotate(-2deg); }
-  50%      { transform: translateY(-24px) rotate(2deg); }
+  margin: 0 auto 28px;
 }
 
-/* code tag */
-.error-code {
-  font-family: 'DM Mono', monospace;
+@keyframes float404 {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50%       { transform: translateY(-20px) rotate(2deg); }
+}
+
+.error-tag-404 {
+  display: inline-block;
   font-size: 0.65rem;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: #00d4ff;
-  background: rgba(0,212,255,0.08);
-  border: 1px solid rgba(0,212,255,0.25);
+  color: #000;
+  background: rgba(0, 0, 0, 0.07);
+  border: 1px solid rgba(0, 0, 0, 0.18);
   padding: 6px 14px;
-  margin-bottom: 20px;
-  display: inline-block;
+  margin-bottom: 18px;
 }
 
-/* big 404 */
 .title-404 {
-  font-family: 'BebasNeue', sans-serif;
-  font-size: clamp(100px, 22vw, 200px);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(90px, 20vw, 180px);
   line-height: 0.88;
   letter-spacing: -4px;
-  color: #f0f4ff;
-  margin-bottom: 16px;
-  text-shadow: 0 0 80px rgba(0,212,255,0.18);
+  color: #000;
+  margin-bottom: 12px;
 }
 
 .subtitle-404 {
-  font-family: 'BebasNeue', sans-serif;
-  font-size: clamp(1.4rem, 5vw, 2.6rem);
-  letter-spacing: 3px;
-  color: rgba(240,244,255,0.55);
-  margin-bottom: 28px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(1.3rem, 4vw, 2.2rem);
+  letter-spacing: 2px;
+  color: rgba(0, 0, 0, 0.65);
+  margin-bottom: 20px;
   text-transform: uppercase;
 }
 
 .desc-404 {
   font-size: 0.95rem;
   line-height: 1.7;
-  color: rgba(240,244,255,0.40);
-  max-width: 400px;
-  margin-bottom: 40px;
-  font-family: 'DM Sans', sans-serif;
+  color: rgba(0, 0, 0, 0.55);
+  max-width: 380px;
+  margin: 0 auto 32px;
 }
 
-/* scan line */
 .scanline-404 {
-  width: 240px; height: 1px;
-  background: linear-gradient(90deg, transparent, #00d4ff, transparent);
-  margin-bottom: 36px;
+  width: 220px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.3), transparent);
+  margin: 0 auto 32px;
   animation: scanPulse 2.5s ease-in-out infinite;
 }
+
 @keyframes scanPulse {
-  0%,100% { opacity: 0.3; transform: scaleX(0.4); }
-  50%      { opacity: 1; transform: scaleX(1); }
+  0%, 100% { opacity: 0.3; transform: scaleX(0.4); }
+  50%       { opacity: 1;   transform: scaleX(1); }
 }
 
-/* button */
-.btn-home {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 14px 36px;
-  background: #00d4ff;
-  color: #000;
-  border: 2px solid #00d4ff;
-  font-family: 'DM Mono', monospace;
-  font-size: 0.72rem;
-  font-weight: 700;
+.coords-404 {
+  font-size: 0.6rem;
   letter-spacing: 2px;
-  text-transform: uppercase;
-  text-decoration: none;
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
-}
-.btn-home:hover {
-  background: transparent;
-  color: #00d4ff;
-  box-shadow: 0 0 30px rgba(0,212,255,0.4);
-  transform: translateY(-3px);
-}
-
-/* coordinate decoration */
-.coords {
-  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-  font-family: 'DM Mono', monospace;
-  font-size: 0.60rem; letter-spacing: 2px;
-  color: rgba(240,244,255,0.18);
-  z-index: 1;
+  color: rgba(0, 0, 0, 0.35);
+  margin-top: 28px;
 }
 </style>
 </head>
 <body>
+<main>
+  <div class="page-404-wrap">
+    <div class="card-404 glass-card">
 
-<div class="page-404">
-  <!-- floating drone -->
-  <img src="drone.svg" alt="Drone perdido" class="drone-404">
+      <img src="drone.svg" alt="Drone perdido" class="drone-404">
 
-  <span class="error-code">ERRO — 404</span>
+      <span class="error-tag-404">ERRO — 404</span>
 
-  <h1 class="title-404">404</h1>
-  <h2 class="subtitle-404">ENTREGA PERDIDA NO AR</h2>
+      <h1 class="title-404">404</h1>
+      <h2 class="subtitle-404">ENTREGA PERDIDA NO AR</h2>
 
-  <p class="desc-404">
-    Este pacote saiu do radar. A página que procuras não foi encontrada — o drone voltou sem entregar.
-  </p>
+      <p class="desc-404">
+        Este pacote saiu do radar. A página que procuras não foi encontrada — o drone voltou sem entregar.
+      </p>
 
-  <div class="scanline-404"></div>
+      <div class="scanline-404"></div>
 
-  <a href="index.html" class="btn-home">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M19 12H5M12 5l-7 7 7 7"/>
-    </svg>
-    VOLTAR AO INÍCIO
-  </a>
-</div>
+      <a href="index.html" class="btn-home">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        VOLTAR AO INÍCIO
+      </a>
 
-<div class="coords">38.7167° N — 9.1333° W — ALT: ???m</div>
+      <p class="coords-404">38.7167° N — 9.1333° W — ALT: ???m</p>
 
+    </div>
+  </div>
+</main>
 </body>
 </html>

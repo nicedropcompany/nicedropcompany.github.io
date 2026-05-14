@@ -40,8 +40,8 @@
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.03) !important;
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* Corta o conteúdo que sai das bordas arredondadas */
-            color: #1a3a5c;
+            overflow: hidden;
+            color: #000;
         }
 
         /* O segredo do scroll está aqui: */
@@ -76,7 +76,7 @@
             font-family: 'DM Sans', sans-serif;
             font-weight: 700;
             font-size: 0.8rem;
-            color: rgba(26, 58, 92, 0.4);
+            color: rgba(0, 0, 0, 0.4);
             cursor: pointer;
             transition: 0.4s ease;
             letter-spacing: 2px;
@@ -84,8 +84,8 @@
         }
 
         .tab-btn.active {
-            color: #1a3a5c;
-            background: rgba(255, 255, 255, 0.3);
+            color: #fff;
+            background: #000;
         }
 
         .minimal-input {
@@ -98,7 +98,7 @@
             font-family: 'DM Sans', sans-serif;
             box-sizing: border-box;
             outline: none;
-            color: #1a3a5c;
+            color: #000;
         }
 
         .auth-header h2 {
@@ -137,7 +137,7 @@
                     <input type="email" id="loginEmail" placeholder="Email institucional" required class="minimal-input">
                     <input type="password" id="loginPassword" placeholder="Password" required class="minimal-input">
 
-                    <button type="submit" class="btn-primary" style="width: 100%; padding: 18px; border-radius: 15px; margin-top: 10px; font-weight: 700;">
+                    <button type="submit" class="btn-primary" style="width: 100%; padding: 18px; margin-top: 10px; font-weight: 700;">
                         CONECTAR
                     </button>
                 </form>
@@ -155,7 +155,7 @@
                     <input type="password" id="signupPassword" placeholder="Password" required class="minimal-input">
                     <input type="password" id="signupConfirm" placeholder="Confirmar Password" required class="minimal-input">
 
-                    <button type="submit" class="btn-primary" style="width: 100%; padding: 18px; border-radius: 15px; margin-top: 10px; font-weight: 700;">
+                    <button type="submit" class="btn-primary" style="width: 100%; padding: 18px; margin-top: 10px; font-weight: 700;">
                         REGISTAR
                     </button>
                 </form>

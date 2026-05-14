@@ -7,17 +7,17 @@
 }
 
 :root {
-  --ink: #1a3a5c;
-  --ink-soft: #2d4d72;
-  --ink-faint: rgba(26, 58, 92, 0.55);
+  --ink: #000000;
+  --ink-soft: #111111;
+  --ink-faint: rgba(0, 0, 0, 0.55);
   --accent: #00d4ff;
-  --accent-deep: #00a6c7;
+  --accent-deep: #000000;
   --glass: rgba(255, 255, 255, 0.3);
   --glass-strong: rgba(255, 255, 255, 0.5);
   --glass-border: rgba(255, 255, 255, 0.65);
   --glass-border-soft: rgba(255, 255, 255, 0.4);
-  --shadow: 0 10px 30px rgba(26, 58, 92, 0.18);
-  --shadow-soft: 0 6px 20px rgba(26, 58, 92, 0.12);
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  --shadow-soft: 0 6px 20px rgba(0, 0, 0, 0.10);
   --radius: 18px;
   --radius-sm: 12px;
   --radius-lg: 24px;
@@ -103,11 +103,12 @@ main {
   background: var(--glass-strong);
 }
 
+.btn,
 .btn-primary,
 .btn-secondary,
 .btn-outline,
 .btn-ghost {
-  border-radius: 999px;
+  border-radius: 0;
   padding: 12px 24px;
   font-size: 0.78rem;
   letter-spacing: 1.6px;
@@ -123,28 +124,29 @@ main {
   font-family: 'DM Sans', sans-serif;
 }
 
+.btn,
 .btn-primary {
-  background: var(--accent);
-  color: #04324a;
-  border-color: var(--accent);
-  box-shadow: 0 10px 24px rgba(0, 212, 255, 0.25);
+  background: #000;
+  color: #fff;
+  border-color: #000;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 30px rgba(0, 212, 255, 0.35);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.75);
-  color: var(--ink);
-  border-color: var(--glass-border);
+  background: #000;
+  color: #fff;
+  border-color: #000;
 }
 
 .btn-outline {
   background: transparent;
-  color: var(--ink);
-  border-color: rgba(26, 58, 92, 0.2);
+  color: #000;
+  border-color: #000;
 }
 
 .btn-outline:hover,
@@ -154,9 +156,9 @@ main {
 }
 
 .btn-ghost {
-  background: rgba(255, 255, 255, 0.5);
-  color: var(--ink);
-  border-color: rgba(255, 255, 255, 0.6);
+  background: #000;
+  color: #fff;
+  border-color: #000;
 }
 
 input,
@@ -188,12 +190,12 @@ textarea {
   position: absolute;
   left: 20px;
   top: -40px;
-  background: var(--accent);
-  color: #04324a;
+  background: #000;
+  color: #fff;
   padding: 8px 14px;
   font-size: 0.72rem;
   letter-spacing: 1px;
-  border-radius: 999px;
+  border-radius: 0;
   transition: top 0.2s ease;
   z-index: 999;
 }
@@ -404,14 +406,14 @@ textarea {
   color: var(--ink);
 }
 
-.badge-active { background: rgba(0, 212, 255, 0.2); color: #045570; }
-.badge-pending { background: rgba(255, 214, 102, 0.4); color: #725200; }
-.badge-shipping { background: rgba(0, 180, 216, 0.25); color: #015f75; }
-.badge-inactive { background: rgba(255, 107, 107, 0.2); color: #7b1f1f; }
-.badge-owner { background: rgba(0, 212, 255, 0.2); color: #045570; }
-.badge-operator { background: rgba(255, 214, 102, 0.4); color: #725200; }
-.badge-client { background: rgba(180, 180, 180, 0.25); color: #4c5a6a; }
-.badge-developer { background: rgba(151, 220, 255, 0.45); color: #03527a; }
+.badge-active { background: rgba(0, 212, 255, 0.2); color: #000; }
+.badge-pending { background: rgba(255, 214, 102, 0.4); color: #000; }
+.badge-shipping { background: rgba(0, 180, 216, 0.25); color: #000; }
+.badge-inactive { background: rgba(255, 107, 107, 0.2); color: #000; }
+.badge-owner { background: rgba(0, 212, 255, 0.2); color: #000; }
+.badge-operator { background: rgba(255, 214, 102, 0.4); color: #000; }
+.badge-client { background: rgba(180, 180, 180, 0.25); color: #000; }
+.badge-developer { background: rgba(151, 220, 255, 0.45); color: #000; }
 
 /* Admin */
 .admin-layout {
@@ -610,13 +612,13 @@ textarea {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: rgba(0, 212, 255, 0.2);
+  background: rgba(0, 0, 0, 0.1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-family: 'Bebas Neue', 'BebasNeue', sans-serif;
   font-size: 1.2rem;
-  color: #045570;
+  color: #000;
   margin-bottom: 6px;
 }
 
@@ -802,17 +804,17 @@ textarea {
 .km-chip {
   padding: 3px 8px;
   border-radius: 999px;
-  background: rgba(0, 212, 255, 0.15);
-  color: #045570;
+  background: rgba(0, 0, 0, 0.08);
+  color: #000;
   font-size: 0.65rem;
 }
 
 .btn-add-employee {
   padding: 8px 14px;
-  border-radius: 999px;
-  border: 1px solid var(--accent);
-  background: rgba(0, 212, 255, 0.2);
-  color: #045570;
+  border-radius: 0;
+  border: 1px solid #000;
+  background: #000;
+  color: #fff;
   text-transform: uppercase;
   letter-spacing: 1.4px;
   font-size: 0.65rem;
@@ -820,21 +822,21 @@ textarea {
 }
 
 .btn-danger {
-  border: 1px solid rgba(255, 107, 107, 0.4);
-  color: #7b1f1f;
-  background: rgba(255, 107, 107, 0.15);
+  border: 1px solid #000;
+  color: #fff;
+  background: #000;
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: 0;
   font-size: 0.65rem;
   text-transform: uppercase;
 }
 
 .btn-promote {
-  border: 1px solid rgba(26, 58, 92, 0.3);
-  background: rgba(255, 255, 255, 0.6);
-  color: var(--ink);
+  border: 1px solid #000;
+  background: #000;
+  color: #fff;
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: 0;
   font-size: 0.65rem;
   text-transform: uppercase;
 }
@@ -946,18 +948,19 @@ textarea {
 
 .tab-btn {
   flex: 1;
-  border-radius: 999px;
+  border-radius: 0;
   padding: 10px 12px;
   border: 1px solid var(--glass-border);
   background: rgba(255, 255, 255, 0.6);
   font-weight: 600;
   cursor: pointer;
+  color: #000;
 }
 
 .tab-btn.active {
-  background: var(--accent);
-  color: #04324a;
-  border-color: var(--accent);
+  background: #000;
+  color: #fff;
+  border-color: #000;
 }
 
 .auth-form {
@@ -971,11 +974,11 @@ textarea {
 }
 
 .btn-submit {
-  background: var(--accent);
-  color: #04324a;
-  border: 1px solid var(--accent);
+  background: #000;
+  color: #fff;
+  border: 1px solid #000;
   padding: 12px 20px;
-  border-radius: 999px;
+  border-radius: 0;
   text-transform: uppercase;
   letter-spacing: 1.6px;
   font-weight: 600;
@@ -990,7 +993,7 @@ textarea {
 .toggle-btn {
   background: none;
   border: none;
-  color: var(--accent-deep);
+  color: #000;
   font-weight: 600;
   cursor: pointer;
 }
@@ -1015,10 +1018,10 @@ textarea {
 
 .btn-add-client {
   padding: 10px 16px;
-  border-radius: 999px;
-  border: 1px solid var(--accent);
-  background: rgba(0, 212, 255, 0.25);
-  color: #045570;
+  border-radius: 0;
+  border: 1px solid #000;
+  background: #000;
+  color: #fff;
   font-weight: 600;
   letter-spacing: 1.2px;
 }
@@ -1027,8 +1030,8 @@ textarea {
   padding: 20px;
 }
 
-.status-badge.status-active { background: rgba(0, 212, 255, 0.2); color: #045570; }
-.status-badge.status-inactive { background: rgba(255, 107, 107, 0.2); color: #7b1f1f; }
+.status-badge.status-active { background: rgba(0, 212, 255, 0.2); color: #000; }
+.status-badge.status-inactive { background: rgba(255, 107, 107, 0.2); color: #000; }
 
 .actions {
   display: flex;
@@ -1037,9 +1040,10 @@ textarea {
 
 .btn-action {
   padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--glass-border);
-  background: rgba(255, 255, 255, 0.6);
+  border-radius: 0;
+  border: 1px solid #000;
+  background: #000;
+  color: #fff;
   font-size: 0.7rem;
   cursor: pointer;
 }
@@ -1124,9 +1128,9 @@ footer {
   letter-spacing: 3px;
   text-transform: uppercase;
   padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(0, 212, 255, 0.2);
-  color: #045570;
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.08);
+  color: #000;
 }
 
 .title-404 {
@@ -1152,10 +1156,10 @@ footer {
 
 .btn-home {
   padding: 12px 26px;
-  border-radius: 999px;
-  background: var(--accent);
-  border: 1px solid var(--accent);
-  color: #04324a;
+  border-radius: 0;
+  background: #000;
+  border: 1px solid #000;
+  color: #fff;
   font-weight: 600;
   letter-spacing: 1.6px;
   text-transform: uppercase;
