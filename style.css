@@ -161,6 +161,17 @@ main {
   border-color: #000;
 }
 
+.btn-inv {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+.btn-inv:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(255, 255, 255, 0.2);
+}
+
 input,
 select,
 textarea {

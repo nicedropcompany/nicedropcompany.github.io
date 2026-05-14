@@ -11,21 +11,18 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="supabase-config.js"></script>
     <style>
-        /* Estrutura de Espaçamento */
         section {
             padding: 180px 40px;
             max-width: 1400px;
             margin: 0 auto;
             text-align: center;
         }
-
         .full-screen {
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-
         .huge-title {
             font-family: 'Bebas Neue', sans-serif;
             font-size: clamp(6rem, 15vw, 10rem);
@@ -33,7 +30,6 @@
             color: #000;
             letter-spacing: -4px;
         }
-
         .sub-headline {
             font-size: 1.1rem;
             letter-spacing: 4px;
@@ -43,22 +39,12 @@
             margin-bottom: 20px;
             display: block;
         }
-
-        .tech-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 100px; /* Espaço gigante entre itens */
-            margin-top: 100px;
-        }
-
         .big-number {
             font-family: 'Bebas Neue';
             font-size: 8rem;
             color: #000;
             line-height: 1;
         }
-
-        /* Navbar fixa e minimalista */
         .nav-fixed {
             position: fixed;
             top: 0; width: 100%;
@@ -67,6 +53,68 @@
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
+        }
+        .stat-block {
+            background: #000;
+            color: #fff;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            gap: 12px;
+        }
+        .stat-block-number {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(4rem, 8vw, 7rem);
+            line-height: 1;
+        }
+        .stat-block-label {
+            font-size: 0.65rem;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            font-weight: 700;
+            opacity: 0.55;
+            line-height: 1.6;
+        }
+        .tech-line {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 60px;
+            padding: 60px 0;
+            text-align: left;
+            border-top: 1px solid rgba(0,0,0,0.08);
+        }
+        .tech-line:last-child {
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+        .tech-line p {
+            margin: 0 auto;
+        }
+        .tech-num {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            opacity: 0.25;
+            flex-shrink: 0;
+            padding-top: 10px;
+        }
+        .join-block {
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.12);
+            padding: 80px 40px;
+        }
+        .join-block-inv {
+            background: #000;
+            color: #fff;
+            border-color: #000;
+        }
+        @media (max-width: 768px) {
+            .tech-line { flex-direction: column; gap: 20px; }
+            section[id="vision"] > div:last-child,
+            section[id="join-network"] > div:last-child { grid-template-columns: 1fr !important; }
         }
     </style>
 </head>
@@ -208,72 +256,11 @@
                 <p style="font-size: 0.7rem; letter-spacing: 3px; font-weight: 700; margin-bottom: 30px; opacity: 0.7;">Para Donos de Loja</p>
                 <h3 style="font-family: 'Bebas Neue'; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1; margin-bottom: 30px;">Junte-se<br>à Frota</h3>
                 <p style="opacity: 0.7; line-height: 1.7; margin-bottom: 40px; max-width: 360px; margin-left: auto; margin-right: auto;">Gira a logística do futuro. Opere nodes, monitorize frotas e faça parte da infraestrutura que está a redefinir o transporte urbano.</p>
-                <a href="auth.html" style="padding: 18px 50px; background:#fff; color:#000; border:2px solid #fff; font-size:0.78rem; letter-spacing:1.6px; text-transform:uppercase; font-weight:600; display:inline-flex; align-items:center; justify-content:center;">ENTRAR COMO DONO DE LOJA</a>
+                <a href="auth.html?tab=signup" class="btn btn-inv" style="padding: 18px 50px;">ENTRAR COMO DONO DE LOJA</a>
             </div>
         </div>
     </section>
 
-    <style>
-        .stat-block {
-            background: #000;
-            color: #fff;
-            aspect-ratio: 1 / 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            gap: 12px;
-        }
-        .stat-block-number {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(4rem, 8vw, 7rem);
-            line-height: 1;
-        }
-        .stat-block-label {
-            font-size: 0.65rem;
-            letter-spacing: 2.5px;
-            text-transform: uppercase;
-            font-weight: 700;
-            opacity: 0.55;
-            line-height: 1.6;
-        }
-        .tech-line {
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            gap: 60px;
-            padding: 60px 0;
-            text-align: left;
-        }
-        .tech-line p {
-            margin: 0 auto;
-        }
-        .tech-num {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-            opacity: 0.25;
-            flex-shrink: 0;
-            padding-top: 10px;
-        }
-        .join-block {
-            background: #fff;
-            border: 1px solid rgba(0,0,0,0.12);
-            padding: 80px 40px;
-        }
-        .join-block-inv {
-            background: #000;
-            color: #fff;
-            border-color: #000;
-        }
-        @media (max-width: 768px) {
-            .tech-grid { grid-template-columns: 1fr; gap: 40px; }
-            .tech-line { flex-direction: column; gap: 20px; }
-            section[id="vision"] > div:last-child,
-            section[id="join-network"] > div:last-child { grid-template-columns: 1fr !important; }
-        }
-    </style>
 
     <footer style="padding: 100px 50px; opacity: 0.3; font-size: 0.7rem; font-weight: 700; letter-spacing: 3px;">
         NICEDROP / 2026 / PORTUGAL

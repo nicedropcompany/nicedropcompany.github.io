@@ -28,7 +28,9 @@
       "PowerShell(npx uipro-cli init --ai claude 2>&1)",
       "PowerShell(node --version)",
       "PowerShell(npm --version 2>&1)",
-      "PowerShell(ls \"$env:USERPROFILE\\\\.claude\\\\skills\")"
+      "PowerShell(ls \"$env:USERPROFILE\\\\.claude\\\\skills\")",
+      "Bash(gh pr *)",
+      "PowerShell(gh pr list)"
     ]
   }
 }
