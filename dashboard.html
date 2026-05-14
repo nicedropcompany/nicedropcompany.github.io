@@ -3,184 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>NiceDrop | Dashboard Operacional</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <title>NiceDrop | Dashboard</title>
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
-    
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js"></script>
-
-    <style>
-        /* Ajustes específicos para o Dashboard Sky-Mode */
-        .dashboard-layout {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            min-height: 100vh;
-        }
-
-        /* Sidebar Glass */
-        .sidebar-glass {
-            background: rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255, 255, 255, 0.5);
-            padding: 30px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-
-        /* KPI Grid - Estilo Nube */
-        .kpi-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-
-        /* Cards em vez de Tabelas */
-        .data-card {
-            background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            transition: 0.3s ease;
-        }
-
-        .data-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.7);
-        }
-
-        .status-pill {
-            padding: 4px 12px;
-            border-radius: 50px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        /* Esconder Scrollbars mas manter funcional */
-        .main-area {
-            height: 100vh;
-            overflow-y: auto;
-            padding: 40px;
-            scrollbar-width: none;
-        }
-    </style>
 </head>
-<body class="sky-mode">
+<body>
 
-    <div class="dashboard-layout">
-        
-        <aside class="sidebar-glass">
-            <div class="brand">
-                <img src="nicedrop.png" style="height: 35px;">
+    <nav class="topbar">
+        <a href="index.html"><img src="nicedrop.png" class="brand-logo" alt="NiceDrop"></a>
+        <div class="topbar-right">
+            <span id="userName" class="user-name">---</span>
+            <span id="userRole" class="user-role" style="margin-right:8px;"></span>
+            <button id="logoutBtn" class="btn-primary">Sair</button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+
+        <aside class="sidebar">
+            <div class="sidebar-user">
+                <div id="userAvatar" class="user-avatar">U</div>
             </div>
 
-            <div class="user-profile glass-panel" style="padding: 15px; text-align: center;">
-                <div id="userAvatar" class="avatar" style="width: 50px; height: 50px; background: #00d4ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin: 0 auto 10px; font-weight: bold;">U</div>
-                <div id="userName" style="font-weight: 700; color: #1a3a5c;">—</div>
-                <div id="userRole" style="font-size: 0.7rem; opacity: 0.6; letter-spacing: 1px;">—</div>
-            </div>
+            <div class="sidebar-section-label">As Minhas Lojas</div>
+            <div id="sidebarStores" class="sidebar-stores"></div>
 
-            <nav>
-                <p style="font-size: 0.7rem; font-weight: 700; opacity: 0.5; margin-bottom: 15px; text-transform: uppercase;">As Minhas Lojas</p>
-                <div id="sidebarStores" class="stores-list">
-                    </div>
-            </nav>
-
-            <button id="logoutBtn" class="btn-outline" style="margin-top: auto; width: 100%; border-color: rgba(26, 58, 92, 0.2);">SAIR</button>
+            <div class="sidebar-spacer"></div>
         </aside>
 
         <main class="main-area">
-            
-            <header id="mainTopbar" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px;">
-                <div>
-                    <h1 id="storeTitle" style="font-family: 'Bebas Neue'; font-size: 3rem; color: #1a3a5c; margin: 0;">—</h1>
-                    <div id="storeMeta"></div>
+
+            <div id="emptyState" class="empty-state">
+                <div class="empty-state-content">
+                    <div class="empty-state-icon">🏪</div>
+                    <p style="color:var(--ink-faint);letter-spacing:1px;font-size:0.85rem;">Sem loja associada</p>
                 </div>
-                <button class="btn-primary" id="addEmployeeBtnTop">+ ADICIONAR FUNCIONÁRIO</button>
-            </header>
-
-            <div id="kpiBar" class="kpi-container">
-                </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-                
-                <section>
-                    <h2 style="font-family: 'Bebas Neue'; letter-spacing: 1px; color: #1a3a5c;">Drones <span id="droneCount" style="font-family: 'DM Sans'; font-size: 0.9rem; opacity: 0.5;"></span></h2>
-                    <div id="dronesList">
-                        </div>
-                </section>
-
-                <section>
-                    <h2 style="font-family: 'Bebas Neue'; letter-spacing: 1px; color: #1a3a5c;">Equipa Local</h2>
-                    <div id="teamList">
-                        </div>
-                </section>
-
             </div>
 
-            <section style="margin-top: 40px;">
-                <h2 style="font-family: 'Bebas Neue'; letter-spacing: 1px; color: #1a3a5c;">Últimas Encomendas</h2>
-                <div id="ordersList">
+            <div id="contentGrid" style="display:none; flex-direction:column; gap:20px;">
+
+                <div id="mainTopbar" class="main-topbar" style="display:none;">
+                    <div>
+                        <h1 id="storeTitle" class="store-title">---</h1>
+                        <div id="storeMeta" class="store-meta"></div>
                     </div>
-            </section>
+                    <button id="addOperatorBtn" class="btn-primary">+ Adicionar Funcionário</button>
+                </div>
+
+                <div id="statsRow" class="stats-row"></div>
+
+                <div id="detailRow" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;"></div>
+
+            </div>
 
         </main>
     </div>
 
-    <div id="modalOverlay" class="modal-overlay" style="background: rgba(26, 58, 92, 0.2); backdrop-filter: blur(5px);"></div>
-    <div id="addOperatorModal" class="glass-panel modal" style="max-width: 400px; padding: 40px;">
-        <h2 style="font-family: 'Bebas Neue'; margin-top: 0;">Novo Funcionário</h2>
-        <div class="form-group">
-            <input type="email" id="addOperatorEmail" placeholder="Email do utilizador" class="minimal-input" style="width: 100%; padding: 15px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1);">
+    <!-- Modal Overlay -->
+    <div id="modalOverlay" class="modal-overlay"></div>
+
+    <!-- Modal Adicionar Operador -->
+    <div id="addOperatorModal" class="modal glass-panel">
+        <div class="modal-header">
+            <h2 style="font-size:1.4rem;margin:0;">Novo Funcionário</h2>
+            <button class="modal-close" onclick="closeModal('addOperatorModal')">&times;</button>
         </div>
-        <div id="addOperatorError" style="color: #ff4d4d; font-size: 0.8rem; margin-top: 10px; display: none;"></div>
-        <div style="display: flex; gap: 10px; margin-top: 30px;">
-            <button class="btn-primary" id="addOperatorBtn" style="flex: 1;">ADICIONAR</button>
-            <button class="btn-outline" onclick="closeModal('addOperatorModal')" style="flex: 1;">CANCELAR</button>
-        </div>
+        <form id="addOperatorForm" style="display:flex;flex-direction:column;gap:14px;">
+            <input type="email" id="addOperatorEmail" placeholder="Email do utilizador" required>
+            <div id="addOperatorError" class="form-error" style="display:none;"></div>
+            <div style="display:flex;gap:10px;">
+                <button type="submit" class="btn-primary" style="flex:1;">ADICIONAR</button>
+                <button type="button" class="btn-outline" onclick="closeModal('addOperatorModal')" style="flex:1;">CANCELAR</button>
+            </div>
+        </form>
     </div>
 
-    <script>
-        // ... (Copiar as funções de init, loadOwnerStores, selectStore, etc. que enviaste) ...
-
-        // ATUALIZAÇÃO: Renderizar Drones como CARDS
-        function renderDrones() {
-            const list = document.getElementById('dronesList');
-            document.getElementById('droneCount').textContent = `(${state.drones.length})`;
-            
-            if (!state.drones.length) {
-                list.innerHTML = '<div class="glass-panel">Nenhum drone em operação.</div>';
-                return;
-            }
-
-            list.innerHTML = state.drones.map(d => `
-                <div class="data-card" data-aos="fade-up">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <strong style="color: #1a3a5c;">✈️ ${d.name}</strong>
-                            <div style="font-size: 0.7rem; opacity: 0.5;">Capacidade: ${d.capacity}g</div>
-                        </div>
-                        <span class="status-pill" style="background: ${getStatusColor(d.status)}; color: white;">
-                            ${d.status}
-                        </span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function getStatusColor(status) {
-            const colors = { active: '#00ff96', shipping: '#00d4ff', pending: '#ffc800', inactive: '#ff4d4d' };
-            return colors[status] || '#ccc';
-        }
-
-        // ... (Repetir a lógica de render para Team e Orders usando o formato data-card) ...
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script src="app.js"></script>
+    <script src="dashboard.js"></script>
 </body>
 </html>

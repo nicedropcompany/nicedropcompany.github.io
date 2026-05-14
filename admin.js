@@ -147,7 +147,7 @@ async function loadStores() {
                 return `<div class="drone-item">
                     <span>${d.name}</span>
                     <span class="${dc}">${d.status.toUpperCase()}</span>
-                    <button class="btn-danger" onclick="deleteDrone(${d.id})">×</button>
+                    <button style="background:#ea580c;border:1px solid #ea580c;color:#fff;padding:4px 10px;font-size:0.65rem;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:1px;" onclick="deleteDrone(${d.id})">× Remover</button>
                 </div>`;
             }).join('')
             : '<div class="drone-item" style="color:#bbb;">Nenhum drone</div>';
@@ -160,9 +160,9 @@ async function loadStores() {
             <div class="store-card-meta">Owner: ${ownerNames} • ${s.service ? 'Ativa' : 'Inativa'}</div>
             <div class="store-card-meta">Cidade: ${s.city || '-'}</div>
             <div class="store-card-drones">${dronesHtml}</div>
-            <div class="store-card-actions" style="margin-top:10px;display:flex;gap:10px;">
-                ${hasCoords ? `<button class="btn-secondary" onclick="window.open('${mapUrl}','_blank')">🗺 Mapa</button>` : ''}
-                <button class="btn-danger" onclick="deleteStore(${s.id})">Apagar Loja</button>
+            <div class="store-card-actions" style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
+                ${hasCoords ? `<button style="background:#2563eb;border:1px solid #2563eb;color:#fff;padding:8px 14px;font-size:0.72rem;text-transform:uppercase;letter-spacing:1.2px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;" onclick="window.open('${mapUrl}','_blank')">🗺 Mapa</button>` : ''}
+                <button style="background:#dc2626;border:1px solid #dc2626;color:#fff;padding:8px 14px;font-size:0.72rem;text-transform:uppercase;letter-spacing:1.2px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;" onclick="deleteStore(${s.id})">Apagar Loja</button>
             </div>
         </div>`;
     }).join('');
