@@ -139,14 +139,6 @@
                 <div class="stat-block-number">—</div>
                 <div class="stat-block-label">Empresas<br>Conectadas</div>
             </div>
-            <div class="stat-block" id="stat-co2" data-target="73" data-suffix="%" data-static="true">
-                <div class="stat-block-number">—</div>
-                <div class="stat-block-label">Redução<br>de CO₂</div>
-            </div>
-            <div class="stat-block" id="stat-time" data-target="12" data-suffix="min" data-static="true">
-                <div class="stat-block-number">—</div>
-                <div class="stat-block-label">Tempo Médio<br>de Voo</div>
-            </div>
         </div>
     </section>
 
@@ -216,7 +208,7 @@
                 <p style="font-size: 0.7rem; letter-spacing: 3px; font-weight: 700; margin-bottom: 30px; opacity: 0.7;">Para Donos de Loja</p>
                 <h3 style="font-family: 'Bebas Neue'; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1; margin-bottom: 30px;">Junte-se<br>à Frota</h3>
                 <p style="opacity: 0.7; line-height: 1.7; margin-bottom: 40px; max-width: 360px; margin-left: auto; margin-right: auto;">Gira a logística do futuro. Opere nodes, monitorize frotas e faça parte da infraestrutura que está a redefinir o transporte urbano.</p>
-                <a href="auth.html?tab=signup" style="padding: 18px 50px; background:#fff; color:#000; border:2px solid #fff; font-size:0.78rem; letter-spacing:1.6px; text-transform:uppercase; font-weight:600; display:inline-flex; align-items:center; justify-content:center;">ENTRAR COMO DONO DE LOJA</a>
+                <a href="auth.html" style="padding: 18px 50px; background:#fff; color:#000; border:2px solid #fff; font-size:0.78rem; letter-spacing:1.6px; text-transform:uppercase; font-weight:600; display:inline-flex; align-items:center; justify-content:center;">ENTRAR COMO DONO DE LOJA</a>
             </div>
         </div>
     </section>
@@ -248,15 +240,11 @@
         }
         .tech-line {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            gap: 16px;
-            padding: 50px 0;
-            border-top: 1px solid rgba(0,0,0,0.12);
-        }
-        .tech-line:last-child {
-            border-bottom: 1px solid rgba(0,0,0,0.12);
+            align-items: flex-start;
+            justify-content: center;
+            gap: 60px;
+            padding: 60px 0;
+            text-align: left;
         }
         .tech-line p {
             margin: 0 auto;
@@ -266,6 +254,8 @@
             font-size: 1.2rem;
             letter-spacing: 2px;
             opacity: 0.25;
+            flex-shrink: 0;
+            padding-top: 10px;
         }
         .join-block {
             background: #fff;
@@ -343,9 +333,7 @@
                 const updates = {
                     'stat-drones':   dronesActive,
                     'stat-shipping': dronesShipping,
-                    'stat-stores':   totalStores,
-                    'stat-co2':      73,
-                    'stat-time':     12
+                    'stat-stores':   totalStores
                 };
 
                 Object.entries(updates).forEach(([id, value]) => {
