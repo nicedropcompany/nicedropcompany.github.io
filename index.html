@@ -177,11 +177,7 @@
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2px; margin-top: 60px;" data-aos="fade-up" data-aos-delay="100">
             <div class="stat-block" id="stat-drones" data-target="0" data-suffix="">
                 <div class="stat-block-number">—</div>
-                <div class="stat-block-label">Drones em<br>Operação</div>
-            </div>
-            <div class="stat-block" id="stat-shipping" data-target="0" data-suffix="">
-                <div class="stat-block-number">—</div>
-                <div class="stat-block-label">Encomendas<br>em Trânsito</div>
+                <div class="stat-block-label">Drones<br>Totais</div>
             </div>
             <div class="stat-block" id="stat-stores" data-target="0" data-suffix="">
                 <div class="stat-block-number">—</div>
@@ -313,13 +309,11 @@
                     sb.from('stores').select('id')
                 ]);
 
-                const dronesActive = (drones || []).filter(d => d.status === 'active' || d.status === 'shipping').length;
-                const dronesShipping = (drones || []).filter(d => d.status === 'shipping').length;
+                const totalDrones = (drones || []).length;
                 const totalStores = (stores || []).length;
 
                 const updates = {
-                    'stat-drones':   dronesActive,
-                    'stat-shipping': dronesShipping,
+                    'stat-drones':   totalDrones,
                     'stat-stores':   totalStores
                 };
 
