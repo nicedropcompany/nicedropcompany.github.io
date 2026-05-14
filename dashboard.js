@@ -1,8 +1,10 @@
 function parseStoreIds(raw) {
     if (!raw) return [];
-    if (Array.isArray(raw)) return raw;
-    if (typeof raw === 'number') return [raw];
-    try { const p = JSON.parse(raw); return Array.isArray(p) ? p : [p]; } catch { return []; }
+    let arr;
+    if (Array.isArray(raw)) arr = raw;
+    else if (typeof raw === 'number') arr = [raw];
+    else { try { const p = JSON.parse(raw); arr = Array.isArray(p) ? p : [p]; } catch { return []; } }
+    return arr.map(Number);
 }
 
 async function appendStoreId(userId, storeId) {
@@ -12,7 +14,8 @@ async function appendStoreId(userId, storeId) {
         .eq('id', userId)
         .single();
     const ids = parseStoreIds(profile?.store_id);
-    if (!ids.includes(storeId)) ids.push(storeId);
+    const numId = Number(storeId);
+    if (!ids.includes(numId)) ids.push(numId);
     return ids;
 }
 
@@ -104,9 +107,10 @@ async function loadStoreData(storeId) {
         .select('id, username, role, store_id')
         .in('role', ['operator', 'owner']);
 
+    const numId = Number(storeId);
     const team = (allProfiles || []).filter(p => {
         const ids = parseStoreIds(p.store_id);
-        return ids.includes(storeId);
+        return ids.includes(numId);
     });
 
     state.drones = drones || [];
