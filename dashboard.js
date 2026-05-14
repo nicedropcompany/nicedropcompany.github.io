@@ -1,3 +1,21 @@
+function parseStoreIds(raw) {
+    if (!raw) return [];
+    if (Array.isArray(raw)) return raw;
+    if (typeof raw === 'number') return [raw];
+    try { const p = JSON.parse(raw); return Array.isArray(p) ? p : [p]; } catch { return []; }
+}
+
+async function appendStoreId(userId, storeId) {
+    const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('store_id')
+        .eq('id', userId)
+        .single();
+    const ids = parseStoreIds(profile?.store_id);
+    if (!ids.includes(storeId)) ids.push(storeId);
+    return ids;
+}
+
 function waitForSupabase(cb) {
     if (window.supabase?.createClient) { cb(); }
     else { setTimeout(() => waitForSupabase(cb), 50); }
@@ -195,16 +213,15 @@ function renderMain() {
                 alert('Utilizador não encontrado');
                 return;
             }
-            // Update profile
+            const ids = await appendStoreId(user.id, state.currentStoreId);
             const { error } = await supabaseClient
                 .from('profiles')
-                .update({ store_id: state.currentStoreId, role: 'operator' })
+                .update({ store_id: ids, role: 'operator' })
                 .eq('id', user.id);
             if (error) {
                 alert('Erro ao adicionar funcionário: ' + error.message);
                 return;
             }
-            // Reload team
             await loadStoreData(state.currentStoreId);
             renderMain();
         });
@@ -240,11 +257,16 @@ function renderMain() {
         });
     }
 
-// Função para remover membro da loja
 async function removeMember(userId) {
+    const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('store_id')
+        .eq('id', userId)
+        .single();
+    const ids = parseStoreIds(profile?.store_id).filter(id => id !== state.currentStoreId);
     const { error } = await supabaseClient
         .from('profiles')
-        .update({ store_id: null, role: 'client' })
+        .update({ store_id: ids.length ? ids : null, role: ids.length ? 'operator' : 'client' })
         .eq('id', userId);
     if (error) {
         alert('Erro ao remover membro: ' + error.message);
@@ -289,16 +311,15 @@ function bindEvents() {
                 errorDiv.textContent = 'Utilizador não encontrado';
                 return;
             }
-            // Atualizar perfil
+            const ids = await appendStoreId(user.id, state.currentStoreId);
             const { error } = await supabaseClient
                 .from('profiles')
-                .update({ store_id: state.currentStoreId, role: 'operator' })
+                .update({ store_id: ids, role: 'operator' })
                 .eq('id', user.id);
             if (error) {
                 errorDiv.textContent = 'Erro ao adicionar operador: ' + error.message;
                 return;
             }
-            // Fechar modal, limpar campo e recarregar equipa
             closeModal('addOperatorModal');
             emailInput.value = '';
             await loadStoreData(state.currentStoreId);

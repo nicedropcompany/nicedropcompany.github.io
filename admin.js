@@ -147,7 +147,7 @@ async function loadStores() {
                 return `<div class="drone-item">
                     <span>${d.name}</span>
                     <span class="${dc}">${d.status.toUpperCase()}</span>
-                    <button style="background:#ea580c;border:1px solid #ea580c;color:#fff;padding:4px 10px;font-size:0.65rem;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:1px;" onclick="deleteDrone(${d.id})">× Remover</button>
+                    <button style="background:#dc2626;border:2px solid #dc2626;color:#fff;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:14px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;" onclick="deleteDrone(${d.id})" title="Remover drone">×</button>
                 </div>`;
             }).join('')
             : '<div class="drone-item" style="color:#bbb;">Nenhum drone</div>';
@@ -161,8 +161,8 @@ async function loadStores() {
             <div class="store-card-meta">Cidade: ${s.city || '-'}</div>
             <div class="store-card-drones">${dronesHtml}</div>
             <div class="store-card-actions" style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
-                ${hasCoords ? `<button style="background:#2563eb;border:1px solid #2563eb;color:#fff;padding:8px 14px;font-size:0.72rem;text-transform:uppercase;letter-spacing:1.2px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;" onclick="window.open('${mapUrl}','_blank')">🗺 Mapa</button>` : ''}
-                <button style="background:#dc2626;border:1px solid #dc2626;color:#fff;padding:8px 14px;font-size:0.72rem;text-transform:uppercase;letter-spacing:1.2px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;" onclick="deleteStore(${s.id})">Apagar Loja</button>
+                ${hasCoords ? `<button style="background:rgba(255,255,255,0.7);border:1px solid rgba(0,0,0,0.15);color:#000;padding:8px 16px;font-size:1rem;cursor:pointer;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:6px;border-radius:0;" onclick="window.open('${mapUrl}','_blank')">🗺</button>` : ''}
+                <button style="background:#dc2626;border:1px solid #dc2626;color:#fff;padding:8px 16px;font-size:0.72rem;text-transform:uppercase;letter-spacing:1.2px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;border-radius:0;" onclick="deleteStore(${s.id})">Apagar Loja</button>
             </div>
         </div>`;
     }).join('');
