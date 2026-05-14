@@ -8,12 +8,15 @@
     <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="supabase-config.js"></script>
     <style>
         /* Estrutura de Espaçamento */
         section {
-            padding: 180px 40px; /* Muito espaço entre secções */
+            padding: 180px 40px;
             max-width: 1400px;
             margin: 0 auto;
+            text-align: center;
         }
 
         .full-screen {
@@ -95,11 +98,11 @@
 
     <section>
         <div style="display: flex; justify-content: space-around; align-items: center;">
-            <div data-aos="fade-right">
+            <div data-aos="fade-right" style="text-align: center;">
                 <div class="big-number">12</div>
                 <p style="letter-spacing: 2px; font-weight: 700; opacity: 0.6;">MINUTOS DE MÉDIA</p>
             </div>
-            <div data-aos="fade-left" data-aos-delay="200">
+            <div data-aos="fade-left" data-aos-delay="200" style="text-align: center;">
                 <div class="big-number">38</div>
                 <p style="letter-spacing: 2px; font-weight: 700; opacity: 0.6;">NODES OPERACIONAIS</p>
             </div>
@@ -124,24 +127,24 @@
     <section id="live-stats" style="text-align: center;">
         <span class="sub-headline" data-aos="fade-up">Live_Network</span>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2px; margin-top: 60px;" data-aos="fade-up" data-aos-delay="100">
-            <div class="stat-block" data-target="47" data-suffix="">
-                <div class="stat-block-number">0</div>
+            <div class="stat-block" id="stat-drones" data-target="0" data-suffix="">
+                <div class="stat-block-number">—</div>
                 <div class="stat-block-label">Drones em<br>Operação</div>
             </div>
-            <div class="stat-block" data-target="312" data-suffix="">
-                <div class="stat-block-number">0</div>
+            <div class="stat-block" id="stat-shipping" data-target="0" data-suffix="">
+                <div class="stat-block-number">—</div>
                 <div class="stat-block-label">Encomendas<br>em Trânsito</div>
             </div>
-            <div class="stat-block" data-target="38" data-suffix="">
-                <div class="stat-block-number">0</div>
+            <div class="stat-block" id="stat-stores" data-target="0" data-suffix="">
+                <div class="stat-block-number">—</div>
                 <div class="stat-block-label">Empresas<br>Conectadas</div>
             </div>
-            <div class="stat-block" data-target="73" data-suffix="%">
-                <div class="stat-block-number">0</div>
+            <div class="stat-block" id="stat-co2" data-target="73" data-suffix="%" data-static="true">
+                <div class="stat-block-number">—</div>
                 <div class="stat-block-label">Redução<br>de CO₂</div>
             </div>
-            <div class="stat-block" data-target="12" data-suffix="min">
-                <div class="stat-block-number">0</div>
+            <div class="stat-block" id="stat-time" data-target="12" data-suffix="min" data-static="true">
+                <div class="stat-block-number">—</div>
                 <div class="stat-block-label">Tempo Médio<br>de Voo</div>
             </div>
         </div>
@@ -151,7 +154,7 @@
     <section id="vision">
         <span class="sub-headline" data-aos="fade-up">The Vision</span>
         <h2 class="huge-title" data-aos="fade-up" data-aos-delay="100" style="margin-top: 40px;">O CÉU É A<br>NOVA<br>INFRAESTRUTURA</h2>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-top: 100px;" data-aos="fade-up" data-aos-delay="200">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-top: 100px; text-align: center;" data-aos="fade-up" data-aos-delay="200">
             <div>
                 <p style="font-size: 0.75rem; letter-spacing: 3px; font-weight: 700; margin-bottom: 20px; text-transform: uppercase;">O Problema</p>
                 <p style="font-size: 1.4rem; font-family: 'DM Sans'; line-height: 1.6; color: #000; font-weight: 400;">O trânsito urbano estrangula o comércio e o planeta. Cada entrega de última milha custa tempo, combustível e emissões que o sistema não consegue suportar.</p>
@@ -207,13 +210,13 @@
                 <p style="font-size: 0.7rem; letter-spacing: 3px; font-weight: 700; margin-bottom: 30px; opacity: 0.5;">Para Empresas</p>
                 <h3 style="font-family: 'Bebas Neue'; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1; margin-bottom: 30px;">Torne-se um<br>Node Oficial</h3>
                 <p style="opacity: 0.7; line-height: 1.7; margin-bottom: 40px; max-width: 360px; margin-left: auto; margin-right: auto;">Comece a expedir via ar. Reduza custos logísticos, elimine atrasos e junte-se à rede de distribuição autónoma mais rápida do mercado.</p>
-                <a href="auth.html" class="btn-primary" style="padding: 18px 50px;">REGISTAR EMPRESA</a>
+                <a href="auth.html?tab=signup" class="btn-primary" style="padding: 18px 50px;">REGISTAR EMPRESA</a>
             </div>
             <div class="join-block join-block-inv">
-                <p style="font-size: 0.7rem; letter-spacing: 3px; font-weight: 700; margin-bottom: 30px; opacity: 0.7;">Para Operadores</p>
+                <p style="font-size: 0.7rem; letter-spacing: 3px; font-weight: 700; margin-bottom: 30px; opacity: 0.7;">Para Donos de Loja</p>
                 <h3 style="font-family: 'Bebas Neue'; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1; margin-bottom: 30px;">Junte-se<br>à Frota</h3>
                 <p style="opacity: 0.7; line-height: 1.7; margin-bottom: 40px; max-width: 360px; margin-left: auto; margin-right: auto;">Gira a logística do futuro. Opere nodes, monitorize frotas e faça parte da infraestrutura que está a redefinir o transporte urbano.</p>
-                <a href="auth.html" class="btn-outline" style="padding: 18px 50px;">ENTRAR COMO OPERADOR</a>
+                <a href="auth.html?tab=signup" style="padding: 18px 50px; background:#fff; color:#000; border:2px solid #fff; font-size:0.78rem; letter-spacing:1.6px; text-transform:uppercase; font-weight:600; display:inline-flex; align-items:center; justify-content:center;">ENTRAR COMO DONO DE LOJA</a>
             </div>
         </div>
     </section>
@@ -245,21 +248,24 @@
         }
         .tech-line {
             display: flex;
-            align-items: flex-start;
-            gap: 60px;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 16px;
             padding: 50px 0;
             border-top: 1px solid rgba(0,0,0,0.12);
         }
         .tech-line:last-child {
             border-bottom: 1px solid rgba(0,0,0,0.12);
         }
+        .tech-line p {
+            margin: 0 auto;
+        }
         .tech-num {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 1.2rem;
             letter-spacing: 2px;
             opacity: 0.25;
-            flex-shrink: 0;
-            padding-top: 10px;
         }
         .join-block {
             background: #fff;
@@ -287,28 +293,77 @@
     <script>
         AOS.init({ duration: 1200, once: true });
 
-        // Counter animation
-        const counters = document.querySelectorAll('.stat-block');
+        // Counter animation — arranca depois de setar data-target
+        function animateCounter(block) {
+            const target = +block.dataset.target;
+            const suffix = block.dataset.suffix || '';
+            const el = block.querySelector('.stat-block-number');
+            if (!target) { el.textContent = '0' + suffix; return; }
+            const step = Math.ceil(target / (1800 / 16));
+            let current = 0;
+            const tick = () => {
+                current = Math.min(current + step, target);
+                el.textContent = current + suffix;
+                if (current < target) requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+        }
+
         const counterObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (!entry.isIntersecting) return;
                 const block = entry.target;
-                const target = +block.dataset.target;
-                const suffix = block.dataset.suffix || '';
-                const el = block.querySelector('.stat-block-number');
-                const duration = 1800;
-                const step = Math.ceil(target / (duration / 16));
-                let current = 0;
-                const tick = () => {
-                    current = Math.min(current + step, target);
-                    el.textContent = current + suffix;
-                    if (current < target) requestAnimationFrame(tick);
-                };
-                requestAnimationFrame(tick);
-                counterObserver.unobserve(block);
+                if (block.dataset.ready === 'true') {
+                    animateCounter(block);
+                    counterObserver.unobserve(block);
+                }
             });
         }, { threshold: 0.3 });
-        counters.forEach(c => counterObserver.observe(c));
+        document.querySelectorAll('.stat-block').forEach(c => counterObserver.observe(c));
+
+        // Fetch dados reais da BD
+        async function loadLiveStats() {
+            function waitForSupabase(cb) {
+                if (window.supabase?.createClient) cb();
+                else setTimeout(() => waitForSupabase(cb), 50);
+            }
+            waitForSupabase(async () => {
+                const sb = window.supabaseConfig.init();
+                if (!sb) return;
+
+                const [{ data: drones }, { data: stores }] = await Promise.all([
+                    sb.from('drones').select('id, status'),
+                    sb.from('stores').select('id')
+                ]);
+
+                const dronesActive = (drones || []).filter(d => d.status === 'active' || d.status === 'shipping').length;
+                const dronesShipping = (drones || []).filter(d => d.status === 'shipping').length;
+                const totalStores = (stores || []).length;
+
+                const updates = {
+                    'stat-drones':   dronesActive,
+                    'stat-shipping': dronesShipping,
+                    'stat-stores':   totalStores,
+                    'stat-co2':      73,
+                    'stat-time':     12
+                };
+
+                Object.entries(updates).forEach(([id, value]) => {
+                    const block = document.getElementById(id);
+                    if (!block) return;
+                    block.dataset.target = value;
+                    block.dataset.ready = 'true';
+                    // Se o bloco já estiver visível no viewport, animar imediatamente
+                    const rect = block.getBoundingClientRect();
+                    const inView = rect.top < window.innerHeight && rect.bottom > 0;
+                    if (inView) {
+                        animateCounter(block);
+                        counterObserver.unobserve(block);
+                    }
+                });
+            });
+        }
+        loadLiveStats();
 
         // PWA Install
         let deferredPrompt;
