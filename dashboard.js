@@ -186,7 +186,7 @@ function renderMain() {
                 <div class="drone-row">
                     <div class="drone-name">${d.name}</div>
                     <span class="drone-status-badge ${d.status}" style="background:${statusColors[d.status] || '#bbb'};color:#fff;padding:2px 10px;border-radius:12px;">${d.status.toUpperCase()}</span>
-                    <div>${d.capacity} kg</div>
+                    <div>${d.capacity} g</div>
                 </div>`).join('') : '<div class="empty-state-text">SEM DRONES</div>'}
         </div>
         <div class="detail-card">
