@@ -1,178 +1,241 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pt-PT">
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<title>NiceDrop App | Download</title>
-
-<link rel="stylesheet" href="style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NiceDrop | App Download</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        section {
+            padding: 180px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .full-screen {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .huge-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(6rem, 15vw, 10rem);
+            line-height: 0.8;
+            color: #000;
+            letter-spacing: -4px;
+        }
+        .sub-headline {
+            font-size: 1.1rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .nav-fixed {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 30px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+        .tech-line {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 60px;
+            padding: 60px 0;
+            text-align: left;
+            border-top: 1px solid rgba(0,0,0,0.08);
+        }
+        .tech-line:last-child {
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+        .tech-line p {
+            margin: 0 auto;
+        }
+        .tech-num {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            opacity: 0.25;
+            flex-shrink: 0;
+            padding-top: 10px;
+        }
+        .download-block {
+            background: #000;
+            color: #fff;
+            padding: 80px 40px;
+            text-align: center;
+        }
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2px;
+            margin-top: 60px;
+        }
+        .platform-card {
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.12);
+            padding: 50px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .platform-card-inv {
+            background: #000;
+            color: #fff;
+            border-color: #000;
+        }
+        .platform-icon {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 4rem;
+            line-height: 1;
+            opacity: 0.15;
+        }
+        @media (max-width: 768px) {
+            .tech-line { flex-direction: column; gap: 20px; }
+        }
+    </style>
 </head>
-
-<body class="app-page">
-
-<header class="navbar">
-
-<a href="index.html#top" class="logo-wrap">
-<img src="nicedrop.png" class="logo" alt="NiceDrop logo">
-</a>
-
-<nav class="nav-links">
-
-<a href="index.html#problem">Problem</a>
-<a href="index.html#solution">Solution</a>
-<a href="index.html#technology">Technology</a>
-<a href="index.html#future">Future</a>
-
-</nav>
-
-</header>
-
-
-<main>
-
-<section class="hero fade-section">
-
-<div class="hero-left reveal reveal-left">
-
-<p class="tag">NICEDROP MOBILE APP</p>
-
-<h1>DOWNLOAD</h1>
-
-<h2>Get the NiceDrop App</h2>
-
-<p class="hero-text">
-
-Download the NiceDrop mobile app to order from local businesses
-with autonomous drone delivery.
-
-Track drones live, schedule deliveries and receive packages
-faster than traditional delivery systems.
-
-</p>
-
-<div class="buttons">
-
-<button class="btn">Download for iOS</button>
-
-<button class="btn-outline">Download for Android</button>
-
-<button class="btn-outline">Download APK</button>
-
-</div>
-
-</div>
-
-
-<div class="hero-right reveal reveal-right">
-
-<div class="panel reveal" style="--delay:0.08s">
-
-<p>APP VERSION</p>
-<h3>1.0</h3>
-
-</div>
-
-<div class="panel reveal" style="--delay:0.16s">
-
-<p>SUPPORTED DEVICES</p>
-<h3>iOS / Android</h3>
-
-</div>
-
-<div class="panel reveal" style="--delay:0.24s">
-
-<p>STATUS</p>
-<h3>AVAILABLE</h3>
-
-</div>
-
-</div>
-
-</section>
-
-
-
-<section class="section fade-section">
-
-<h2 class="center reveal reveal-up">APP FEATURES</h2>
-
-<div class="grid">
-
-<div class="card reveal reveal-up" style="--delay:0.08s">LIVE DRONE TRACKING</div>
-
-<div class="card reveal reveal-up" style="--delay:0.16s">LOCAL BUSINESS MARKETPLACE</div>
-
-<div class="card reveal reveal-up" style="--delay:0.24s">SMART DELIVERY SCHEDULING</div>
-
-<div class="card reveal reveal-up" style="--delay:0.32s">ULTRA FAST DRONE DELIVERY</div>
-
-</div>
-
-</section>
-
-
-
-<section class="section fade-section">
-
-<h2 class="center reveal reveal-up">HOW THE APP WORKS</h2>
-
-<div class="grid">
-
-<div class="card reveal reveal-left" style="--delay:0.08s">1 CHOOSE A LOCAL BUSINESS</div>
-
-<div class="card reveal reveal-left" style="--delay:0.16s">2 PLACE YOUR ORDER</div>
-
-<div class="card reveal reveal-right" style="--delay:0.24s">3 DRONE PICKS UP PACKAGE</div>
-
-<div class="card reveal reveal-right" style="--delay:0.32s">4 DELIVERY ARRIVES IN MINUTES</div>
-
-</div>
-
-</section>
-
-
-
-<section class="section future fade-section">
-
-<h2 class="reveal reveal-up">DOWNLOAD THE APP</h2>
-
-<p class="reveal reveal-up" style="--delay:0.12s">
-
-Start using the NiceDrop app today and experience the future
-of autonomous drone delivery.
-
-</p>
-
-<div class="buttons" style="justify-content:center;margin-top:40px;">
-
-<button class="btn">App Store</button>
-
-<button class="btn-outline">Google Play</button>
-
-<button class="btn-outline">APK Download</button>
-
-</div>
-
-</section>
-
-
-
-<footer>
-
-<img src="nicedrop.png" class="footer-logo">
-
-<p>NiceDrop © 2026 — Future Autonomous Delivery</p>
-
-</footer>
-
-</main>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js"></script>
-
+<body class="sky-mode">
+
+    <nav class="nav-fixed">
+        <a href="index.html"><img src="nicedrop.png" alt="NiceDrop" style="height: 35px;"></a>
+        <div style="display:flex;gap:10px;align-items:center;">
+            <a href="index.html" class="btn-outline" style="padding: 12px 28px;">INÍCIO</a>
+            <a href="auth.html" class="btn-primary" style="padding: 12px 40px;">DASHBOARD</a>
+        </div>
+    </nav>
+
+    <header class="full-screen">
+        <div style="text-align: center;" data-aos="fade-up">
+            <span class="sub-headline">NiceDrop Mobile App</span>
+            <h1 class="huge-title">DOWNLOAD<br>A APP</h1>
+            <div style="margin-top: 50px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+                <a href="#ios" class="btn-primary" style="padding: 18px 50px; font-size: 1rem;">APP STORE</a>
+                <a href="#android" class="btn-outline" style="padding: 18px 50px; font-size: 1rem;">GOOGLE PLAY</a>
+            </div>
+        </div>
+    </header>
+
+    <section style="text-align: center;">
+        <p data-aos="fade-up" style="font-size: 2.5rem; font-family: 'DM Sans'; color: #000; max-width: 900px; margin: 0 auto; font-weight: 400; line-height: 1.4;">
+            Encomendes às empresas locais. Rastreias o drone em tempo real. Recebes em minutos.
+        </p>
+    </section>
+
+    <section>
+        <span class="sub-headline" data-aos="fade-up">Funcionalidades</span>
+        <div style="margin-top: 80px;">
+            <div class="tech-line" data-aos="fade-up" data-aos-delay="0">
+                <span class="tech-num">01</span>
+                <div>
+                    <h3 style="font-family: 'Bebas Neue'; font-size: 3rem; letter-spacing: 2px;">Rastreio ao Vivo</h3>
+                    <p style="opacity: 0.6; line-height: 1.8; max-width: 600px; margin-top: 8px;">Vê o teu drone em tempo real no mapa. Altitude, velocidade e tempo estimado de chegada atualizados ao segundo.</p>
+                </div>
+            </div>
+            <div class="tech-line" data-aos="fade-up" data-aos-delay="100">
+                <span class="tech-num">02</span>
+                <div>
+                    <h3 style="font-family: 'Bebas Neue'; font-size: 3rem; letter-spacing: 2px;">Marketplace Local</h3>
+                    <p style="opacity: 0.6; line-height: 1.8; max-width: 600px; margin-top: 8px;">Descobre e encomena das melhores empresas locais ligadas à rede NiceDrop. Produtos frescos, rápidos e autónomos.</p>
+                </div>
+            </div>
+            <div class="tech-line" data-aos="fade-up" data-aos-delay="200">
+                <span class="tech-num">03</span>
+                <div>
+                    <h3 style="font-family: 'Bebas Neue'; font-size: 3rem; letter-spacing: 2px;">Entrega Inteligente</h3>
+                    <p style="opacity: 0.6; line-height: 1.8; max-width: 600px; margin-top: 8px;">Agenda entregas, define a janela horária e deixa o sistema otimizar a rota automaticamente. Zero burocracia.</p>
+                </div>
+            </div>
+            <div class="tech-line" data-aos="fade-up" data-aos-delay="300">
+                <span class="tech-num">04</span>
+                <div>
+                    <h3 style="font-family: 'Bebas Neue'; font-size: 3rem; letter-spacing: 2px;">Ultra Rápido</h3>
+                    <p style="opacity: 0.6; line-height: 1.8; max-width: 600px; margin-top: 8px;">Média de 12 minutos da encomenda à entrega. Sem semáforos, sem trânsito, sem desculpas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="how">
+        <span class="sub-headline" data-aos="fade-up">Como Funciona</span>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2px; margin-top: 80px;" data-aos="fade-up" data-aos-delay="100">
+            <div style="background: #000; color: #fff; padding: 60px 30px; text-align: center;">
+                <div style="font-family: 'Bebas Neue'; font-size: 5rem; line-height: 1; opacity: 0.2;">01</div>
+                <h3 style="font-family: 'Bebas Neue'; font-size: 1.8rem; margin: 20px 0 12px;">Escolhe uma Empresa</h3>
+                <p style="opacity: 0.6; font-size: 0.9rem; line-height: 1.7;">Navega no marketplace e seleciona o que precisas.</p>
+            </div>
+            <div style="background: #fff; border: 1px solid rgba(0,0,0,0.1); padding: 60px 30px; text-align: center;">
+                <div style="font-family: 'Bebas Neue'; font-size: 5rem; line-height: 1; opacity: 0.1;">02</div>
+                <h3 style="font-family: 'Bebas Neue'; font-size: 1.8rem; margin: 20px 0 12px;">Faz a Encomenda</h3>
+                <p style="opacity: 0.6; font-size: 0.9rem; line-height: 1.7;">Em dois toques, encomenda confirmada e processada.</p>
+            </div>
+            <div style="background: #000; color: #fff; padding: 60px 30px; text-align: center;">
+                <div style="font-family: 'Bebas Neue'; font-size: 5rem; line-height: 1; opacity: 0.2;">03</div>
+                <h3 style="font-family: 'Bebas Neue'; font-size: 1.8rem; margin: 20px 0 12px;">Drone em Voo</h3>
+                <p style="opacity: 0.6; font-size: 0.9rem; line-height: 1.7;">O drone levanta voo automaticamente e segue a rota otimizada.</p>
+            </div>
+            <div style="background: #fff; border: 1px solid rgba(0,0,0,0.1); padding: 60px 30px; text-align: center;">
+                <div style="font-family: 'Bebas Neue'; font-size: 5rem; line-height: 1; opacity: 0.1;">04</div>
+                <h3 style="font-family: 'Bebas Neue'; font-size: 1.8rem; margin: 20px 0 12px;">Entregue em Minutos</h3>
+                <p style="opacity: 0.6; font-size: 0.9rem; line-height: 1.7;">Recebe a encomenda diretamente no ponto de entrega designado.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="ios">
+        <span class="sub-headline" data-aos="fade-up">Plataformas</span>
+        <h2 class="huge-title" data-aos="fade-up" data-aos-delay="100" style="margin-top: 40px;">DISPONÍVEL<br>AGORA</h2>
+        <div class="platform-grid" data-aos="fade-up" data-aos-delay="200" style="margin-top: 80px;">
+            <div class="platform-card">
+                <div class="platform-icon">iOS</div>
+                <p style="font-size: 0.7rem; letter-spacing: 3px; font-weight: 700; opacity: 0.5;">APPLE</p>
+                <h3 style="font-family: 'Bebas Neue'; font-size: 2.2rem;">App Store</h3>
+                <p style="opacity: 0.6; font-size: 0.9rem; line-height: 1.6;">Compatível com iPhone e iPad.<br>iOS 15 ou superior.</p>
+                <a href="#" class="btn-primary" style="padding: 16px 40px; width: 100%; text-align: center;">DOWNLOAD</a>
+            </div>
+            <div class="platform-card platform-card-inv" id="android">
+                <div class="platform-icon" style="opacity:0.2; color:#fff;">APK</div>
+                <p style="font-size: 0.7rem; letter-spacing: 3px; font-weight: 700; opacity: 0.5;">GOOGLE</p>
+                <h3 style="font-family: 'Bebas Neue'; font-size: 2.2rem; color: #fff;">Google Play</h3>
+                <p style="opacity: 0.6; font-size: 0.9rem; line-height: 1.6;">Compatível com Android 9+.<br>Disponível na Play Store.</p>
+                <a href="#" class="btn-inv" style="padding: 16px 40px; width: 100%; text-align: center; font-size: 0.78rem; letter-spacing: 1.6px; font-weight: 600;">DOWNLOAD</a>
+            </div>
+            <div class="platform-card">
+                <div class="platform-icon">APK</div>
+                <p style="font-size: 0.7rem; letter-spacing: 3px; font-weight: 700; opacity: 0.5;">SIDELOAD</p>
+                <h3 style="font-family: 'Bebas Neue'; font-size: 2.2rem;">APK Direto</h3>
+                <p style="opacity: 0.6; font-size: 0.9rem; line-height: 1.6;">Instala diretamente no Android.<br>Versão mais recente disponível.</p>
+                <a href="#" class="btn-outline" style="padding: 16px 40px; width: 100%; text-align: center;">DOWNLOAD APK</a>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding-bottom: 80px;">
+        <div style="background: #000; color: #fff; padding: 120px 40px; text-align: center;">
+            <span class="sub-headline" data-aos="fade-up" style="color: rgba(255,255,255,0.4);">Versão Atual</span>
+            <h2 class="huge-title" data-aos="fade-up" data-aos-delay="100" style="color: #fff; margin-top: 20px;">V 1.0</h2>
+            <p data-aos="fade-up" data-aos-delay="200" style="font-size: 1.1rem; opacity: 0.5; margin-top: 30px; letter-spacing: 2px;">iOS / ANDROID / APK — DISPONÍVEL</p>
+        </div>
+    </section>
+
+    <footer style="padding: 100px 50px; opacity: 0.3; font-size: 0.7rem; font-weight: 700; letter-spacing: 3px; text-align: center;">
+        NICEDROP / 2026 / PORTUGAL
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1200, once: true });
+    </script>
 </body>
 </html>
