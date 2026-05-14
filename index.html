@@ -53,6 +53,8 @@
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
+            box-sizing: border-box;
+            max-width: 100vw;
         }
         .stat-block {
             background: #000;
@@ -114,7 +116,8 @@
         @media (max-width: 768px) {
             section { padding: 80px 24px; }
             .nav-fixed { padding: 16px 20px; }
-            .nav-fixed .btn-primary { padding: 10px 14px !important; font-size: 0.7rem !important; letter-spacing: 1px !important; }
+            .nav-fixed > div { flex-wrap: wrap; justify-content: flex-end; max-width: 60vw; }
+            .nav-fixed .btn-primary { padding: 8px 14px !important; font-size: 0.68rem !important; letter-spacing: 0.8px !important; }
             .huge-title { letter-spacing: -2px; }
             .tech-line { flex-direction: column; gap: 20px; }
             .join-block { padding: 50px 24px !important; }
@@ -128,8 +131,7 @@
     <nav class="nav-fixed">
         <a href="index.html"><img src="nicedrop.png" alt="NiceDrop" style="height: 35px;"></a>
         <div style="display:flex;gap:10px;align-items:center;">
-            <button id="installBtn" class="btn-outline" style="display:none;padding:12px 28px;">INSTALAR APP</button>
-            <a href="download.html" class="btn-primary" style="padding: 12px 28px;">APP</a>
+<a href="download.html" class="btn-primary" style="padding: 12px 28px;">APP</a>
             <a href="auth.html" class="btn-primary" style="padding: 12px 40px;">DASHBOARD</a>
         </div>
     </nav>
@@ -321,27 +323,6 @@
         }
         loadLiveStats();
 
-        // PWA Install
-        let deferredPrompt;
-        const installBtn = document.getElementById('installBtn');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'inline-flex';
-        });
-
-        installBtn.addEventListener('click', async () => {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') installBtn.style.display = 'none';
-            deferredPrompt = null;
-        });
-
-        window.addEventListener('appinstalled', () => {
-            installBtn.style.display = 'none';
-        });
     </script>
 </body>
 </html>

@@ -27,16 +27,20 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  min-width: 0;
 }
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
   font-family: 'DM Sans', sans-serif;
   color: var(--ink);
   min-height: 100vh;
+  max-width: 100%;
+  overflow-x: hidden;
   background: url('sky.png') no-repeat center center fixed;
   background-size: cover;
   text-rendering: optimizeLegibility;
@@ -1405,12 +1409,7 @@ footer {
     display: none;
   }
 
-  .auth-container {
-    grid-template-columns: 1fr;
-    padding-top: 0;
-  }
-
-  .sidebar {
+.sidebar {
     flex-direction: row;
     flex-wrap: wrap;
     padding: 10px 16px;
@@ -1442,6 +1441,11 @@ footer {
   .sidebar-logout {
     margin-left: auto;
     align-self: center;
+  }
+
+  .sidebar-logout button,
+  .sidebar-logout #logoutBtn {
+    width: auto;
   }
 
   .main-area {
