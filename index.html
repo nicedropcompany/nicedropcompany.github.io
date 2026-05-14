@@ -112,7 +112,12 @@
             border-color: #000;
         }
         @media (max-width: 768px) {
+            section { padding: 80px 24px; }
+            .nav-fixed { padding: 16px 20px; }
+            .nav-fixed .btn-primary { padding: 10px 14px !important; font-size: 0.7rem !important; letter-spacing: 1px !important; }
+            .huge-title { letter-spacing: -2px; }
             .tech-line { flex-direction: column; gap: 20px; }
+            .join-block { padding: 50px 24px !important; }
             section[id="vision"] > div:last-child,
             section[id="join-network"] > div:last-child { grid-template-columns: 1fr !important; }
         }
@@ -145,32 +150,6 @@
         </p>
     </section>
 
-    <section>
-        <div style="display: flex; justify-content: space-around; align-items: center;">
-            <div data-aos="fade-right" style="text-align: center;">
-                <div class="big-number">12</div>
-                <p style="letter-spacing: 2px; font-weight: 700; opacity: 0.6;">MINUTOS DE MÉDIA</p>
-            </div>
-            <div data-aos="fade-left" data-aos-delay="200" style="text-align: center;">
-                <div class="big-number">38</div>
-                <p style="letter-spacing: 2px; font-weight: 700; opacity: 0.6;">NODES OPERACIONAIS</p>
-            </div>
-        </div>
-    </section>
-
-    <section id="tech" style="text-align: center;">
-        <span class="sub-headline">The Stack</span>
-        <div style="display: flex; justify-content: center; gap: 100px; flex-wrap: wrap; margin-top: 100px;">
-            <div data-aos="fade-up">
-                <h3 style="font-family: 'Bebas Neue'; font-size: 3rem;">WEB SOCKETS</h3>
-                <p style="opacity: 0.7; line-height: 1.8; max-width: 400px;">Monitorização constante de frota e telemetria em tempo real para precisão absoluta.</p>
-            </div>
-            <div data-aos="fade-up" data-aos-delay="200">
-                <h3 style="font-family: 'Bebas Neue'; font-size: 3rem;">ESP32 IOT</h3>
-                <p style="opacity: 0.7; line-height: 1.8; max-width: 400px;">Hardware dedicado para gestão de carga e sistemas de segurança redundantes.</p>
-            </div>
-        </div>
-    </section>
 
     <!-- LIVE_STATS -->
     <section id="live-stats" style="text-align: center;">
