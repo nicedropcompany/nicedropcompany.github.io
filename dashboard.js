@@ -67,7 +67,6 @@ async function init() {
 
         document.getElementById('userAvatar').textContent = (profile.username || 'U')[0].toUpperCase();
         document.getElementById('userName').textContent = profile.username || '-';
-        document.getElementById('userRole').textContent = role.toUpperCase();
 
         if (role === 'owner' && profile.store_id) {
             // store_id é um array JSONB — normalizar antes de usar
