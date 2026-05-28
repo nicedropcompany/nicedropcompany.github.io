@@ -139,10 +139,20 @@
             text-transform: uppercase;
         }
 
+        .loja-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .loja-store-section + .loja-store-section {
+            border-top: 2px solid var(--glass-border);
+            padding-top: 28px;
+            margin-top: 8px;
+        }
         @media (max-width: 640px) {
             .profile-hero { flex-direction: column; text-align: center; align-items: center; padding: 22px; }
             .profile-meta { justify-content: center; }
-            #lojaGrid { grid-template-columns: 1fr !important; }
+            .loja-grid { grid-template-columns: 1fr !important; }
         }
     </style>
 </head>
@@ -274,37 +284,7 @@
         </div>
 
         <!-- TAB: Loja (operator / owner) -->
-        <div class="profile-tab-panel" id="tab-loja">
-            <div class="stats-row" id="lojaStatsRow"></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;" id="lojaGrid">
-                <div class="card glass-card">
-                    <div class="card-header">
-                        <h2 class="card-title" style="font-size:1.1rem;">Encomendas Recentes</h2>
-                    </div>
-                    <div id="lojaOrdersList"></div>
-                </div>
-                <div class="card glass-card">
-                    <div class="card-header">
-                        <h2 class="card-title" style="font-size:1.1rem;">Drones</h2>
-                    </div>
-                    <div id="lojaDronesList"></div>
-                </div>
-            </div>
-            <div class="card glass-card">
-                <div class="card-header">
-                    <h2 class="card-title" style="font-size:1.1rem;">Produtos da Loja</h2>
-                    <span id="lojaProductsCount" class="badge"></span>
-                </div>
-                <div class="table-vertical-scroll" style="max-height:320px;">
-                    <table class="glass-table">
-                        <thead>
-                            <tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Peso</th></tr>
-                        </thead>
-                        <tbody id="lojaProductsBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+        <div class="profile-tab-panel" id="tab-loja"></div>
 
     </div>
 

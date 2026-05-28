@@ -320,101 +320,121 @@ async function loadFavorites() {
 
 async function loadStoreData() {
     const ids = parseStoreIds(currentProfile.store_id);
+    const tabEl = document.getElementById('tab-loja');
+
     if (!ids.length) {
-        document.getElementById('lojaStatsRow').innerHTML = '<div class="empty-section" style="grid-column:1/-1;">Sem lojas associadas</div>';
+        tabEl.innerHTML = '<div class="empty-section">Sem lojas associadas</div>';
         return;
     }
 
-    const storeId = ids[0];
+    const storesData = await Promise.all(ids.map(async (storeId) => {
+        const [
+            { data: store },
+            { data: orders },
+            { data: drones },
+            { data: products }
+        ] = await Promise.all([
+            clientSupabase.from('stores').select('id, name, service').eq('id', storeId).single(),
+            clientSupabase.from('orders').select('id, username, price, status, created_at').eq('store_id', storeId).order('created_at', { ascending: false }).limit(10),
+            clientSupabase.from('drones').select('id, name, status, capacity').eq('store_id', storeId),
+            clientSupabase.from('products').select('id, name, price, category, weight').eq('store_id', storeId)
+        ]);
+        return { store, orders: orders || [], drones: drones || [], products: products || [] };
+    }));
 
-    const [
-        { data: store },
-        { data: orders },
-        { data: drones },
-        { data: products }
-    ] = await Promise.all([
-        clientSupabase.from('stores').select('id, name, service').eq('id', storeId).single(),
-        clientSupabase.from('orders').select('id, username, price, status, created_at').eq('store_id', storeId).order('created_at', { ascending: false }).limit(10),
-        clientSupabase.from('drones').select('id, name, status, capacity').eq('store_id', storeId),
-        clientSupabase.from('products').select('id, name, price, category, weight').eq('store_id', storeId)
-    ]);
+    const multiple = storesData.length > 1;
 
-    const orderList = orders || [];
-    const droneList = drones || [];
-    const productList = products || [];
-    const totalRevenue = orderList.reduce((s, o) => s + (parseFloat(o.price) || 0), 0);
-    const activeDrones = droneList.filter(d => d.status === 'active' || d.status === 'shipping').length;
-    const isActive = store?.service === true || store?.service === 1;
+    tabEl.innerHTML = storesData.map(({ store, orders, drones, products }) => {
+        const totalRevenue = orders.reduce((s, o) => s + (parseFloat(o.price) || 0), 0);
+        const activeDrones = drones.filter(d => d.status === 'active' || d.status === 'shipping').length;
+        const isActive = store?.service === true || store?.service === 1;
 
-    document.getElementById('lojaStatsRow').innerHTML = `
-        <div class="stat-card">
-            <div class="stat-label">Loja</div>
-            <div class="stat-number" style="font-size:1.05rem;padding-top:6px;">${store?.name || '—'}</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Receita Total</div>
-            <div class="stat-number" style="font-size:1.4rem;">${euro(totalRevenue)}</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Encomendas</div>
-            <div class="stat-number">${orderList.length}</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Drones Ativos</div>
-            <div class="stat-number">${activeDrones}<span style="font-size:1rem;color:var(--ink-faint);">/${droneList.length}</span></div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Produtos</div>
-            <div class="stat-number">${productList.length}</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Estado</div>
-            <div class="stat-number" style="font-size:1rem;padding-top:6px;color:${isActive ? '#27ae60' : '#e74c3c'};">${isActive ? 'Ativa' : 'Inativa'}</div>
-        </div>
-    `;
-
-    // Encomendas da loja
-    const lojaOrdersEl = document.getElementById('lojaOrdersList');
-    lojaOrdersEl.innerHTML = orderList.length
-        ? orderList.map(o => `
-            <div class="data-row">
-                <div class="data-row-left">
-                    <div class="data-row-title">#${o.id} — ${o.username || '—'}</div>
-                    <div class="data-row-sub">${fmtDate(o.created_at)}</div>
+        return `
+        <div class="loja-store-section" style="display:flex;flex-direction:column;gap:20px;">
+            ${multiple ? `<div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:1.5px;">${store?.name || 'Loja'}</div>` : ''}
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-label">Loja</div>
+                    <div class="stat-number" style="font-size:1.05rem;padding-top:6px;">${store?.name || '—'}</div>
                 </div>
-                <div style="display:flex;align-items:center;gap:8px;">
-                    ${statusBadge(o.status)}
-                    <span style="font-weight:600;font-size:0.82rem;flex-shrink:0;">${euro(o.price)}</span>
+                <div class="stat-card">
+                    <div class="stat-label">Receita Total</div>
+                    <div class="stat-number" style="font-size:1.4rem;">${euro(totalRevenue)}</div>
                 </div>
-            </div>`).join('')
-        : '<div class="empty-section">Sem encomendas</div>';
-
-    // Drones
-    const dronesEl = document.getElementById('lojaDronesList');
-    dronesEl.innerHTML = droneList.length
-        ? droneList.map(d => `
-            <div class="data-row">
-                <div class="data-row-left">
-                    <div class="data-row-title">${d.name}</div>
-                    <div class="data-row-sub">${d.capacity ? d.capacity + 'g cap.' : ''}</div>
+                <div class="stat-card">
+                    <div class="stat-label">Encomendas</div>
+                    <div class="stat-number">${orders.length}</div>
                 </div>
-                ${statusBadge(d.status)}
-            </div>`).join('')
-        : '<div class="empty-section">Sem drones</div>';
-
-    // Produtos
-    document.getElementById('lojaProductsCount').textContent =
-        productList.length + ' produto' + (productList.length !== 1 ? 's' : '');
-
-    document.getElementById('lojaProductsBody').innerHTML = productList.length
-        ? productList.map(p => `
-            <tr>
-                <td><strong>${p.name}</strong></td>
-                <td>${p.category || '—'}</td>
-                <td>${euro(p.price)}</td>
-                <td>${p.weight ? p.weight + 'g' : '—'}</td>
-            </tr>`).join('')
-        : '<tr><td colspan="4" style="text-align:center;color:var(--ink-faint);padding:20px;">Sem produtos</td></tr>';
+                <div class="stat-card">
+                    <div class="stat-label">Drones Ativos</div>
+                    <div class="stat-number">${activeDrones}<span style="font-size:1rem;color:var(--ink-faint);">/${drones.length}</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Produtos</div>
+                    <div class="stat-number">${products.length}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Estado</div>
+                    <div class="stat-number" style="font-size:1rem;padding-top:6px;color:${isActive ? '#27ae60' : '#e74c3c'};">${isActive ? 'Ativa' : 'Inativa'}</div>
+                </div>
+            </div>
+            <div class="loja-grid">
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h2 class="card-title" style="font-size:1.1rem;">Encomendas Recentes</h2>
+                    </div>
+                    <div>${orders.length
+                        ? orders.map(o => `
+                            <div class="data-row">
+                                <div class="data-row-left">
+                                    <div class="data-row-title">#${o.id} — ${o.username || '—'}</div>
+                                    <div class="data-row-sub">${fmtDate(o.created_at)}</div>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    ${statusBadge(o.status)}
+                                    <span style="font-weight:600;font-size:0.82rem;flex-shrink:0;">${euro(o.price)}</span>
+                                </div>
+                            </div>`).join('')
+                        : '<div class="empty-section">Sem encomendas</div>'}</div>
+                </div>
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h2 class="card-title" style="font-size:1.1rem;">Drones</h2>
+                    </div>
+                    <div>${drones.length
+                        ? drones.map(d => `
+                            <div class="data-row">
+                                <div class="data-row-left">
+                                    <div class="data-row-title">${d.name}</div>
+                                    <div class="data-row-sub">${d.capacity ? d.capacity + 'g cap.' : ''}</div>
+                                </div>
+                                ${statusBadge(d.status)}
+                            </div>`).join('')
+                        : '<div class="empty-section">Sem drones</div>'}</div>
+                </div>
+            </div>
+            <div class="card glass-card">
+                <div class="card-header">
+                    <h2 class="card-title" style="font-size:1.1rem;">Produtos da Loja</h2>
+                    <span class="badge">${products.length} produto${products.length !== 1 ? 's' : ''}</span>
+                </div>
+                <div class="table-vertical-scroll" style="max-height:320px;">
+                    <table class="glass-table">
+                        <thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Peso</th></tr></thead>
+                        <tbody>${products.length
+                            ? products.map(p => `
+                                <tr>
+                                    <td><strong>${p.name}</strong></td>
+                                    <td>${p.category || '—'}</td>
+                                    <td>${euro(p.price)}</td>
+                                    <td>${p.weight ? p.weight + 'g' : '—'}</td>
+                                </tr>`).join('')
+                            : '<tr><td colspan="4" style="text-align:center;color:var(--ink-faint);padding:20px;">Sem produtos</td></tr>'}</tbody>
+                    </table>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
 }
 
 // ─── MODAL ─────────────────────────────────────────────────────────────────
