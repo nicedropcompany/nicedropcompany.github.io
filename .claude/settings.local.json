@@ -30,7 +30,9 @@
       "PowerShell(npm --version 2>&1)",
       "PowerShell(ls \"$env:USERPROFILE\\\\.claude\\\\skills\")",
       "Bash(gh pr *)",
-      "PowerShell(gh pr list)"
+      "PowerShell(gh pr list)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\diogo\\\\Desktop\\\\nicedropcompany.github.io\" -Force)",
+      "Bash(Select-Object Name, Mode)"
     ]
   }
 }
