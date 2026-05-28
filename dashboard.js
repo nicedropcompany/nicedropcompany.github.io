@@ -50,8 +50,7 @@ async function init() {
 
         const role = (profile.role || '').trim().toLowerCase();
         if (role === 'client' || role === 'operator') {
-            alert('Sem acesso ao painel web');
-            window.location.href = '/auth.html';
+            window.location.href = '/client.html';
             return;
         }
         if (role === 'developer') {

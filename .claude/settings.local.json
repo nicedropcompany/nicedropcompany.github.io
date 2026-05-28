@@ -32,7 +32,9 @@
       "Bash(gh pr *)",
       "PowerShell(gh pr list)",
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\diogo\\\\Desktop\\\\nicedropcompany.github.io\" -Force)",
-      "Bash(Select-Object Name, Mode)"
+      "Bash(Select-Object Name, Mode)",
+      "Bash(Get-ChildItem -Recurse)",
+      "Bash(Select-Object FullName)"
     ]
   }
 }
