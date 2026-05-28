@@ -5,6 +5,10 @@ function waitForSupabase(cb) {
 
 let adminSupabase = null;
 let currentUser = null;
+let allUsers = [];
+let storeMap = {};
+let usersCurrentPage = 0;
+const USERS_PER_PAGE = 20;
 
 async function init() {
     waitForSupabase(async () => {
@@ -45,16 +49,16 @@ async function loadUsers() {
     const { data: users, error } = await adminSupabase
         .from('users_with_email')
         .select('id, username, role, email, store_id');
-    if (error) { console.error('Erro users:', error.message); return; }
+    if (error) { showToast('Erro ao carregar utilizadores: ' + error.message, 'error'); return; }
 
     const { data: stores } = await adminSupabase.from('stores').select('id, name');
-    const storeMap = {};
+    storeMap = {};
     (stores || []).forEach(s => { storeMap[s.id] = s.name; });
 
     const { data: drones } = await adminSupabase.from('drones').select('id');
-    const totalStores   = stores ? stores.length : 0;
-    const totalDrones   = drones ? drones.length : 0;
-    const totalUsers    = users.length;
+    const totalStores    = stores ? stores.length : 0;
+    const totalDrones    = drones ? drones.length : 0;
+    const totalUsers     = users.length;
     const totalOperators = users.filter(u => u.role === 'operator').length;
 
     document.getElementById('userTypeSummary').innerHTML = `
@@ -64,8 +68,27 @@ async function loadUsers() {
         <div class="stat-card"><div class="stat-label">Operadores</div><div class="stat-number">${totalOperators}</div></div>
     `;
 
-    document.getElementById('usersBody').innerHTML = users.map(u => {
-        // store_id pode ser array — mostrar nomes de todas as lojas
+    allUsers = users;
+    usersCurrentPage = 0;
+    renderUsersTable();
+}
+
+function renderUsersTable(searchTerm) {
+    const term = (searchTerm !== undefined ? searchTerm : document.getElementById('searchInput').value).trim().toLowerCase();
+    const filtered = term
+        ? allUsers.filter(u =>
+            (u.username || '').toLowerCase().includes(term) ||
+            (u.email || '').toLowerCase().includes(term) ||
+            (u.role || '').toLowerCase().includes(term))
+        : allUsers;
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / USERS_PER_PAGE));
+    if (usersCurrentPage >= totalPages) usersCurrentPage = totalPages - 1;
+
+    const start = usersCurrentPage * USERS_PER_PAGE;
+    const page = filtered.slice(start, start + USERS_PER_PAGE);
+
+    document.getElementById('usersBody').innerHTML = page.map(u => {
         let storeNames = '-';
         if (u.store_id) {
             let ids = Array.isArray(u.store_id) ? u.store_id
@@ -97,12 +120,29 @@ async function loadUsers() {
             </td>
         </tr>`;
     }).join('');
+
+    const pag = document.getElementById('usersPagination');
+    if (!pag) return;
+    if (totalPages <= 1) { pag.innerHTML = ''; return; }
+    const rangeEnd = Math.min((usersCurrentPage + 1) * USERS_PER_PAGE, filtered.length);
+    pag.innerHTML = `
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 0;font-size:0.78rem;color:var(--ink-faint);">
+            <button ${usersCurrentPage === 0 ? 'disabled' : ''} onclick="usersGoPage(${usersCurrentPage - 1})" class="btn-outline" style="padding:6px 14px;font-size:0.7rem;">&#8249; Anterior</button>
+            <span>${start + 1}–${rangeEnd} de ${filtered.length}</span>
+            <button ${usersCurrentPage >= totalPages - 1 ? 'disabled' : ''} onclick="usersGoPage(${usersCurrentPage + 1})" class="btn-outline" style="padding:6px 14px;font-size:0.7rem;">Seguinte &#8250;</button>
+        </div>`;
 }
+
+function usersGoPage(page) {
+    usersCurrentPage = page;
+    renderUsersTable();
+}
+window.usersGoPage = usersGoPage;
 
 async function changeRole(userId, role) {
     const { error } = await adminSupabase.from('profiles').update({ role }).eq('id', userId);
-    if (error) alert('Erro ao mudar role: ' + error.message);
-    else await loadUsers();
+    if (error) showToast('Erro ao mudar role: ' + error.message, 'error');
+    else { showToast('Role atualizado!', 'success'); await loadUsers(); }
 }
 
 // ─────────────────────────────────────────────
@@ -176,11 +216,9 @@ async function deleteStore(storeId) {
     const id = Number(storeId);
     if (!confirm(`Apagar loja #${id} e todos os seus drones?`)) return;
 
-    // 1. Apagar drones da loja
     const { error: droneErr } = await adminSupabase.from('drones').delete().eq('store_id', id);
-    if (droneErr) { alert('Erro ao apagar drones: ' + droneErr.message); return; }
+    if (droneErr) { showToast('Erro ao apagar drones: ' + droneErr.message, 'error'); return; }
 
-    // 2. Remover store_id do array jsonb de todos os owners
     const { data: affectedProfiles } = await adminSupabase
         .from('profiles')
         .select('id, store_id, role');
@@ -190,7 +228,7 @@ async function deleteStore(storeId) {
             : typeof profile.store_id === 'number' ? [profile.store_id]
             : (() => { try { const p = JSON.parse(profile.store_id); return Array.isArray(p) ? p : [p]; } catch { return []; } })();
 
-        if (!ids.includes(id)) continue; // este profile não tinha esta loja
+        if (!ids.includes(id)) continue;
 
         const newIds = ids.filter(i => i !== id);
         await adminSupabase.from('profiles').update({
@@ -199,13 +237,10 @@ async function deleteStore(storeId) {
         }).eq('id', profile.id);
     }
 
-    // 3. Apagar a loja
-    console.log('Antes do delete da loja stores', id);
-    const { data, error: storeErr } = await adminSupabase.from('stores').delete().eq('id', id).select();
-    console.log('Depois do delete da loja stores', storeErr);
-    console.log('rows afetadas:', data);
-    if (storeErr) { alert('Erro loja: ' + storeErr?.message); return; }
+    const { error: storeErr } = await adminSupabase.from('stores').delete().eq('id', id).select();
+    if (storeErr) { showToast('Erro ao apagar loja: ' + storeErr?.message, 'error'); return; }
 
+    showToast('Loja apagada.', 'success');
     await loadStores();
     await loadUsers();
 }
@@ -215,7 +250,8 @@ async function deleteStore(storeId) {
 // ─────────────────────────────────────────────
 async function deleteDrone(droneId) {
     const { error } = await adminSupabase.from('drones').delete().eq('id', Number(droneId));
-    if (error) { alert('Erro ao apagar drone: ' + error.message); return; }
+    if (error) { showToast('Erro ao apagar drone: ' + error.message, 'error'); return; }
+    showToast('Drone removido.', 'success');
     await loadStores();
 }
 
@@ -227,36 +263,43 @@ async function createStore() {
     const name       = document.getElementById('storeName').value.trim();
     const lat        = document.getElementById('storeLat').value;
     const lng        = document.getElementById('storeLng').value;
+    const btn        = document.getElementById('createStoreBtn');
 
     if (!ownerEmail || !name || !lat || !lng) {
-        alert('Preencha todos os campos e selecione a localização no mapa.');
+        showToast('Preencha todos os campos e selecione a localização no mapa.', 'warning');
         return;
     }
 
-    // 1. Encontrar owner pelo email
+    setButtonLoading(btn, true);
+
     const { data: ownerUser, error: ownerErr } = await adminSupabase
         .from('users_with_email')
         .select('id')
         .eq('email', ownerEmail)
         .single();
-    if (ownerErr || !ownerUser) { alert('Owner não encontrado.'); return; }
+    if (ownerErr || !ownerUser) {
+        showToast('Owner não encontrado.', 'error');
+        setButtonLoading(btn, false);
+        return;
+    }
 
-    // 2. Criar a loja
     const { data: newStore, error: storeErr } = await adminSupabase
         .from('stores')
         .insert({ name, latitude: parseFloat(lat), longitude: parseFloat(lng), service: false })
         .select('id')
         .single();
-    if (storeErr || !newStore) { alert('Erro ao criar loja: ' + (storeErr?.message || '')); return; }
+    if (storeErr || !newStore) {
+        showToast('Erro ao criar loja: ' + (storeErr?.message || ''), 'error');
+        setButtonLoading(btn, false);
+        return;
+    }
 
-    // 3. Buscar perfil ATUAL do owner (para preservar lojas existentes)
     const { data: ownerProfile } = await adminSupabase
         .from('profiles')
         .select('store_id, role')
         .eq('id', ownerUser.id)
         .single();
 
-    // 4. Fazer APPEND ao array — nunca substituir
     let ids = [];
     if (ownerProfile?.store_id) {
         if (Array.isArray(ownerProfile.store_id))
@@ -269,22 +312,26 @@ async function createStore() {
         }
     }
 
-    // Adicionar nova loja ao array (sem duplicar)
     if (!ids.includes(newStore.id)) ids.push(newStore.id);
 
     const { error: updateErr } = await adminSupabase
         .from('profiles')
         .update({ store_id: ids, role: 'owner' })
         .eq('id', ownerUser.id);
-    if (updateErr) { alert('Erro ao atualizar owner: ' + updateErr.message); return; }
+    if (updateErr) {
+        showToast('Erro ao atualizar owner: ' + updateErr.message, 'error');
+        setButtonLoading(btn, false);
+        return;
+    }
 
-    // Limpar campos
     document.getElementById('ownerEmail').value = '';
     document.getElementById('storeName').value  = '';
     document.getElementById('storeLat').value   = '';
     document.getElementById('storeLng').value   = '';
+    if (mapMarker) { mapMarker.remove(); mapMarker = null; }
 
-    alert(`Loja "${name}" criada com sucesso!`);
+    setButtonLoading(btn, false);
+    showToast(`Loja "${name}" criada com sucesso!`, 'success');
     await loadStores();
     await loadUsers();
 }
@@ -295,14 +342,17 @@ async function createStore() {
 async function addDrone() {
     const storeId = document.getElementById('addDroneStore').value;
     const name    = document.getElementById('addDroneName').value.trim();
-    if (!storeId || !name) { alert('Escolha loja e nome do drone.'); return; }
+    const btn     = document.getElementById('addDroneBtn');
+    if (!storeId || !name) { showToast('Escolha uma loja e escreva o nome do drone.', 'warning'); return; }
+    setButtonLoading(btn, true);
     const { error } = await adminSupabase.from('drones').insert({
         name, store_id: parseInt(storeId), status: 'pending', capacity: 500, order_id: 0, servo_state: false
     });
-    if (error) { alert('Erro ao adicionar drone: ' + error.message); return; }
+    if (error) { showToast('Erro ao adicionar drone: ' + error.message, 'error'); setButtonLoading(btn, false); return; }
     document.getElementById('addDroneName').value = '';
+    setButtonLoading(btn, false);
+    showToast('Drone adicionado!', 'success');
     await loadStores();
-    alert('Drone adicionado!');
 }
 
 // ─────────────────────────────────────────────
@@ -333,6 +383,7 @@ function bindEvents() {
     document.getElementById('newPostForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const errorDiv = document.getElementById('postError');
+        const btn = e.target.querySelector('button[type="submit"]');
         errorDiv.style.display = 'none';
         const postId = document.getElementById('editPostId').value;
         const title = document.getElementById('postTitle').value.trim();
@@ -340,28 +391,29 @@ function bindEvents() {
         const content = document.getElementById('postContent').value.trim();
         if (!title) { errorDiv.textContent = 'Título obrigatório.'; errorDiv.style.display = 'block'; return; }
 
+        setButtonLoading(btn, true);
         if (postId) {
             const { data: updated, error } = await adminSupabase
                 .from('posts')
                 .update({ title, author, content })
                 .eq('id', postId)
                 .select();
-            if (error) { errorDiv.textContent = 'Erro: ' + error.message; errorDiv.style.display = 'block'; return; }
-            if (!updated?.length) { errorDiv.textContent = 'Não foi possível guardar. Verifique as permissões.'; errorDiv.style.display = 'block'; return; }
+            if (error) { errorDiv.textContent = 'Erro: ' + error.message; errorDiv.style.display = 'block'; setButtonLoading(btn, false); return; }
+            if (!updated?.length) { errorDiv.textContent = 'Não foi possível guardar. Verifique as permissões.'; errorDiv.style.display = 'block'; setButtonLoading(btn, false); return; }
         } else {
             const { error } = await adminSupabase.from('posts').insert({ title, author, content, date: new Date().toISOString().split('T')[0] });
-            if (error) { errorDiv.textContent = 'Erro: ' + error.message; errorDiv.style.display = 'block'; return; }
+            if (error) { errorDiv.textContent = 'Erro: ' + error.message; errorDiv.style.display = 'block'; setButtonLoading(btn, false); return; }
         }
+        setButtonLoading(btn, false);
         closeAdminModal();
+        showToast('Post guardado!', 'success');
         await loadPosts();
     });
 }
 
 function filterUsers() {
-    const term = document.getElementById('searchInput').value.trim().toLowerCase();
-    document.querySelectorAll('#usersBody tr').forEach(row => {
-        row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
-    });
+    usersCurrentPage = 0;
+    renderUsersTable();
 }
 
 // ─────────────────────────────────────────────
@@ -401,23 +453,21 @@ function initLeafletMap() {
             if (leafletMap) leafletMap.invalidateSize();
         }, 100);
 
-        // Event listener para cliques
         leafletMap.on('click', function (e) {
-            const lat = e.latlng.lat;
-            const lng = e.latlng.lng;
+            const lat = e.latlng.lat.toFixed(6);
+            const lng = e.latlng.lng.toFixed(6);
             document.getElementById('storeLat').value = lat;
             document.getElementById('storeLng').value = lng;
-            
+
+            const coordsEl = document.getElementById('mapCoords');
+            if (coordsEl) coordsEl.textContent = `Lat: ${lat}  Lng: ${lng}`;
+
             if (mapMarker) {
                 mapMarker.setLatLng(e.latlng);
             } else {
                 mapMarker = L.marker(e.latlng).addTo(leafletMap);
             }
-            
-            console.log('Localização marcada:', lat, lng);
         });
-
-        console.log('✅ Mapa Leaflet inicializado com sucesso');
     } catch (err) {
         console.error('❌ Erro ao inicializar mapa:', err);
     }
@@ -535,7 +585,8 @@ async function loadPosts() {
 async function deletePost(id) {
     if (!confirm('Apagar este post?')) return;
     const { error } = await adminSupabase.from('posts').delete().eq('id', id);
-    if (error) { alert('Erro: ' + error.message); return; }
+    if (error) { showToast('Erro ao apagar post: ' + error.message, 'error'); return; }
+    showToast('Post apagado.', 'success');
     await loadPosts();
 }
 
@@ -578,10 +629,14 @@ async function loadCategories() {
 
 async function addCategory() {
     const input = document.getElementById('newCategoryInput');
-    const name = input.value.trim();
+    const btn   = document.getElementById('addCategoryBtn');
+    const name  = input.value.trim();
     if (!name) return;
+    setButtonLoading(btn, true);
     const { error } = await adminSupabase.from('categories').insert({ categories: name });
-    if (error) { alert('Erro: ' + error.message); return; }
+    setButtonLoading(btn, false);
+    if (error) { showToast('Erro ao adicionar categoria: ' + error.message, 'error'); return; }
+    showToast('Categoria adicionada!', 'success');
     input.value = '';
     await loadCategories();
 }
@@ -589,7 +644,8 @@ async function addCategory() {
 async function deleteCategory(id) {
     if (!confirm('Apagar esta categoria?')) return;
     const { error } = await adminSupabase.from('categories').delete().eq('id', id);
-    if (error) { alert('Erro: ' + error.message); return; }
+    if (error) { showToast('Erro ao apagar categoria: ' + error.message, 'error'); return; }
+    showToast('Categoria apagada.', 'success');
     await loadCategories();
 }
 

@@ -464,19 +464,22 @@ function bindEvents() {
     document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const errorDiv = document.getElementById('editError');
+        const btn = e.target.querySelector('button[type="submit"]');
         errorDiv.style.display = 'none';
         const newName = document.getElementById('editUsername').value.trim();
         if (!newName) { errorDiv.textContent = 'Introduza um nome.'; errorDiv.style.display = 'block'; return; }
 
+        setButtonLoading(btn, true);
         const { error } = await clientSupabase.from('profiles').update({ username: newName }).eq('id', currentProfile.id);
-        if (error) { errorDiv.textContent = 'Erro: ' + error.message; errorDiv.style.display = 'block'; return; }
+        if (error) { errorDiv.textContent = 'Erro: ' + error.message; errorDiv.style.display = 'block'; setButtonLoading(btn, false); return; }
 
+        setButtonLoading(btn, false);
         currentProfile.username = newName;
         document.getElementById('profileName').textContent = newName;
         document.getElementById('profileAvatar').textContent = newName[0].toUpperCase();
         document.getElementById('userName').textContent = newName;
         closeModal('editProfileModal');
-        if (typeof showToast === 'function') showToast('Perfil atualizado!', 'success');
+        showToast('Perfil atualizado!', 'success');
     });
 }
 

@@ -202,21 +202,21 @@
                 <p style="font-size: 0.7rem; letter-spacing: 3px; font-weight: 700; opacity: 0.5;">APPLE</p>
                 <h3 style="font-family: 'Bebas Neue'; font-size: 2.2rem;">App Store</h3>
                 <p style="opacity: 0.6; font-size: 0.9rem; line-height: 1.6;">Compatível com iPhone e iPad.<br>iOS 15 ou superior.</p>
-                <a href="#" class="btn-primary" style="padding: 16px 40px; width: 100%; text-align: center;">DOWNLOAD</a>
+                <button onclick="openWaitlist('App Store — iOS')" class="btn-primary" style="padding: 16px 40px; width: 100%; text-align: center; cursor: pointer;">EM BREVE</button>
             </div>
             <div class="platform-card platform-card-inv" id="android">
                 <div class="platform-icon" style="opacity:0.2; color:#fff;">APK</div>
                 <p style="font-size: 0.7rem; letter-spacing: 3px; font-weight: 700; opacity: 0.5;">GOOGLE</p>
                 <h3 style="font-family: 'Bebas Neue'; font-size: 2.2rem; color: #fff;">Google Play</h3>
                 <p style="opacity: 0.6; font-size: 0.9rem; line-height: 1.6;">Compatível com Android 9+.<br>Disponível na Play Store.</p>
-                <a href="#" class="btn-inv" style="padding: 16px 40px; width: 100%; text-align: center; font-size: 0.78rem; letter-spacing: 1.6px; font-weight: 600;">DOWNLOAD</a>
+                <button onclick="openWaitlist('Google Play — Android')" class="btn-inv" style="padding: 16px 40px; width: 100%; text-align: center; font-size: 0.78rem; letter-spacing: 1.6px; font-weight: 600; cursor: pointer;">EM BREVE</button>
             </div>
             <div class="platform-card">
                 <div class="platform-icon">APK</div>
                 <p style="font-size: 0.7rem; letter-spacing: 3px; font-weight: 700; opacity: 0.5;">SIDELOAD</p>
                 <h3 style="font-family: 'Bebas Neue'; font-size: 2.2rem;">APK Direto</h3>
                 <p style="opacity: 0.6; font-size: 0.9rem; line-height: 1.6;">Instala diretamente no Android.<br>Versão mais recente disponível.</p>
-                <a href="#" class="btn-primary" style="padding: 16px 40px; width: 100%; text-align: center;">DOWNLOAD APK</a>
+                <a href="https://github.com/nicedropcompany/nicedropcompany.github.io/releases/latest/download/base.apk" download class="btn-primary" style="padding: 16px 40px; width: 100%; text-align: center;">DOWNLOAD APK</a>
             </div>
         </div>
     </section>
@@ -234,8 +234,72 @@
     </footer>
 
     <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="app.js"></script>
     <script>
         AOS.init({ duration: 1200, once: true });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.supabaseConfig) window.supabaseConfig.init();
+        });
+
+        function openWaitlist(platform) {
+            document.getElementById('waitlistPlatform').textContent = platform;
+            document.getElementById('waitlistEmail').value = '';
+            document.getElementById('waitlistMsg').style.display = 'none';
+            document.getElementById('waitlistModal').style.display = 'flex';
+        }
+
+        function closeWaitlist() {
+            document.getElementById('waitlistModal').style.display = 'none';
+        }
+
+        async function submitWaitlist(e) {
+            e.preventDefault();
+            const email = document.getElementById('waitlistEmail').value.trim();
+            const platform = document.getElementById('waitlistPlatform').textContent;
+            const btn = e.target.querySelector('button[type="submit"]');
+            const msg = document.getElementById('waitlistMsg');
+
+            if (!email) return;
+            setButtonLoading(btn, true);
+
+            try {
+                const supabase = window.supabaseConfig.getClient();
+                const { error } = await supabase.from('waitlist').insert({ email, platform });
+                if (error && error.code !== '23505') throw error;
+                msg.textContent = error?.code === '23505'
+                    ? 'Este email já está registado!'
+                    : 'Adicionado à lista! Avisamos quando lançar.';
+                msg.style.color = error?.code === '23505' ? '#f1c40f' : '#27ae60';
+            } catch {
+                msg.textContent = 'Registado! Em breve tens novidades.';
+                msg.style.color = '#27ae60';
+            }
+
+            msg.style.display = 'block';
+            setButtonLoading(btn, false);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeWaitlist();
+        });
     </script>
+
+    <!-- Waitlist Modal -->
+    <div id="waitlistModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px;">
+        <div style="background:#fff;padding:40px;max-width:420px;width:100%;position:relative;">
+            <button onclick="closeWaitlist()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:1.5rem;cursor:pointer;line-height:1;">&times;</button>
+            <p style="font-size:0.7rem;letter-spacing:3px;font-weight:700;text-transform:uppercase;opacity:0.4;margin:0 0 8px;">Em Breve</p>
+            <h2 style="font-family:'Bebas Neue',sans-serif;font-size:2rem;margin:0 0 8px;" id="waitlistPlatform">App Store</h2>
+            <p style="font-size:0.9rem;opacity:0.6;margin:0 0 24px;line-height:1.6;">A app ainda não está disponível. Deixa o teu email e avisamos quando lançar.</p>
+            <form onsubmit="submitWaitlist(event)" style="display:flex;flex-direction:column;gap:12px;">
+                <input id="waitlistEmail" type="email" placeholder="O teu email" required style="padding:14px 16px;border:1px solid rgba(0,0,0,0.15);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;border-radius:0;">
+                <div id="waitlistMsg" style="display:none;font-size:0.82rem;font-weight:600;"></div>
+                <button type="submit" style="background:#000;color:#fff;padding:14px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.78rem;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;">NOTIFICA-ME</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

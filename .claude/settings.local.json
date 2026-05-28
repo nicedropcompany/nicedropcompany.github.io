@@ -35,7 +35,10 @@
       "Bash(Select-Object Name, Mode)",
       "Bash(Get-ChildItem -Recurse)",
       "Bash(Select-Object FullName)",
-      "Bash(node --input-type=module)"
+      "Bash(node --input-type=module)",
+      "Bash(Get-ChildItem -Recurse -Force)",
+      "Bash(Select-Object FullName, PSIsContainer)",
+      "Bash(Sort-Object FullName)"
     ]
   }
 }

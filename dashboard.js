@@ -263,7 +263,7 @@ function renderMain() {
                     .update({ role: 'owner' })
                     .eq('id', memberId);
                 if (error) {
-                    alert('Erro ao mudar role: ' + error.message);
+                    showToast('Erro ao mudar role: ' + error.message, 'error');
                     return;
                 }
                 await loadStoreData(state.currentStoreId);
@@ -346,7 +346,7 @@ function renderPosts() {
         btn.addEventListener('click', async () => {
             if (!confirm('Apagar este post?')) return;
             const { error } = await supabaseClient.from('posts').delete().eq('id', btn.dataset.id);
-            if (error) { alert('Erro: ' + error.message); return; }
+            if (error) { showToast('Erro ao apagar post: ' + error.message, 'error'); return; }
             await loadStoreData(state.currentStoreId);
             renderPosts();
         });
@@ -365,7 +365,7 @@ async function removeMember(userId) {
         .update({ store_id: ids.length ? ids : null, role: ids.length ? 'operator' : 'client' })
         .eq('id', userId);
     if (error) {
-        alert('Erro ao remover membro: ' + error.message);
+        showToast('Erro ao remover membro: ' + error.message, 'error');
         return;
     }
     await loadStoreData(state.currentStoreId);
@@ -390,13 +390,16 @@ function bindEvents() {
             e.preventDefault();
             const emailInput = document.getElementById('addOperatorEmail');
             const errorDiv = document.getElementById('addOperatorError');
+            const btn = e.target.querySelector('button[type="submit"]');
             errorDiv.textContent = '';
+            errorDiv.style.display = 'none';
             const email = emailInput.value.trim();
             if (!email) {
                 errorDiv.textContent = 'Introduza o email.';
+                errorDiv.style.display = 'block';
                 return;
             }
-            // Procurar utilizador
+            setButtonLoading(btn, true);
             const { data: user } = await supabaseClient
                 .from('users_with_email')
                 .select('id')
@@ -404,6 +407,8 @@ function bindEvents() {
                 .single();
             if (!user) {
                 errorDiv.textContent = 'Utilizador não encontrado';
+                errorDiv.style.display = 'block';
+                setButtonLoading(btn, false);
                 return;
             }
             const ids = await appendStoreId(user.id, state.currentStoreId);
@@ -413,10 +418,14 @@ function bindEvents() {
                 .eq('id', user.id);
             if (error) {
                 errorDiv.textContent = 'Erro ao adicionar operador: ' + error.message;
+                errorDiv.style.display = 'block';
+                setButtonLoading(btn, false);
                 return;
             }
+            setButtonLoading(btn, false);
             closeModal('addOperatorModal');
             emailInput.value = '';
+            showToast('Funcionário adicionado com sucesso!', 'success');
             await loadStoreData(state.currentStoreId);
             renderMain();
         });
@@ -427,6 +436,7 @@ function bindEvents() {
         dashPostForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const errorDiv = document.getElementById('dashPostError');
+            const btn = e.target.querySelector('button[type="submit"]');
             errorDiv.style.display = 'none';
             const postId = document.getElementById('dashPostId').value;
             const title = document.getElementById('dashPostTitle').value.trim();
@@ -434,22 +444,25 @@ function bindEvents() {
             const content = document.getElementById('dashPostContent').value.trim();
             if (!title) { errorDiv.textContent = 'Título obrigatório.'; errorDiv.style.display = 'block'; return; }
 
+            setButtonLoading(btn, true);
             if (postId) {
                 const { data: updated, error } = await supabaseClient
                     .from('posts')
                     .update({ title, author, content })
                     .eq('id', postId)
                     .select();
-                if (error) { errorDiv.textContent = 'Erro: ' + error.message; errorDiv.style.display = 'block'; return; }
-                if (!updated?.length) { errorDiv.textContent = 'Sem permissão para guardar.'; errorDiv.style.display = 'block'; return; }
+                if (error) { errorDiv.textContent = 'Erro: ' + error.message; errorDiv.style.display = 'block'; setButtonLoading(btn, false); return; }
+                if (!updated?.length) { errorDiv.textContent = 'Sem permissão para guardar.'; errorDiv.style.display = 'block'; setButtonLoading(btn, false); return; }
             } else {
                 const { error } = await supabaseClient
                     .from('posts')
                     .insert({ title, author, content, store_id: state.currentStoreId, date: new Date().toISOString().split('T')[0] });
-                if (error) { errorDiv.textContent = 'Erro: ' + error.message; errorDiv.style.display = 'block'; return; }
+                if (error) { errorDiv.textContent = 'Erro: ' + error.message; errorDiv.style.display = 'block'; setButtonLoading(btn, false); return; }
             }
 
+            setButtonLoading(btn, false);
             closeModal('dashPostModal');
+            showToast('Post guardado!', 'success');
             await loadStoreData(state.currentStoreId);
             renderPosts();
         });

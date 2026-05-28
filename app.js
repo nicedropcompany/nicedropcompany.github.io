@@ -69,7 +69,25 @@ function showToast(msg, type) {
 
 window.showToast = showToast;
 
-// 4. Initialize on DOM Ready
+// 4. Button Loading State
+function setButtonLoading(btn, loading) {
+  if (!btn) return;
+  if (loading) {
+    btn._origHtml = btn.innerHTML;
+    btn._origDisabled = btn.disabled;
+    btn.disabled = true;
+    btn.style.opacity = '0.65';
+    btn.style.cursor = 'not-allowed';
+  } else {
+    if (btn._origHtml !== undefined) btn.innerHTML = btn._origHtml;
+    btn.disabled = btn._origDisabled || false;
+    btn.style.opacity = '';
+    btn.style.cursor = '';
+  }
+}
+window.setButtonLoading = setButtonLoading;
+
+// 6. Initialize on DOM Ready
 document.addEventListener('DOMContentLoaded', function () {
   initThemeToggle();
 });

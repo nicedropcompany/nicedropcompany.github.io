@@ -38,6 +38,9 @@ async function handleLogin(e) {
     const password = document.getElementById('loginPassword').value.trim();
     if (!email || !validateEmail(email)) return showMessage('error', 'Email inválido');
     if (!password) return showMessage('error', 'Introduza a password');
+
+    const btn = e.target.querySelector('button[type="submit"]');
+    setButtonLoading(btn, true);
     showMessage('info', 'A entrar...');
     try {
         const supabase = window.supabaseConfig.getClient();
@@ -73,11 +76,10 @@ async function handleLogin(e) {
             setTimeout(() => { window.location.href = '/admin.html'; }, 1500);
             return;
         }
-        // client e operator → página de perfil
         setTimeout(() => { window.location.href = '/client.html'; }, 1500);
     } catch (error) {
-        console.error('Erro login:', error.message);
         showMessage('error', 'Credenciais inválidas.');
+        setButtonLoading(btn, false);
     }
 }
 
@@ -91,6 +93,9 @@ async function handleSignup(e) {
     if (!email || !validateEmail(email)) return showMessage('error', 'Email inválido');
     if (password.length < 6) return showMessage('error', 'Password com mínimo 6 caracteres');
     if (password !== confirm) return showMessage('error', 'As passwords não coincidem');
+
+    const btn = e.target.querySelector('button[type="submit"]');
+    setButtonLoading(btn, true);
     showMessage('info', 'A criar conta...');
     try {
         const supabase = window.supabaseConfig.getClient();
@@ -100,23 +105,19 @@ async function handleSignup(e) {
         });
         if (error) throw error;
 
-        // Insert into profiles immediately — works when email confirmation is disabled in Supabase Auth settings
         if (data.user) {
-            const { error: profileError } = await supabase
+            await supabase
                 .from('profiles')
                 .upsert({ id: data.user.id, username: name, role: 'client' }, { onConflict: 'id' });
-            if (profileError) {
-                // Falls back to upsert on first login; for a guaranteed fix add a DB trigger in Supabase
-                console.warn('Profile insert on signup:', profileError.message);
-            }
         }
 
         showMessage('success', 'Conta criada com sucesso!');
         document.getElementById('signupForm').reset();
+        setButtonLoading(btn, false);
         setTimeout(() => switchTab('login'), 2000);
     } catch (error) {
-        console.error('Erro signup:', error.message);
         showMessage('error', error.message || 'Erro ao criar conta.');
+        setButtonLoading(btn, false);
     }
 }
 
