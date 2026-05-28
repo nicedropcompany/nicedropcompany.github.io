@@ -1456,11 +1456,80 @@ footer {
 
   .glass-table {
     font-size: 0.78rem;
+    min-width: 520px;
   }
 
   .glass-table th,
   .glass-table td {
     padding: 10px 6px;
+  }
+
+  /* Tables scroll horizontally on mobile */
+  .table-vertical-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Admin search — full width */
+  #searchInput {
+    max-width: 100% !important;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Form rows stack vertically */
+  .form-row {
+    flex-direction: column;
+  }
+  .form-row > input,
+  .form-row > select {
+    min-width: 0;
+    width: 100%;
+  }
+  .form-row > button {
+    width: 100%;
+  }
+
+  /* Topbar buttons smaller to fit next to logo */
+  .topbar .btn-primary,
+  .topbar .btn-outline,
+  .topbar a.btn-primary,
+  .topbar a.btn-outline {
+    padding: 8px 12px !important;
+    font-size: 0.68rem !important;
+    letter-spacing: 0.8px !important;
+    height: auto !important;
+  }
+
+  /* Dashboard topbar action button */
+  .main-topbar .btn-primary {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* Admin page title padding */
+  .main[style*="padding-top"] {
+    padding-top: 80px !important;
+  }
+
+  /* Stores grid - single column */
+  .stores-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Store card actions full width */
+  .store-card-actions button,
+  .store-card-actions a {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* Admin role select — full width */
+  .role-select {
+    width: 100%;
+    min-width: 0;
   }
 
   footer {
@@ -1479,7 +1548,7 @@ footer {
   }
 
   .stats-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 
   .modal {
@@ -1490,5 +1559,28 @@ footer {
   .btn, .btn-primary, .btn-secondary, .btn-outline {
     padding: 10px 16px;
     font-size: 0.72rem;
+  }
+
+  /* Detail cards single column */
+  #detailRow {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Make-owner and remove buttons wrap nicely */
+  .team-member-row {
+    flex-wrap: wrap;
+  }
+
+  /* Profile tabs text smaller */
+  .profile-tab-btn {
+    padding: 12px 14px;
+    font-size: 0.62rem;
+  }
+
+  /* Topbar: hide "Meu Perfil" text, keep only icon-like buttons */
+  .topbar .btn-primary,
+  .topbar a.btn-primary {
+    padding: 7px 10px !important;
+    font-size: 0.62rem !important;
   }
 }
