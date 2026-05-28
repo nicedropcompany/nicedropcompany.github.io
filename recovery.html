@@ -1,113 +1,225 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pt-PT">
 <head>
-
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NiceDrop | Recuperar Password</title>
 
-    <title>NiceDrop | Password Recovery</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
 
-    <!DOCTYPE html>
-    <html lang="pt-PT">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>NiceDrop | Confirmação de Email</title>
-        <link rel="stylesheet" href="/style.css">
-    </head>
-    <body class="app-page">
-        <main style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;">
-            <div style="width:min(100%,520px);background:white;padding:36px;box-shadow:-5px 5px 0 rgba(0,0,0,0.30);border:1px solid rgba(0,0,0,0.08);">
-                <h2>Confirmação de Email</h2>
-                <p id="message" class="hero-text">A verificar o seu link...</p>
+    <style>
+        body.auth-page {
+            background: url('sky.png') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .auth-glass-container {
+            width: 100%;
+            max-width: 420px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 0;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.03);
+            color: #000;
+            overflow: hidden;
+        }
+
+        .auth-form-scroll {
+            padding: 40px;
+        }
+
+        .minimal-input {
+            width: 100%;
+            padding: 18px 22px;
+            margin-bottom: 15px;
+            border-radius: 0;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.4);
+            font-family: 'DM Sans', sans-serif;
+            box-sizing: border-box;
+            outline: none;
+            color: #000;
+            font-size: 0.95rem;
+        }
+
+        .minimal-input::placeholder {
+            color: rgba(0, 0, 0, 0.45);
+        }
+
+        .auth-header h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.5rem;
+            margin: 0 0 6px 0;
+            line-height: 1;
+        }
+
+        .auth-message {
+            padding: 14px 20px;
+            text-align: center;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.82rem;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.8rem;
+            color: rgba(0, 0, 0, 0.55);
+            text-decoration: none;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .back-link:hover {
+            color: #000;
+        }
+    </style>
+</head>
+
+<body class="auth-page">
+
+    <div class="auth-glass-container">
+
+        <div style="text-align: center; margin-bottom: 30px;">
+            <a href="index.html">
+                <img src="/nicedrop.png" alt="NiceDrop" style="height: 40px; opacity: 0.9;">
+            </a>
+        </div>
+
+        <div class="auth-card">
+
+            <!-- Painel: pedir reset -->
+            <div id="requestPanel" class="auth-form-scroll">
+                <div class="auth-header" style="text-align: center; margin-bottom: 30px;">
+                    <h2>RECUPERAR</h2>
+                    <p style="font-size: 0.85rem; opacity: 0.6;">Introduz o teu email para receber o link</p>
+                </div>
+
+                <form id="requestForm">
+                    <input type="email" id="recoveryEmail" placeholder="Email institucional" required class="minimal-input">
+                    <button type="submit" class="btn-primary" style="width: 100%; padding: 18px; margin-top: 10px; font-weight: 700;">
+                        ENVIAR LINK
+                    </button>
+                </form>
+
+                <a href="auth.html" class="back-link">← Voltar ao login</a>
             </div>
-        </main>
-        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-        <script src="/supabase-config.js"></script>
-        <script>
-        async function checkEmailConfirmation() {
-            const msg = document.getElementById('message');
-            const hash = window.location.hash;
-            const search = window.location.search;
-            const params = new URLSearchParams(search);
-            const hashParams = new URLSearchParams(hash.replace(/^#/, ''));
 
-            // Helper para esperar supabase
-            function waitForSupabase(cb) {
-                if (window.supabaseConfig && window.supabaseConfig.getClient) cb();
-                else setTimeout(() => waitForSupabase(cb), 50);
+            <!-- Painel: definir nova password -->
+            <div id="resetPanel" class="auth-form-scroll" style="display: none;">
+                <div class="auth-header" style="text-align: center; margin-bottom: 30px;">
+                    <h2>NOVA PASSWORD</h2>
+                    <p style="font-size: 0.85rem; opacity: 0.6;">Define a tua nova password de acesso</p>
+                </div>
+
+                <form id="resetForm">
+                    <input type="password" id="newPassword" placeholder="Nova password" required class="minimal-input">
+                    <input type="password" id="confirmPassword" placeholder="Confirmar password" required class="minimal-input">
+                    <button type="submit" class="btn-primary" style="width: 100%; padding: 18px; margin-top: 10px; font-weight: 700;">
+                        GUARDAR
+                    </button>
+                </form>
+            </div>
+
+            <!-- Mensagem de feedback -->
+            <div id="authMessage" class="auth-message" style="display: none;"></div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/supabase-config.js"></script>
+    <script>
+        function waitForSupabase(cb) {
+            if (window.supabaseConfig && window.supabaseConfig.getClient) cb();
+            else setTimeout(() => waitForSupabase(cb), 50);
+        }
+
+        function showMessage(text, isError = false) {
+            const el = document.getElementById('authMessage');
+            el.textContent = text;
+            el.style.display = 'block';
+            el.style.color = isError ? '#c0392b' : '#1a7a4a';
+        }
+
+        waitForSupabase(async () => {
+            await window.supabaseConfig.init();
+            const supabase = window.supabaseConfig.getClient();
+
+            // Detectar se chegou com token de reset (#access_token ou ?code=)
+            const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+            const query = new URLSearchParams(window.location.search);
+            const type = hash.get('type') || query.get('type');
+            const hasCode = query.has('code');
+            const isReset = type === 'recovery' || hasCode;
+
+            if (isReset) {
+                document.getElementById('requestPanel').style.display = 'none';
+                document.getElementById('resetPanel').style.display = 'block';
+
+                if (hasCode) {
+                    try {
+                        await supabase.auth.exchangeCodeForSession(query.get('code'));
+                    } catch (_) {}
+                }
             }
 
-            // Lógica principal
-            waitForSupabase(async () => {
-                await window.supabaseConfig.init();
-                const supabase = window.supabaseConfig.getClient();
-                if (!supabase) {
-                    msg.textContent = 'Erro ao inicializar Supabase.';
-                    msg.style.color = 'red';
+            // Formulário: pedir email de reset
+            document.getElementById('requestForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('recoveryEmail').value.trim();
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + '/recovery.html'
+                });
+                if (error) {
+                    showMessage('Erro: ' + error.message, true);
+                } else {
+                    showMessage('Link enviado! Verifica o teu email.');
+                    document.getElementById('requestForm').reset();
+                }
+            });
+
+            // Formulário: guardar nova password
+            document.getElementById('resetForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const pw = document.getElementById('newPassword').value;
+                const pw2 = document.getElementById('confirmPassword').value;
+                if (pw !== pw2) {
+                    showMessage('As passwords não coincidem.', true);
                     return;
                 }
-
-                // 1. PKCE flow: ?code=...
-                if (params.has('code')) {
-                    try {
-                        const { error } = await supabase.auth.exchangeCodeForSession(params.get('code'));
-                        if (error) throw error;
-                        msg.textContent = 'Email confirmado com sucesso! A redirecionar...';
-                        msg.style.color = 'green';
-                        setTimeout(() => { window.location.href = '/auth.html'; }, 2000);
-                        return;
-                    } catch (e) {
-                        msg.textContent = 'Link inválido ou expirado.';
-                        msg.style.color = 'red';
-                        return;
-                    }
+                if (pw.length < 6) {
+                    showMessage('A password deve ter pelo menos 6 caracteres.', true);
+                    return;
                 }
-
-                // 2. Hash ou query com type=signup/email_change
-                const type = hashParams.get('type') || params.get('type');
-                if (type === 'signup' || type === 'email_change') {
-                    // Se vier com access_token/refresh_token no hash
-                    if (hashParams.get('access_token') && hashParams.get('refresh_token')) {
-                        // Supabase já faz o setSession automaticamente, só precisa verificar sessão
-                        try {
-                            const { data, error } = await supabase.auth.getSession();
-                            if (error || !data.session) throw error;
-                            msg.textContent = 'Email confirmado com sucesso! A redirecionar...';
-                            msg.style.color = 'green';
-                            setTimeout(() => { window.location.href = '/auth.html'; }, 2000);
-                            return;
-                        } catch (e) {
-                            msg.textContent = 'Link inválido ou expirado.';
-                            msg.style.color = 'red';
-                            return;
-                        }
-                    }
-                    // Caso especial: token_hash na query (ex: ?token_hash=...&type=signup)
-                    if (params.get('token_hash')) {
-                        // Supabase trata isto internamente, só precisa verificar sessão
-                        try {
-                            const { data, error } = await supabase.auth.getSession();
-                            if (error || !data.session) throw error;
-                            msg.textContent = 'Email confirmado com sucesso! A redirecionar...';
-                            msg.style.color = 'green';
-                            setTimeout(() => { window.location.href = '/auth.html'; }, 2000);
-                            return;
-                        } catch (e) {
-                            msg.textContent = 'Link inválido ou expirado.';
-                            msg.style.color = 'red';
-                            return;
-                        }
-                    }
+                const { error } = await supabase.auth.updateUser({ password: pw });
+                if (error) {
+                    showMessage('Erro: ' + error.message, true);
+                } else {
+                    showMessage('Password alterada com sucesso! A redirecionar...');
+                    setTimeout(() => { window.location.href = '/auth.html'; }, 2000);
                 }
-
-                // Se não encontrou nenhum dos fluxos válidos
-                msg.textContent = 'Link inválido ou expirado.';
-                msg.style.color = 'red';
             });
-        }
-        checkEmailConfirmation();
-        </script>
-    </body>
-    </html>
+        });
+    </script>
+</body>
+</html>
