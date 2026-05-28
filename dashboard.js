@@ -319,7 +319,8 @@ function renderPosts() {
     document.getElementById('newPostDashBtn').addEventListener('click', () => {
         document.getElementById('dashPostId').value = '';
         document.getElementById('dashPostTitle').value = '';
-        document.getElementById('dashPostAuthor').value = state.user?.username || '';
+        const currentStore = state.stores.find(s => s.id === state.currentStoreId);
+        document.getElementById('dashPostAuthor').value = currentStore?.name || state.user?.username || '';
         document.getElementById('dashPostContent').value = '';
         document.getElementById('dashPostModalTitle').textContent = 'Novo Post';
         document.getElementById('dashPostError').style.display = 'none';
