@@ -56,6 +56,8 @@
                 <div id="detailRow" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;"></div>
                 <style>#detailRow > .detail-card:last-child { grid-column: 1 / -1; }</style>
 
+                <div id="postsRow"></div>
+
             </div>
 
         </main>
@@ -76,6 +78,25 @@
             <div style="display:flex;gap:10px;">
                 <button type="submit" class="btn-primary" style="flex:1;">ADICIONAR</button>
                 <button type="button" class="btn-outline" onclick="closeModal('addOperatorModal')" style="flex:1;">CANCELAR</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal Post -->
+    <div id="dashPostModal" class="modal glass-panel" style="max-width:520px;width:92vw;">
+        <div class="modal-header">
+            <h2 style="font-size:1.4rem;margin:0;" id="dashPostModalTitle">Novo Post</h2>
+            <button class="modal-close" onclick="closeModal('dashPostModal')">&times;</button>
+        </div>
+        <form id="dashPostForm" style="display:flex;flex-direction:column;gap:14px;">
+            <input type="hidden" id="dashPostId">
+            <input type="text" id="dashPostTitle" placeholder="Título" required>
+            <input type="text" id="dashPostAuthor" placeholder="Autor">
+            <textarea id="dashPostContent" placeholder="Conteúdo..." rows="5" style="border-radius:0;resize:vertical;"></textarea>
+            <div id="dashPostError" style="display:none;color:#e74c3c;font-size:0.82rem;"></div>
+            <div style="display:flex;gap:10px;">
+                <button type="submit" class="btn-primary" style="flex:1;">GUARDAR</button>
+                <button type="button" class="btn-outline" onclick="closeModal('dashPostModal')" style="flex:1;">CANCELAR</button>
             </div>
         </form>
     </div>

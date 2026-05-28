@@ -25,7 +25,8 @@ function waitForSupabase(cb) {
 }
 
 let supabaseClient = null;
-const state = { user: null, stores: [], drones: [], team: [], orders: [], products: [], currentStoreId: null };
+const state = { user: null, stores: [], drones: [], team: [], orders: [], products: [], posts: [], currentStoreId: null };
+let dashPostsCache = {};
 
 async function logout() {
     await supabaseClient.auth.signOut();
@@ -121,10 +122,17 @@ async function loadStoreData(storeId) {
         .select('id, name, price, category, weight, image')
         .eq('store_id', storeId);
 
+    const { data: posts } = await supabaseClient
+        .from('posts')
+        .select('id, title, author, content, date, created_at')
+        .eq('store_id', storeId)
+        .order('created_at', { ascending: false });
+
     state.drones = drones || [];
     state.team = team;
     state.orders = orders || [];
     state.products = products || [];
+    state.posts = posts || [];
 }
 
 function renderSidebar() {
@@ -273,6 +281,76 @@ function renderMain() {
         });
     }
 
+    renderPosts();
+}
+
+function renderPosts() {
+    const el = document.getElementById('postsRow');
+    if (!el) return;
+
+    dashPostsCache = {};
+    state.posts.forEach(p => { dashPostsCache[p.id] = p; });
+
+    el.innerHTML = `
+    <div class="detail-card" style="grid-column:1/-1;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <div class="detail-card-title" style="margin-bottom:0;">Posts / Notícias</div>
+            <button id="newPostDashBtn" class="btn-primary" style="font-size:0.72rem;padding:8px 16px;">+ Novo Post</button>
+        </div>
+        ${state.posts.length ? state.posts.map(p => {
+            const dateStr = (p.date || p.created_at) ? new Date(p.date || p.created_at).toLocaleDateString('pt-PT', { day:'2-digit', month:'long', year:'numeric' }) : '—';
+            const preview = p.content ? p.content.substring(0, 80) + (p.content.length > 80 ? '…' : '') : '';
+            return `<div style="padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.08);">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-weight:700;font-size:0.88rem;">${p.title || '—'}</div>
+                        <div style="font-size:0.72rem;color:var(--ink-faint);margin-top:2px;">${p.author || '—'} · ${dateStr}</div>
+                        ${preview ? `<div style="font-size:0.78rem;color:var(--ink-faint);margin-top:4px;">${preview}</div>` : ''}
+                    </div>
+                    <div style="display:flex;gap:6px;flex-shrink:0;">
+                        <button class="dash-edit-post-btn btn-outline" data-id="${p.id}" style="font-size:0.62rem;padding:5px 10px;">Editar</button>
+                        <button class="dash-delete-post-btn" data-id="${p.id}" style="background:rgba(220,38,38,0.12);border:1px solid rgba(220,38,38,0.45);color:#dc2626;padding:5px 10px;font-size:0.62rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;letter-spacing:1px;text-transform:uppercase;">Apagar</button>
+                    </div>
+                </div>
+            </div>`;
+        }).join('') : '<div class="empty-state-text" style="padding:20px 0;font-size:0.82rem;">SEM POSTS</div>'}
+    </div>`;
+
+    document.getElementById('newPostDashBtn').addEventListener('click', () => {
+        document.getElementById('dashPostId').value = '';
+        document.getElementById('dashPostTitle').value = '';
+        document.getElementById('dashPostAuthor').value = state.user?.username || '';
+        document.getElementById('dashPostContent').value = '';
+        document.getElementById('dashPostModalTitle').textContent = 'Novo Post';
+        document.getElementById('dashPostError').style.display = 'none';
+        openModal('dashPostModal');
+    });
+
+    el.querySelectorAll('.dash-edit-post-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const p = dashPostsCache[btn.dataset.id];
+            if (!p) return;
+            document.getElementById('dashPostId').value = p.id;
+            document.getElementById('dashPostTitle').value = p.title || '';
+            document.getElementById('dashPostAuthor').value = p.author || '';
+            document.getElementById('dashPostContent').value = p.content || '';
+            document.getElementById('dashPostModalTitle').textContent = 'Editar Post';
+            document.getElementById('dashPostError').style.display = 'none';
+            openModal('dashPostModal');
+        });
+    });
+
+    el.querySelectorAll('.dash-delete-post-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            if (!confirm('Apagar este post?')) return;
+            const { error } = await supabaseClient.from('posts').delete().eq('id', btn.dataset.id);
+            if (error) { alert('Erro: ' + error.message); return; }
+            await loadStoreData(state.currentStoreId);
+            renderPosts();
+        });
+    });
+}
+
 async function removeMember(userId) {
     const { data: profile } = await supabaseClient
         .from('profiles')
@@ -290,7 +368,6 @@ async function removeMember(userId) {
     }
     await loadStoreData(state.currentStoreId);
     renderMain();
-}
 }
 
 function bindEvents() {
@@ -340,6 +417,39 @@ function bindEvents() {
             emailInput.value = '';
             await loadStoreData(state.currentStoreId);
             renderMain();
+        });
+    }
+
+    const dashPostForm = document.getElementById('dashPostForm');
+    if (dashPostForm) {
+        dashPostForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorDiv = document.getElementById('dashPostError');
+            errorDiv.style.display = 'none';
+            const postId = document.getElementById('dashPostId').value;
+            const title = document.getElementById('dashPostTitle').value.trim();
+            const author = document.getElementById('dashPostAuthor').value.trim();
+            const content = document.getElementById('dashPostContent').value.trim();
+            if (!title) { errorDiv.textContent = 'Título obrigatório.'; errorDiv.style.display = 'block'; return; }
+
+            if (postId) {
+                const { data: updated, error } = await supabaseClient
+                    .from('posts')
+                    .update({ title, author, content })
+                    .eq('id', postId)
+                    .select();
+                if (error) { errorDiv.textContent = 'Erro: ' + error.message; errorDiv.style.display = 'block'; return; }
+                if (!updated?.length) { errorDiv.textContent = 'Sem permissão para guardar.'; errorDiv.style.display = 'block'; return; }
+            } else {
+                const { error } = await supabaseClient
+                    .from('posts')
+                    .insert({ title, author, content, store_id: state.currentStoreId, date: new Date().toISOString().split('T')[0] });
+                if (error) { errorDiv.textContent = 'Erro: ' + error.message; errorDiv.style.display = 'block'; return; }
+            }
+
+            closeModal('dashPostModal');
+            await loadStoreData(state.currentStoreId);
+            renderPosts();
         });
     }
 }

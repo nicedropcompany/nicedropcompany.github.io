@@ -34,7 +34,8 @@
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\diogo\\\\Desktop\\\\nicedropcompany.github.io\" -Force)",
       "Bash(Select-Object Name, Mode)",
       "Bash(Get-ChildItem -Recurse)",
-      "Bash(Select-Object FullName)"
+      "Bash(Select-Object FullName)",
+      "Bash(node --input-type=module)"
     ]
   }
 }

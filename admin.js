@@ -321,6 +321,7 @@ function bindEvents() {
     document.getElementById('newPostBtn').addEventListener('click', () => {
         document.getElementById('newPostForm').reset();
         document.getElementById('editPostId').value = '';
+        document.getElementById('postAuthor').value = currentUser?.username || currentUser?.email || '';
         document.getElementById('postModalTitle').textContent = 'Novo Post';
         document.getElementById('postError').style.display = 'none';
         openAdminModal();
