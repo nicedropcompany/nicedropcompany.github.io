@@ -197,7 +197,7 @@ function renderMain() {
 
     const ordersHtml = (state.orders || []).length
         ? (state.orders || []).map(o => {
-            const sc = { pending:'#f1c40f', confirmed:'#2980ef', shipping:'#2980ef', delivered:'#27ae60', completed:'#27ae60', cancelled:'#e74c3c' };
+            const sc = { pending:'#f1c40f', confirmed:'#2980ef', shipping:'#2980ef', delivered:'#27ae60', complete:'#27ae60', completed:'#27ae60', cancelled:'#e74c3c', canceled:'#e74c3c' };
             const s = (o.status || '').toLowerCase();
             return `<div class="drone-row" style="gap:10px;">
                 <div style="flex:1;min-width:0;">

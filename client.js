@@ -37,8 +37,10 @@ const STATUS_COLORS = {
     shipping: '#2980ef',
     shipped: '#2980ef',
     delivered: '#27ae60',
+    complete: '#27ae60',
     completed: '#27ae60',
     cancelled: '#e74c3c',
+    canceled: '#e74c3c',
     active: '#27ae60',
     inactive: '#e74c3c'
 };
@@ -109,7 +111,7 @@ async function init() {
         ]);
 
         const role = (profile.role || '').trim().toLowerCase();
-        if (role === 'operator' || role === 'owner') {
+        if (role === 'operator') {
             await loadStoreData();
         }
 
@@ -157,7 +159,7 @@ function setupDashLink() {
 
 function setupTabs() {
     const r = (currentProfile.role || '').trim().toLowerCase();
-    if (r === 'operator' || r === 'owner') {
+    if (r === 'operator') {
         const btn = document.getElementById('lojaTabBtn');
         if (btn) btn.style.display = 'block';
     }

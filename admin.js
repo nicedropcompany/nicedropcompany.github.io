@@ -423,7 +423,7 @@ async function loadGlobalOrders() {
     const list = orders || [];
     document.getElementById('ordersGlobalCount').textContent = list.length + ' encomenda' + (list.length !== 1 ? 's' : '');
 
-    const statusColors = { pending:'#f1c40f', confirmed:'#2980ef', processing:'#8e44ad', shipping:'#2980ef', delivered:'#27ae60', completed:'#27ae60', cancelled:'#e74c3c' };
+    const statusColors = { pending:'#f1c40f', confirmed:'#2980ef', processing:'#8e44ad', shipping:'#2980ef', delivered:'#27ae60', complete:'#27ae60', completed:'#27ae60', cancelled:'#e74c3c', canceled:'#e74c3c' };
 
     document.getElementById('ordersGlobalBody').innerHTML = list.length
         ? list.map(o => {
