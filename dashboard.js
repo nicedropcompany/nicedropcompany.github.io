@@ -25,7 +25,7 @@ function waitForSupabase(cb) {
 }
 
 let supabaseClient = null;
-const state = { user: null, stores: [], drones: [], team: [], currentStoreId: null };
+const state = { user: null, stores: [], drones: [], team: [], orders: [], products: [], currentStoreId: null };
 
 async function logout() {
     await supabaseClient.auth.signOut();
@@ -98,8 +98,6 @@ async function loadStoreData(storeId) {
         .select('id, name, status, capacity')
         .eq('store_id', storeId);
 
-    // store_id é JSONB e pode ser scalar (37) ou array ([37,2])
-    // .eq() não faz match em arrays, por isso filtramos no cliente
     const { data: allProfiles } = await supabaseClient
         .from('profiles')
         .select('id, username, role, store_id')
@@ -111,8 +109,22 @@ async function loadStoreData(storeId) {
         return ids.includes(numId);
     });
 
+    const { data: orders } = await supabaseClient
+        .from('orders')
+        .select('id, username, price, status, created_at, address')
+        .eq('store_id', storeId)
+        .order('created_at', { ascending: false })
+        .limit(8);
+
+    const { data: products } = await supabaseClient
+        .from('products')
+        .select('id, name, price, category, weight, image')
+        .eq('store_id', storeId);
+
     state.drones = drones || [];
     state.team = team;
+    state.orders = orders || [];
+    state.products = products || [];
 }
 
 function renderSidebar() {
@@ -162,11 +174,17 @@ function renderMain() {
     const totalDrones = state.drones.length;
     const activeDrones = state.drones.filter(d => d.status === 'active' || d.status === 'shipping').length;
     const totalTeam = state.team.length;
+    const totalRevenue = (state.orders || []).reduce((s, o) => s + (parseFloat(o.price) || 0), 0);
+    const totalProducts = (state.products || []).length;
+    const pendingOrders = (state.orders || []).filter(o => o.status === 'pending' || o.status === 'confirmed').length;
     document.getElementById('statsRow').innerHTML = `
         <div class="stat-card"><div class="stat-label">Total Drones</div><div class="stat-number">${totalDrones}</div></div>
         <div class="stat-card"><div class="stat-label">Drones Ativos</div><div class="stat-number">${activeDrones}</div></div>
         <div class="stat-card"><div class="stat-label">Equipa</div><div class="stat-number">${totalTeam}</div></div>
-        <div class="stat-card"><div class="stat-label">Estado Loja</div><div class="stat-number" style="color:${storeStatusColor}">${storeStatus}</div></div>
+        <div class="stat-card"><div class="stat-label">Receita</div><div class="stat-number" style="font-size:1.4rem;">${formatEuro(totalRevenue)}</div></div>
+        <div class="stat-card"><div class="stat-label">Produtos</div><div class="stat-number">${totalProducts}</div></div>
+        <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-number" style="color:${pendingOrders > 0 ? '#f1c40f' : 'inherit'}">${pendingOrders}</div></div>
+        <div class="stat-card"><div class="stat-label">Estado Loja</div><div class="stat-number" style="font-size:1rem;color:${storeStatusColor};padding-top:6px;">${storeStatus}</div></div>
     `;
 
     // Drone status badge colors
@@ -176,6 +194,21 @@ function renderMain() {
         active: '#27ae60',
         inactive: '#e74c3c'
     };
+
+    const ordersHtml = (state.orders || []).length
+        ? (state.orders || []).map(o => {
+            const sc = { pending:'#f1c40f', confirmed:'#2980ef', shipping:'#2980ef', delivered:'#27ae60', completed:'#27ae60', cancelled:'#e74c3c' };
+            const s = (o.status || '').toLowerCase();
+            return `<div class="drone-row" style="gap:10px;">
+                <div style="flex:1;min-width:0;">
+                    <div style="font-weight:600;font-size:0.82rem;">#${o.id} — ${o.username || '—'}</div>
+                    <div style="font-size:0.72rem;color:var(--ink-faint);">${o.address ? o.address.substring(0,40) + (o.address.length > 40 ? '…' : '') : '—'}</div>
+                </div>
+                <span style="background:${sc[s]||'#bbb'};color:#fff;padding:2px 8px;border-radius:12px;font-size:0.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;flex-shrink:0;">${s}</span>
+                <div style="flex-shrink:0;font-weight:600;font-size:0.82rem;">${formatEuro(o.price)}</div>
+            </div>`;
+        }).join('')
+        : '<div class="empty-state-text">SEM ENCOMENDAS</div>';
 
     document.getElementById('detailRow').innerHTML = `
         <div class="detail-card">
@@ -190,6 +223,10 @@ function renderMain() {
         <div class="detail-card">
             <div class="detail-card-title">Equipa</div>
             <div id="teamListHtml"></div>
+        </div>
+        <div class="detail-card" style="grid-column:1/-1;">
+            <div class="detail-card-title">Encomendas Recentes</div>
+            ${ordersHtml}
         </div>
     `;
 

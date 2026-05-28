@@ -33,6 +33,7 @@ async function init() {
 
         await loadUsers();
         await loadStores();
+        await Promise.all([loadGlobalOrders(), loadParentOrders(), loadPosts(), loadCategories()]);
         bindEvents();
     });
 }
@@ -315,11 +316,32 @@ function bindEvents() {
     });
     document.getElementById('createStoreBtn').addEventListener('click', createStore);
     document.getElementById('addDroneBtn').addEventListener('click', addDrone);
-    document.getElementById('refreshBtn').addEventListener('click', async () => {
-        await loadUsers();
-        await loadStores();
-    });
     document.getElementById('searchInput').addEventListener('input', filterUsers);
+
+    document.getElementById('newPostBtn').addEventListener('click', openAdminModal);
+    document.getElementById('addCategoryBtn').addEventListener('click', addCategory);
+    document.getElementById('modalOverlay').addEventListener('click', closeAdminModal);
+
+    document.getElementById('newPostForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const errorDiv = document.getElementById('postError');
+        errorDiv.style.display = 'none';
+        const postId = document.getElementById('editPostId').value;
+        const title = document.getElementById('postTitle').value.trim();
+        const author = document.getElementById('postAuthor').value.trim();
+        const content = document.getElementById('postContent').value.trim();
+        if (!title) { errorDiv.textContent = 'Título obrigatório.'; errorDiv.style.display = 'block'; return; }
+
+        let error;
+        if (postId) {
+            ({ error } = await adminSupabase.from('posts').update({ title, author, content }).eq('id', postId));
+        } else {
+            ({ error } = await adminSupabase.from('posts').insert({ title, author, content, date: new Date().toISOString().split('T')[0] }));
+        }
+        if (error) { errorDiv.textContent = 'Erro: ' + error.message; errorDiv.style.display = 'block'; return; }
+        closeAdminModal();
+        await loadPosts();
+    });
 }
 
 function filterUsers() {
@@ -388,13 +410,188 @@ function initLeafletMap() {
     }
 }
 
-// Expor funções ao HTML inline
+// ─────────────────────────────────────────────
+//  ENCOMENDAS GLOBAIS
+// ─────────────────────────────────────────────
+async function loadGlobalOrders() {
+    const { data: orders } = await adminSupabase
+        .from('orders')
+        .select('id, username, email, store, price, status, created_at, date')
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+    const list = orders || [];
+    document.getElementById('ordersGlobalCount').textContent = list.length + ' encomenda' + (list.length !== 1 ? 's' : '');
+
+    const statusColors = { pending:'#f1c40f', confirmed:'#2980ef', processing:'#8e44ad', shipping:'#2980ef', delivered:'#27ae60', completed:'#27ae60', cancelled:'#e74c3c' };
+
+    document.getElementById('ordersGlobalBody').innerHTML = list.length
+        ? list.map(o => {
+            const s = (o.status || '').toLowerCase();
+            const color = statusColors[s] || '#bbb';
+            const d = o.date || o.created_at;
+            const dateStr = d ? new Date(d).toLocaleDateString('pt-PT', { day:'2-digit', month:'2-digit', year:'numeric' }) : '—';
+            return `<tr>
+                <td><strong>#${o.id}</strong></td>
+                <td>${o.username || o.email || '—'}</td>
+                <td>${o.store || '—'}</td>
+                <td>${new Intl.NumberFormat('pt-PT',{style:'currency',currency:'EUR'}).format(o.price||0)}</td>
+                <td><span style="background:${color};color:#fff;padding:2px 8px;border-radius:999px;font-size:0.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;">${s||'—'}</span></td>
+                <td style="white-space:nowrap;">${dateStr}</td>
+            </tr>`;
+        }).join('')
+        : '<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);padding:24px;">Sem encomendas</td></tr>';
+}
+
+// ─────────────────────────────────────────────
+//  PARENT ORDERS (STRIPE)
+// ─────────────────────────────────────────────
+async function loadParentOrders() {
+    const { data: pOrders } = await adminSupabase
+        .from('parent_orders')
+        .select('id, paid, stripe_session_id, payment_url, created_at')
+        .order('created_at', { ascending: false })
+        .limit(30);
+
+    const list = pOrders || [];
+    document.getElementById('parentOrdersCount').textContent = list.length + ' pagamento' + (list.length !== 1 ? 's' : '');
+
+    document.getElementById('parentOrdersBody').innerHTML = list.length
+        ? list.map(p => {
+            const isPaid = p.paid === true || p.paid?.status === 'paid' || JSON.stringify(p.paid)?.includes('paid');
+            const color = isPaid ? '#27ae60' : '#f1c40f';
+            const label = isPaid ? 'Pago' : 'Pendente';
+            const session = p.stripe_session_id ? p.stripe_session_id.substring(0, 20) + '…' : '—';
+            const dateStr = p.created_at ? new Date(p.created_at).toLocaleDateString('pt-PT', { day:'2-digit', month:'2-digit', year:'numeric' }) : '—';
+            return `<tr>
+                <td><strong>#${p.id}</strong></td>
+                <td><span style="background:${color};color:#fff;padding:2px 8px;border-radius:999px;font-size:0.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;">${label}</span></td>
+                <td style="font-size:0.75rem;color:var(--ink-faint);">${session}</td>
+                <td style="white-space:nowrap;">${dateStr}</td>
+                <td>${p.payment_url ? `<a href="${p.payment_url}" target="_blank" class="btn-outline" style="font-size:0.65rem;padding:5px 10px;">Link</a>` : '—'}</td>
+            </tr>`;
+        }).join('')
+        : '<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);padding:24px;">Sem pagamentos</td></tr>';
+}
+
+// ─────────────────────────────────────────────
+//  POSTS
+// ─────────────────────────────────────────────
+async function loadPosts() {
+    const { data: posts } = await adminSupabase
+        .from('posts')
+        .select('id, title, author, content, date, created_at')
+        .order('created_at', { ascending: false });
+
+    const list = posts || [];
+    const el = document.getElementById('postsList');
+
+    if (!list.length) {
+        el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink-faint);font-size:0.82rem;text-transform:uppercase;letter-spacing:1px;">Sem posts</div>';
+        return;
+    }
+
+    el.innerHTML = list.map(p => {
+        const dateStr = (p.date || p.created_at) ? new Date(p.date || p.created_at).toLocaleDateString('pt-PT', { day:'2-digit', month:'long', year:'numeric' }) : '—';
+        const preview = p.content ? p.content.substring(0, 100) + (p.content.length > 100 ? '…' : '') : '';
+        return `
+        <div style="padding:16px 0;border-bottom:1px solid rgba(255,255,255,0.3);">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+                <div style="flex:1;min-width:0;">
+                    <div style="font-weight:700;font-size:0.9rem;">${p.title || '—'}</div>
+                    <div style="font-size:0.75rem;color:var(--ink-faint);margin-top:2px;">${p.author || '—'} · ${dateStr}</div>
+                    ${preview ? `<div style="font-size:0.8rem;color:var(--ink-faint);margin-top:6px;">${preview}</div>` : ''}
+                </div>
+                <div style="display:flex;gap:8px;flex-shrink:0;">
+                    <button onclick="editPost(${p.id},'${encodeURIComponent(p.title||'')}','${encodeURIComponent(p.author||'')}','${encodeURIComponent(p.content||'')}')" class="btn-outline" style="font-size:0.65rem;padding:6px 12px;">Editar</button>
+                    <button onclick="deletePost(${p.id})" style="background:rgba(220,38,38,0.12);border:1px solid rgba(220,38,38,0.45);color:#dc2626;padding:6px 12px;font-size:0.65rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;letter-spacing:1px;text-transform:uppercase;">Apagar</button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function editPost(id, title, author, content) {
+    document.getElementById('editPostId').value = id;
+    document.getElementById('postTitle').value = decodeURIComponent(title);
+    document.getElementById('postAuthor').value = decodeURIComponent(author);
+    document.getElementById('postContent').value = decodeURIComponent(content);
+    document.getElementById('postModalTitle').textContent = 'Editar Post';
+    openAdminModal();
+}
+
+async function deletePost(id) {
+    if (!confirm('Apagar este post?')) return;
+    const { error } = await adminSupabase.from('posts').delete().eq('id', id);
+    if (error) { alert('Erro: ' + error.message); return; }
+    await loadPosts();
+}
+
+function openAdminModal() {
+    document.getElementById('newPostModal').classList.add('show');
+    document.getElementById('modalOverlay').classList.add('show');
+}
+
+function closeAdminModal() {
+    document.getElementById('newPostModal').classList.remove('show');
+    document.getElementById('modalOverlay').classList.remove('show');
+    document.getElementById('newPostForm').reset();
+    document.getElementById('editPostId').value = '';
+    document.getElementById('postModalTitle').textContent = 'Novo Post';
+    document.getElementById('postError').style.display = 'none';
+}
+
+window.closeAdminModal = closeAdminModal;
+window.editPost = editPost;
+window.deletePost = deletePost;
+
+// ─────────────────────────────────────────────
+//  CATEGORIAS
+// ─────────────────────────────────────────────
+async function loadCategories() {
+    const { data: cats } = await adminSupabase.from('categories').select('id, categories').order('id');
+    const list = cats || [];
+    const el = document.getElementById('categoriesList');
+
+    if (!list.length) {
+        el.innerHTML = '<div style="color:var(--ink-faint);font-size:0.82rem;padding:12px 0;">Sem categorias</div>';
+        return;
+    }
+
+    el.innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:8px;padding-top:4px;">${list.map(c => `
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.5);border:1px solid var(--glass-border);padding:6px 14px;">
+            <span style="font-size:0.82rem;font-weight:600;">${c.categories}</span>
+            <button onclick="deleteCategory(${c.id})" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:16px;line-height:1;padding:0;">&times;</button>
+        </div>`).join('')}</div>`;
+}
+
+async function addCategory() {
+    const input = document.getElementById('newCategoryInput');
+    const name = input.value.trim();
+    if (!name) return;
+    const { error } = await adminSupabase.from('categories').insert({ categories: name });
+    if (error) { alert('Erro: ' + error.message); return; }
+    input.value = '';
+    await loadCategories();
+}
+
+async function deleteCategory(id) {
+    if (!confirm('Apagar esta categoria?')) return;
+    const { error } = await adminSupabase.from('categories').delete().eq('id', id);
+    if (error) { alert('Erro: ' + error.message); return; }
+    await loadCategories();
+}
+
+window.deleteCategory = deleteCategory;
+
+// ─────────────────────────────────────────────
+//  EXPOR & INICIAR
+// ─────────────────────────────────────────────
 window.deleteStore  = deleteStore;
 window.deleteDrone  = deleteDrone;
 window.changeRole   = changeRole;
 
 document.addEventListener('DOMContentLoaded', function () {
     init();
-    // Inicializar mapa após um pequeno delay para garantir que tudo está pronto
     setTimeout(initLeafletMap, 500);
 });

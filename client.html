@@ -8,11 +8,47 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
     <style>
+        .profile-tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255,255,255,0.4);
+            overflow-x: auto;
+            scrollbar-width: none;
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+        }
+        .profile-tabs::-webkit-scrollbar { display: none; }
+
+        .profile-tab-btn {
+            padding: 14px 22px;
+            font-size: 0.7rem;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            color: var(--ink-faint);
+            white-space: nowrap;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .profile-tab-btn.active {
+            color: var(--ink);
+            border-bottom-color: var(--ink);
+        }
+        .profile-tab-btn:hover { color: var(--ink); }
+
+        .profile-tab-panel { display: none; }
+        .profile-tab-panel.active { display: flex; flex-direction: column; gap: 20px; }
+
         .profile-hero {
             display: flex;
             align-items: center;
             gap: 24px;
-            padding: 28px;
+            padding: 28px 32px;
             background: var(--glass);
             border: 1px solid var(--glass-border);
             backdrop-filter: blur(15px);
@@ -21,8 +57,8 @@
         }
 
         .profile-avatar-large {
-            width: 80px;
-            height: 80px;
+            width: 74px;
+            height: 74px;
             border-radius: 50%;
             background: #000;
             color: #fff;
@@ -30,125 +66,83 @@
             align-items: center;
             justify-content: center;
             font-family: 'Bebas Neue', 'BebasNeue', sans-serif;
-            font-size: 2.4rem;
-            letter-spacing: 1px;
+            font-size: 2.2rem;
             flex-shrink: 0;
-        }
-
-        .profile-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
         }
 
         .profile-name {
             font-family: 'Bebas Neue', 'BebasNeue', sans-serif;
-            font-size: 2rem;
+            font-size: 1.9rem;
             letter-spacing: 1.5px;
             line-height: 1;
         }
 
-        .profile-email {
-            font-size: 0.85rem;
-            color: var(--ink-faint);
-            letter-spacing: 0.5px;
-        }
+        .profile-email { font-size: 0.82rem; color: var(--ink-faint); margin-top: 4px; }
 
         .profile-meta {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
-            margin-top: 4px;
+            margin-top: 6px;
         }
 
         .profile-since {
-            font-size: 0.72rem;
-            letter-spacing: 1.2px;
+            font-size: 0.68rem;
+            letter-spacing: 1px;
             text-transform: uppercase;
             color: var(--ink-faint);
         }
 
-        .profile-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            align-items: flex-end;
-        }
-
-        .order-row {
+        .data-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
-            padding: 12px 0;
+            padding: 13px 0;
             border-bottom: 1px solid rgba(255,255,255,0.3);
-            font-size: 0.85rem;
         }
+        .data-row:last-child { border-bottom: none; }
+        .data-row-left { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+        .data-row-title { font-weight: 600; font-size: 0.85rem; }
+        .data-row-sub { font-size: 0.74rem; color: var(--ink-faint); }
 
-        .order-row:last-child {
-            border-bottom: none;
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 14px;
         }
-
-        .order-id {
-            font-weight: 600;
-            font-size: 0.78rem;
-            letter-spacing: 0.8px;
-            color: var(--ink-soft);
+        .product-card {
+            background: rgba(255,255,255,0.5);
+            border: 1px solid var(--glass-border);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
         }
-
-        .order-store {
-            color: var(--ink-faint);
-            font-size: 0.78rem;
+        .product-img {
+            width: 100%;
+            height: 90px;
+            object-fit: cover;
+            background: rgba(0,0,0,0.04);
         }
+        .product-name { font-weight: 600; font-size: 0.82rem; }
+        .product-price { font-family: 'Bebas Neue', 'BebasNeue', sans-serif; font-size: 1.05rem; }
+        .product-cat { font-size: 0.68rem; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px; }
 
-        .order-date {
-            font-size: 0.72rem;
-            color: var(--ink-faint);
-            letter-spacing: 0.5px;
-        }
-
-        .empty-orders {
+        .empty-section {
             text-align: center;
-            padding: 40px 20px;
+            padding: 38px 20px;
             color: var(--ink-faint);
-            font-size: 0.85rem;
-            letter-spacing: 1px;
+            font-size: 0.8rem;
+            letter-spacing: 1.2px;
             text-transform: uppercase;
         }
 
-        .nav-dash-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.75rem;
-            letter-spacing: 1.4px;
-            text-transform: uppercase;
-            font-weight: 600;
-            color: var(--ink-faint);
-            transition: color 0.2s;
-        }
-
-        .nav-dash-link:hover {
-            color: var(--ink);
-        }
-
-        @media (max-width: 600px) {
-            .profile-hero {
-                flex-direction: column;
-                text-align: center;
-                align-items: center;
-            }
-            .profile-actions {
-                align-items: center;
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .profile-meta {
-                justify-content: center;
-            }
+        @media (max-width: 640px) {
+            .profile-hero { flex-direction: column; text-align: center; align-items: center; padding: 22px; }
+            .profile-meta { justify-content: center; }
+            #lojaGrid { grid-template-columns: 1fr !important; }
         }
     </style>
 </head>
@@ -156,23 +150,22 @@
 
     <nav class="topbar">
         <a href="index.html"><img src="nicedrop.png" class="brand-logo" alt="NiceDrop"></a>
-        <div class="topbar-right">
+        <div class="topbar-right" style="gap:16px;">
             <span id="userName" class="user-name">---</span>
-            <span id="userRole" class="user-role" style="margin-right:8px;"></span>
             <button id="logoutBtn" class="btn-primary">Sair</button>
         </div>
     </nav>
 
     <div class="main" style="padding-top:100px;">
 
-        <div id="dashLink" style="display:none; margin-bottom:4px;">
-            <a id="dashAnchor" class="nav-dash-link" href="#">&#8592; Painel</a>
+        <div id="dashLink" style="display:none;margin-bottom:6px;">
+            <a id="dashAnchor" href="#" style="font-size:0.72rem;letter-spacing:1.4px;text-transform:uppercase;font-weight:600;color:var(--ink-faint);">&#8592; Painel</a>
         </div>
 
-        <!-- Perfil hero card -->
-        <div class="profile-hero" data-aos="fade-up">
+        <!-- Perfil hero -->
+        <div class="profile-hero">
             <div id="profileAvatar" class="profile-avatar-large">U</div>
-            <div class="profile-info">
+            <div style="flex:1;min-width:0;">
                 <div id="profileName" class="profile-name">---</div>
                 <div id="profileEmail" class="profile-email">---</div>
                 <div class="profile-meta">
@@ -180,39 +173,138 @@
                     <span id="profileSince" class="profile-since"></span>
                 </div>
             </div>
-            <div class="profile-actions">
-                <button id="editProfileBtn" class="btn-outline" style="font-size:0.72rem;padding:10px 18px;">Editar Perfil</button>
+            <button id="editProfileBtn" class="btn-outline" style="font-size:0.7rem;padding:10px 18px;flex-shrink:0;">Editar</button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="profile-tabs" id="profileTabs">
+            <button class="profile-tab-btn active" data-tab="resumo">Resumo</button>
+            <button class="profile-tab-btn" data-tab="encomendas">Encomendas</button>
+            <button class="profile-tab-btn" data-tab="carrinho">Carrinho</button>
+            <button class="profile-tab-btn" data-tab="moradas">Moradas</button>
+            <button class="profile-tab-btn" data-tab="favoritos">Favoritos</button>
+            <button class="profile-tab-btn" id="lojaTabBtn" data-tab="loja" style="display:none;">Loja</button>
+        </div>
+
+        <!-- TAB: Resumo -->
+        <div class="profile-tab-panel active" id="tab-resumo">
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-label">Encomendas</div>
+                    <div class="stat-number" id="statOrders">—</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Gasto</div>
+                    <div class="stat-number" id="statSpent" style="font-size:1.5rem;padding-top:4px;">—</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Lojas Diferentes</div>
+                    <div class="stat-number" id="statStores">—</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Moradas Guardadas</div>
+                    <div class="stat-number" id="statAddresses">—</div>
+                </div>
+            </div>
+            <div class="card glass-card">
+                <div class="card-header">
+                    <h2 class="card-title" style="font-size:1.15rem;">Últimas Encomendas</h2>
+                    <button class="btn-outline" style="font-size:0.68rem;padding:8px 14px;" onclick="switchTab('encomendas')">Ver todas</button>
+                </div>
+                <div id="recentOrdersList"></div>
             </div>
         </div>
 
-        <!-- Stats -->
-        <div class="stats-row" id="statsRow" data-aos="fade-up">
-            <div class="stat-card">
-                <div class="stat-label">Encomendas</div>
-                <div class="stat-number" id="statOrders">—</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Lojas Diferentes</div>
-                <div class="stat-number" id="statStores">—</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Estado</div>
-                <div class="stat-number" id="statStatus" style="font-size:1.1rem;padding-top:6px;">—</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Tipo de Conta</div>
-                <div class="stat-number" id="statRole" style="font-size:1.1rem;padding-top:6px;">—</div>
+        <!-- TAB: Encomendas -->
+        <div class="profile-tab-panel" id="tab-encomendas">
+            <div class="card glass-card">
+                <div class="card-header">
+                    <h2 class="card-title" style="font-size:1.15rem;">Todas as Encomendas</h2>
+                    <span id="ordersTotal" class="badge"></span>
+                </div>
+                <div class="table-vertical-scroll" style="max-height:520px;">
+                    <table class="glass-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Loja</th>
+                                <th>Valor</th>
+                                <th>Estado</th>
+                                <th>Morada</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <!-- Encomendas recentes -->
-        <section class="card glass-card" data-aos="fade-up">
-            <div class="card-header">
-                <h2 class="card-title" style="font-size:1.3rem;">Encomendas Recentes</h2>
-                <span id="ordersCount" class="badge"></span>
+        <!-- TAB: Carrinho -->
+        <div class="profile-tab-panel" id="tab-carrinho">
+            <div class="card glass-card">
+                <div class="card-header">
+                    <h2 class="card-title" style="font-size:1.15rem;">Carrinho Atual</h2>
+                    <span id="cartTotal" class="badge"></span>
+                </div>
+                <div id="cartList"></div>
             </div>
-            <div id="ordersList"></div>
-        </section>
+        </div>
+
+        <!-- TAB: Moradas -->
+        <div class="profile-tab-panel" id="tab-moradas">
+            <div class="card glass-card">
+                <div class="card-header">
+                    <h2 class="card-title" style="font-size:1.15rem;">Moradas Guardadas</h2>
+                    <span id="addressesCount" class="badge"></span>
+                </div>
+                <div id="addressesList"></div>
+            </div>
+        </div>
+
+        <!-- TAB: Favoritos -->
+        <div class="profile-tab-panel" id="tab-favoritos">
+            <div class="card glass-card">
+                <div class="card-header">
+                    <h2 class="card-title" style="font-size:1.15rem;">Produtos Favoritos</h2>
+                    <span id="favoritesCount" class="badge"></span>
+                </div>
+                <div id="favoritesList"></div>
+            </div>
+        </div>
+
+        <!-- TAB: Loja (operator / owner) -->
+        <div class="profile-tab-panel" id="tab-loja">
+            <div class="stats-row" id="lojaStatsRow"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;" id="lojaGrid">
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h2 class="card-title" style="font-size:1.1rem;">Encomendas Recentes</h2>
+                    </div>
+                    <div id="lojaOrdersList"></div>
+                </div>
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h2 class="card-title" style="font-size:1.1rem;">Drones</h2>
+                    </div>
+                    <div id="lojaDronesList"></div>
+                </div>
+            </div>
+            <div class="card glass-card">
+                <div class="card-header">
+                    <h2 class="card-title" style="font-size:1.1rem;">Produtos da Loja</h2>
+                    <span id="lojaProductsCount" class="badge"></span>
+                </div>
+                <div class="table-vertical-scroll" style="max-height:320px;">
+                    <table class="glass-table">
+                        <thead>
+                            <tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Peso</th></tr>
+                        </thead>
+                        <tbody id="lojaProductsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
     </div>
 
@@ -225,7 +317,7 @@
         </div>
         <form id="editProfileForm" style="display:flex;flex-direction:column;gap:14px;">
             <input type="text" id="editUsername" placeholder="Nome de utilizador" required>
-            <div id="editError" class="form-error" style="display:none;color:#e74c3c;font-size:0.82rem;"></div>
+            <div id="editError" style="display:none;color:#e74c3c;font-size:0.82rem;"></div>
             <div style="display:flex;gap:10px;">
                 <button type="submit" class="btn-primary" style="flex:1;">GUARDAR</button>
                 <button type="button" class="btn-outline" onclick="closeModal('editProfileModal')" style="flex:1;">CANCELAR</button>
