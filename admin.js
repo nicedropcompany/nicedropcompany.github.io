@@ -318,7 +318,13 @@ function bindEvents() {
     document.getElementById('addDroneBtn').addEventListener('click', addDrone);
     document.getElementById('searchInput').addEventListener('input', filterUsers);
 
-    document.getElementById('newPostBtn').addEventListener('click', openAdminModal);
+    document.getElementById('newPostBtn').addEventListener('click', () => {
+        document.getElementById('newPostForm').reset();
+        document.getElementById('editPostId').value = '';
+        document.getElementById('postModalTitle').textContent = 'Novo Post';
+        document.getElementById('postError').style.display = 'none';
+        openAdminModal();
+    });
     document.getElementById('addCategoryBtn').addEventListener('click', addCategory);
     document.getElementById('modalOverlay').addEventListener('click', closeAdminModal);
     document.getElementById('newPostModal').addEventListener('click', (e) => e.stopPropagation());
@@ -335,7 +341,7 @@ function bindEvents() {
 
         let error;
         if (postId) {
-            ({ error } = await adminSupabase.from('posts').update({ title, author, content }).eq('id', postId));
+            ({ error } = await adminSupabase.from('posts').update({ title, author, content }).eq('id', Number(postId)));
         } else {
             ({ error } = await adminSupabase.from('posts').insert({ title, author, content, date: new Date().toISOString().split('T')[0] }));
         }
@@ -518,14 +524,20 @@ async function loadPosts() {
 
     // Bind events após render
     el.querySelectorAll('.edit-post-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const p = postsCache[btn.dataset.id];
-            if (!p) return;
+        btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
+            let p = postsCache[id];
+            if (!p) {
+                const { data } = await adminSupabase.from('posts').select('id, title, author, content, date, created_at').eq('id', Number(id)).single();
+                p = data;
+            }
+            if (!p) { alert('Post não encontrado.'); return; }
             document.getElementById('editPostId').value = p.id;
             document.getElementById('postTitle').value = p.title || '';
             document.getElementById('postAuthor').value = p.author || '';
             document.getElementById('postContent').value = p.content || '';
             document.getElementById('postModalTitle').textContent = 'Editar Post';
+            document.getElementById('postError').style.display = 'none';
             openAdminModal();
         });
     });
