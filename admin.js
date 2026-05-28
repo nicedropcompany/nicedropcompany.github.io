@@ -339,13 +339,18 @@ function bindEvents() {
         const content = document.getElementById('postContent').value.trim();
         if (!title) { errorDiv.textContent = 'Título obrigatório.'; errorDiv.style.display = 'block'; return; }
 
-        let error;
         if (postId) {
-            ({ error } = await adminSupabase.from('posts').update({ title, author, content }).eq('id', Number(postId)));
+            const { data: updated, error } = await adminSupabase
+                .from('posts')
+                .update({ title, author, content })
+                .eq('id', postId)
+                .select();
+            if (error) { errorDiv.textContent = 'Erro: ' + error.message; errorDiv.style.display = 'block'; return; }
+            if (!updated?.length) { errorDiv.textContent = 'Não foi possível guardar. Verifique as permissões.'; errorDiv.style.display = 'block'; return; }
         } else {
-            ({ error } = await adminSupabase.from('posts').insert({ title, author, content, date: new Date().toISOString().split('T')[0] }));
+            const { error } = await adminSupabase.from('posts').insert({ title, author, content, date: new Date().toISOString().split('T')[0] });
+            if (error) { errorDiv.textContent = 'Erro: ' + error.message; errorDiv.style.display = 'block'; return; }
         }
-        if (error) { errorDiv.textContent = 'Erro: ' + error.message; errorDiv.style.display = 'block'; return; }
         closeAdminModal();
         await loadPosts();
     });
