@@ -321,6 +321,7 @@ function bindEvents() {
     document.getElementById('newPostBtn').addEventListener('click', openAdminModal);
     document.getElementById('addCategoryBtn').addEventListener('click', addCategory);
     document.getElementById('modalOverlay').addEventListener('click', closeAdminModal);
+    document.getElementById('newPostModal').addEventListener('click', (e) => e.stopPropagation());
 
     document.getElementById('newPostForm').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -477,6 +478,8 @@ async function loadParentOrders() {
 // ─────────────────────────────────────────────
 //  POSTS
 // ─────────────────────────────────────────────
+let postsCache = {};
+
 async function loadPosts() {
     const { data: posts } = await adminSupabase
         .from('posts')
@@ -484,6 +487,9 @@ async function loadPosts() {
         .order('created_at', { ascending: false });
 
     const list = posts || [];
+    postsCache = {};
+    list.forEach(p => { postsCache[p.id] = p; });
+
     const el = document.getElementById('postsList');
 
     if (!list.length) {
@@ -503,21 +509,30 @@ async function loadPosts() {
                     ${preview ? `<div style="font-size:0.8rem;color:var(--ink-faint);margin-top:6px;">${preview}</div>` : ''}
                 </div>
                 <div style="display:flex;gap:8px;flex-shrink:0;">
-                    <button onclick="editPost(${p.id},'${encodeURIComponent(p.title||'')}','${encodeURIComponent(p.author||'')}','${encodeURIComponent(p.content||'')}')" class="btn-outline" style="font-size:0.65rem;padding:6px 12px;">Editar</button>
-                    <button onclick="deletePost(${p.id})" style="background:rgba(220,38,38,0.12);border:1px solid rgba(220,38,38,0.45);color:#dc2626;padding:6px 12px;font-size:0.65rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;letter-spacing:1px;text-transform:uppercase;">Apagar</button>
+                    <button class="edit-post-btn btn-outline" data-id="${p.id}" style="font-size:0.65rem;padding:6px 12px;">Editar</button>
+                    <button class="delete-post-btn" data-id="${p.id}" style="background:rgba(220,38,38,0.12);border:1px solid rgba(220,38,38,0.45);color:#dc2626;padding:6px 12px;font-size:0.65rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;letter-spacing:1px;text-transform:uppercase;">Apagar</button>
                 </div>
             </div>
         </div>`;
     }).join('');
-}
 
-function editPost(id, title, author, content) {
-    document.getElementById('editPostId').value = id;
-    document.getElementById('postTitle').value = decodeURIComponent(title);
-    document.getElementById('postAuthor').value = decodeURIComponent(author);
-    document.getElementById('postContent').value = decodeURIComponent(content);
-    document.getElementById('postModalTitle').textContent = 'Editar Post';
-    openAdminModal();
+    // Bind events após render
+    el.querySelectorAll('.edit-post-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const p = postsCache[btn.dataset.id];
+            if (!p) return;
+            document.getElementById('editPostId').value = p.id;
+            document.getElementById('postTitle').value = p.title || '';
+            document.getElementById('postAuthor').value = p.author || '';
+            document.getElementById('postContent').value = p.content || '';
+            document.getElementById('postModalTitle').textContent = 'Editar Post';
+            openAdminModal();
+        });
+    });
+
+    el.querySelectorAll('.delete-post-btn').forEach(btn => {
+        btn.addEventListener('click', () => deletePost(Number(btn.dataset.id)));
+    });
 }
 
 async function deletePost(id) {
@@ -542,7 +557,6 @@ function closeAdminModal() {
 }
 
 window.closeAdminModal = closeAdminModal;
-window.editPost = editPost;
 window.deletePost = deletePost;
 
 // ─────────────────────────────────────────────
