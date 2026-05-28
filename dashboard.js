@@ -331,9 +331,10 @@ function renderPosts() {
         btn.addEventListener('click', () => {
             const p = dashPostsCache[btn.dataset.id];
             if (!p) return;
+            const currentStore = state.stores.find(s => s.id === state.currentStoreId);
             document.getElementById('dashPostId').value = p.id;
             document.getElementById('dashPostTitle').value = p.title || '';
-            document.getElementById('dashPostAuthor').value = p.author || '';
+            document.getElementById('dashPostAuthor').value = currentStore?.name || state.user?.username || '';
             document.getElementById('dashPostContent').value = p.content || '';
             document.getElementById('dashPostModalTitle').textContent = 'Editar Post';
             document.getElementById('dashPostError').style.display = 'none';

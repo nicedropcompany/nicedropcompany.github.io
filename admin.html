@@ -155,7 +155,7 @@
         <form id="newPostForm" style="display:flex;flex-direction:column;gap:14px;">
             <input type="hidden" id="editPostId">
             <input type="text" id="postTitle" placeholder="Título" required>
-            <input type="text" id="postAuthor" placeholder="Autor">
+            <input type="text" id="postAuthor" placeholder="Autor" readonly style="opacity:0.6;cursor:not-allowed;">
             <textarea id="postContent" placeholder="Conteúdo..." rows="5" style="border-radius:0;resize:vertical;"></textarea>
             <div id="postError" style="display:none;color:#e74c3c;font-size:0.82rem;"></div>
             <div style="display:flex;gap:10px;">
