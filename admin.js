@@ -520,35 +520,14 @@ async function loadPosts() {
                     ${preview ? `<div style="font-size:0.8rem;color:var(--ink-faint);margin-top:6px;">${preview}</div>` : ''}
                 </div>
                 <div style="display:flex;gap:8px;flex-shrink:0;">
-                    <button class="edit-post-btn btn-outline" data-id="${p.id}" style="font-size:0.65rem;padding:6px 12px;">Editar</button>
                     <button class="delete-post-btn" data-id="${p.id}" style="background:rgba(220,38,38,0.12);border:1px solid rgba(220,38,38,0.45);color:#dc2626;padding:6px 12px;font-size:0.65rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;letter-spacing:1px;text-transform:uppercase;">Apagar</button>
                 </div>
             </div>
         </div>`;
     }).join('');
 
-    // Bind events após render
-    el.querySelectorAll('.edit-post-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const id = btn.dataset.id;
-            let p = postsCache[id];
-            if (!p) {
-                const { data } = await adminSupabase.from('posts').select('id, title, author, content, date, created_at').eq('id', Number(id)).single();
-                p = data;
-            }
-            if (!p) { alert('Post não encontrado.'); return; }
-            document.getElementById('editPostId').value = p.id;
-            document.getElementById('postTitle').value = p.title || '';
-            document.getElementById('postAuthor').value = p.author || '';
-            document.getElementById('postContent').value = p.content || '';
-            document.getElementById('postModalTitle').textContent = 'Editar Post';
-            document.getElementById('postError').style.display = 'none';
-            openAdminModal();
-        });
-    });
-
     el.querySelectorAll('.delete-post-btn').forEach(btn => {
-        btn.addEventListener('click', () => deletePost(Number(btn.dataset.id)));
+        btn.addEventListener('click', () => deletePost(btn.dataset.id));
     });
 }
 
