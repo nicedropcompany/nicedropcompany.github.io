@@ -22,7 +22,9 @@ function switchTab(tabName) {
         tab.classList.toggle('active', tab.dataset.tab === tabName);
     });
     document.querySelectorAll('.auth-form').forEach(form => {
-        form.classList.toggle('active', form.dataset.form === tabName);
+        const isActive = form.dataset.form === tabName;
+        form.style.display = isActive ? 'block' : 'none';
+        form.classList.toggle('active', isActive);
     });
     const el = document.getElementById('authMessage');
     if (el) el.style.display = 'none';
@@ -111,10 +113,10 @@ async function handleSignup(e) {
                 .upsert({ id: data.user.id, username: name, role: 'client' }, { onConflict: 'id' });
         }
 
-        showMessage('success', 'Conta criada com sucesso!');
+        showMessage('success', 'Conta criada! Verifica o teu email para activar o acesso.');
         document.getElementById('signupForm').reset();
         setButtonLoading(btn, false);
-        setTimeout(() => switchTab('login'), 2000);
+        setTimeout(() => switchTab('login'), 3500);
     } catch (error) {
         showMessage('error', error.message || 'Erro ao criar conta.');
         setButtonLoading(btn, false);
@@ -137,7 +139,7 @@ async function handleGoogleAuth() {
 async function handleOAuthReturn() {
     const hash = window.location.hash;
     const params = new URLSearchParams(window.location.search);
-    if (!hash.includes('access_token') && !params.has('code')) return;
+    if (!hash.includes('access_token') && !params.has('code') && !params.has('token_hash')) return;
 
     showMessage('info', 'A verificar conta Google...');
 

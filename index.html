@@ -238,7 +238,7 @@
                 <p style="font-size: 0.7rem; letter-spacing: 3px; font-weight: 700; margin-bottom: 30px; opacity: 0.7;">Para Donos de Loja</p>
                 <h3 style="font-family: 'Bebas Neue'; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1; margin-bottom: 30px;">Junte-se<br>à Frota</h3>
                 <p style="opacity: 0.7; line-height: 1.7; margin-bottom: 40px; max-width: 360px; margin-left: auto; margin-right: auto;">Gira a logística do futuro. Opere nodes, monitorize frotas e faça parte da infraestrutura que está a redefinir o transporte urbano.</p>
-                <a href="auth.html?tab=signup" class="btn btn-inv" style="padding: 18px 50px;">ENTRAR COMO DONO DE LOJA</a>
+                <a href="auth.html" class="btn btn-inv" style="padding: 18px 50px;">ENTRAR COMO DONO DE LOJA</a>
             </div>
         </div>
     </section>
@@ -250,6 +250,15 @@
 
     <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
     <script>
+        // Se o utilizador chegar aqui vindo de um link de email/OAuth, redireciona para auth.html
+        (function() {
+            const hash = window.location.hash;
+            const params = new URLSearchParams(window.location.search);
+            if (hash.includes('access_token') || params.has('code') || params.has('token_hash')) {
+                window.location.replace('/auth.html' + window.location.search + window.location.hash);
+            }
+        })();
+
         AOS.init({ duration: 1200, once: true });
 
         // Counter animation — arranca depois de setar data-target
