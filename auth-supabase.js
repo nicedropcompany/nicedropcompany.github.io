@@ -121,6 +121,58 @@ async function handleSignup(e) {
     }
 }
 
+async function handleGoogleAuth() {
+    try {
+        const supabase = window.supabaseConfig.getClient();
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: { redirectTo: window.location.origin + '/auth.html' }
+        });
+        if (error) throw error;
+    } catch (err) {
+        showMessage('error', 'Erro ao entrar com Google.');
+    }
+}
+
+async function handleOAuthReturn() {
+    const hash = window.location.hash;
+    const params = new URLSearchParams(window.location.search);
+    if (!hash.includes('access_token') && !params.has('code')) return;
+
+    showMessage('info', 'A verificar conta Google...');
+
+    const supabase = window.supabaseConfig.getClient();
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error || !session) { showMessage('error', 'Erro na autenticação Google.'); return; }
+
+    const user = session.user;
+    let { data: profile } = await supabase
+        .from('profiles')
+        .select('id, username, role, store_id')
+        .eq('id', user.id)
+        .single();
+
+    if (!profile) {
+        const username = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
+        const { data: newProfile } = await supabase
+            .from('profiles')
+            .upsert({ id: user.id, username, role: 'client' }, { onConflict: 'id' })
+            .select('id, username, role, store_id')
+            .single();
+        profile = newProfile;
+    }
+
+    if (!profile) { showMessage('error', 'Erro ao criar perfil.'); return; }
+
+    const role = (profile.role || '').trim().toLowerCase();
+    setStoredSession({ id: profile.id, email: user.email, username: profile.username, role: profile.role, store_id: profile.store_id });
+    showMessage('success', 'Bem-vindo! A redirecionar...');
+
+    if (role === 'developer') { setTimeout(() => { window.location.href = '/admin.html'; }, 1000); return; }
+    if (role === 'owner') { setTimeout(() => { window.location.href = '/dashboard.html'; }, 1000); return; }
+    setTimeout(() => { window.location.href = '/client.html'; }, 1000);
+}
+
 function setupEventListeners() {
     document.querySelectorAll('.tab-btn').forEach(tab => {
         tab.addEventListener('click', () => switchTab(tab.dataset.tab));
@@ -146,6 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
     waitForSupabase(() => {
         window.supabaseConfig.init();
         setupEventListeners();
+        handleOAuthReturn();
         console.log('✅ Auth pronto');
     });
 });
