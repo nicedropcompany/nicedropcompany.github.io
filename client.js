@@ -149,11 +149,11 @@ function setupDashLink() {
     if (r === 'developer') {
         btn.href = '/admin.html';
         btn.textContent = 'Admin Panel';
-        btn.style.display = '';
+        btn.style.display = 'inline-flex';
     } else if (r === 'owner') {
         btn.href = '/dashboard.html';
         btn.textContent = 'Dashboard';
-        btn.style.display = '';
+        btn.style.display = 'inline-flex';
     }
 }
 
