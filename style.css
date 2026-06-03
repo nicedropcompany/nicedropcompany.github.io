@@ -529,6 +529,25 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  min-width: 0;
+  gap: 8px;
+}
+
+.store-card-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 1;
+}
+
+.store-card-meta {
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .store-card-actions {
@@ -715,6 +734,10 @@ textarea {
 
 .store-title {
   font-size: 2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .store-meta {
@@ -1260,11 +1283,15 @@ footer {
 
 .member-info {
   flex: 1;
+  min-width: 0;
 }
 
 .member-name {
   font-weight: 600;
   font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .member-role-badge {
