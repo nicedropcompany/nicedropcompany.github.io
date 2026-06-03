@@ -144,16 +144,16 @@ function renderProfile() {
 
 function setupDashLink() {
     const r = (currentProfile.role || '').trim().toLowerCase();
-    const container = document.getElementById('dashLink');
-    const anchor = document.getElementById('dashAnchor');
+    const btn = document.getElementById('panelBtn');
+    if (!btn) return;
     if (r === 'developer') {
-        container.style.display = 'block';
-        anchor.href = '/admin.html';
-        anchor.textContent = '← Admin Panel';
+        btn.href = '/admin.html';
+        btn.textContent = 'Admin Panel';
+        btn.style.display = '';
     } else if (r === 'owner') {
-        container.style.display = 'block';
-        anchor.href = '/dashboard.html';
-        anchor.textContent = '← Dashboard';
+        btn.href = '/dashboard.html';
+        btn.textContent = 'Dashboard';
+        btn.style.display = '';
     }
 }
 

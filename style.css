@@ -244,6 +244,8 @@ textarea {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 
 /* Loader */
@@ -618,6 +620,10 @@ textarea {
 
 .user-name {
   font-weight: 600;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .user-role {
