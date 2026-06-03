@@ -260,6 +260,10 @@ textarea {
   white-space: nowrap;
 }
 
+.topbar-right #logoutBtn {
+  width: auto;
+}
+
 /* Loader */
 #loader {
   position: fixed;
