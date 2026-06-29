@@ -198,7 +198,6 @@
             100% { transform: translateY(100%); }
         }
 
-
         /* ---------- Drone cursor ---------- */
         body.sky-mode, body.sky-mode * { cursor: none !important; }
         #drone-cursor {
@@ -218,7 +217,7 @@
         .lenis.lenis-smooth { scroll-behavior: auto !important; }
         .lenis.lenis-stopped { overflow: hidden; }
 
-        /* Conteúdo acima de outros elementos fixos */
+        /* z-index base */
         header, section, footer { position: relative; z-index: 1; }
 
         /* Estados iniciais escondidos — só quando há animações (anti-FOUC) */
@@ -441,6 +440,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.min.js"></script>
+    <script defer src="motion.js"></script>
     <!-- Drone cursor -->
     <div id="drone-cursor">
         <svg width="42" height="42" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg">
@@ -468,6 +468,5 @@
             document.addEventListener('mouseleave', function() { cur.style.display = 'none'; });
         })();
     </script>
-    <script defer src="motion.js"></script>
 </body>
 </html>
