@@ -53,7 +53,10 @@
       "Bash(node anchor-test.js)",
       "Bash(node hero-recheck.js)",
       "Bash(curl -s -o /dev/null -w \"index: %{http_code} em %{time_total}s\\\\n\" --max-time 10 http://localhost:8765/index.html)",
-      "Bash(cd /tmp/nicedrop-verify && node hero-recheck.js)"
+      "Bash(cd /tmp/nicedrop-verify && node hero-recheck.js)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
