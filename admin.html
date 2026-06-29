@@ -7,6 +7,7 @@
     
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
 
@@ -48,12 +49,30 @@
         <section class="card glass-card" id="createStoreSection" data-aos="fade-up">
             <div class="card-header">
                 <h2 class="card-title">Criar Loja</h2>
+                <div style="display:flex;gap:6px;">
+                    <button id="modeMapBtn" class="btn-primary" onclick="setStoreLocMode('map')" style="font-size:0.72rem;padding:8px 14px;">Mapa</button>
+                    <button id="modeCoordsBtn" class="btn-outline" onclick="setStoreLocMode('coords')" style="font-size:0.72rem;padding:8px 14px;">Coordenadas</button>
+                </div>
             </div>
-            <div class="form-row">
+            <div class="form-row" style="margin-bottom:14px;">
                 <input type="email" id="ownerEmail" placeholder="Email do owner">
                 <input type="text" id="storeName" placeholder="Nome da loja">
-                <input type="number" id="storeLat" placeholder="Latitude (ex: 38.716667)" step="any">
-                <input type="number" id="storeLng" placeholder="Longitude (ex: -9.139444)" step="any">
+            </div>
+            <!-- Modo mapa (default) -->
+            <div id="storeMapPanel">
+                <div id="storeMapEl" style="height:340px;"></div>
+                <p id="mapCoordInfo" style="font-size:0.72rem;color:var(--ink-faint);margin-top:8px;text-align:center;">Clica no mapa para definir a localização da loja.</p>
+            </div>
+            <!-- Modo coordenadas -->
+            <div id="storeCoordsPanel" style="display:none;">
+                <div class="form-row">
+                    <input type="number" id="storeLatVis" placeholder="Latitude (ex: 38.716667)" step="any" oninput="document.getElementById('storeLat').value=this.value">
+                    <input type="number" id="storeLngVis" placeholder="Longitude (ex: -9.139444)" step="any" oninput="document.getElementById('storeLng').value=this.value">
+                </div>
+            </div>
+            <input type="hidden" id="storeLat">
+            <input type="hidden" id="storeLng">
+            <div style="margin-top:14px;">
                 <button id="createStoreBtn" class="btn-primary">Criar Loja</button>
             </div>
         </section>
@@ -72,6 +91,7 @@
             <div class="form-row">
                 <select id="addDroneStore"></select>
                 <input type="text" id="addDroneName" placeholder="Nome do drone">
+                <input type="number" id="addDroneCapacity" placeholder="Capacidade máx. (g)" step="1" min="0">
                 <button id="addDroneBtn" class="btn-primary">Adicionar Drone</button>
             </div>
         </section>
@@ -167,6 +187,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="app.js"></script>
     <script src="admin.js"></script>
 </body>

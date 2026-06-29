@@ -10,6 +10,45 @@ let storeMap = {};
 let usersCurrentPage = 0;
 const USERS_PER_PAGE = 20;
 
+let storeLeafletMap = null;
+let storeMapMarker = null;
+
+function setStoreLocMode(mode) {
+    const mapPanel    = document.getElementById('storeMapPanel');
+    const coordsPanel = document.getElementById('storeCoordsPanel');
+    const mapBtn      = document.getElementById('modeMapBtn');
+    const coordBtn    = document.getElementById('modeCoordsBtn');
+    if (mode === 'map') {
+        mapPanel.style.display    = '';
+        coordsPanel.style.display = 'none';
+        mapBtn.className   = 'btn-primary';
+        coordBtn.className = 'btn-outline';
+        setTimeout(initStoreMap, 50);
+    } else {
+        mapPanel.style.display    = 'none';
+        coordsPanel.style.display = '';
+        mapBtn.className   = 'btn-outline';
+        coordBtn.className = 'btn-primary';
+    }
+}
+
+function initStoreMap() {
+    if (storeLeafletMap) { storeLeafletMap.invalidateSize(); return; }
+    storeLeafletMap = L.map('storeMapEl').setView([38.716, -9.139], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(storeLeafletMap);
+    storeLeafletMap.on('click', function(e) {
+        const lat = e.latlng.lat.toFixed(6);
+        const lng = e.latlng.lng.toFixed(6);
+        document.getElementById('storeLat').value = lat;
+        document.getElementById('storeLng').value = lng;
+        document.getElementById('mapCoordInfo').textContent = `Lat: ${lat}  |  Lng: ${lng}`;
+        if (storeMapMarker) storeMapMarker.setLatLng(e.latlng);
+        else storeMapMarker = L.marker(e.latlng).addTo(storeLeafletMap);
+    });
+}
+
 async function init() {
     waitForSupabase(async () => {
         adminSupabase = window.supabaseConfig.init();
@@ -39,6 +78,7 @@ async function init() {
         await loadStores();
         await Promise.all([loadGlobalOrders(), loadParentOrders(), loadPosts(), loadCategories()]);
         bindEvents();
+        setTimeout(initStoreMap, 500);
     });
 }
 
@@ -324,10 +364,17 @@ async function createStore() {
         return;
     }
 
-    document.getElementById('ownerEmail').value = '';
-    document.getElementById('storeName').value  = '';
-    document.getElementById('storeLat').value   = '';
-    document.getElementById('storeLng').value   = '';
+    document.getElementById('ownerEmail').value  = '';
+    document.getElementById('storeName').value   = '';
+    document.getElementById('storeLat').value    = '';
+    document.getElementById('storeLng').value    = '';
+    const latVis = document.getElementById('storeLatVis');
+    const lngVis = document.getElementById('storeLngVis');
+    if (latVis) latVis.value = '';
+    if (lngVis) lngVis.value = '';
+    if (storeMapMarker) { storeMapMarker.remove(); storeMapMarker = null; }
+    const info = document.getElementById('mapCoordInfo');
+    if (info) info.textContent = 'Clica no mapa para definir a localização da loja.';
 
     setButtonLoading(btn, false);
     showToast(`Loja "${name}" criada com sucesso!`, 'success');
@@ -341,14 +388,17 @@ async function createStore() {
 async function addDrone() {
     const storeId = document.getElementById('addDroneStore').value;
     const name    = document.getElementById('addDroneName').value.trim();
+    const capRaw  = document.getElementById('addDroneCapacity').value;
+    const cap     = capRaw !== '' ? parseInt(capRaw) : 500;
     const btn     = document.getElementById('addDroneBtn');
     if (!storeId || !name) { showToast('Escolha uma loja e escreva o nome do drone.', 'warning'); return; }
     setButtonLoading(btn, true);
     const { error } = await adminSupabase.from('drones').insert({
-        name, store_id: parseInt(storeId), status: 'pending', capacity: 500, order_id: 0, servo_state: false
+        name, store_id: parseInt(storeId), status: 'pending', capacity: cap, order_id: 0, servo_state: false
     });
     if (error) { showToast('Erro ao adicionar drone: ' + error.message, 'error'); setButtonLoading(btn, false); return; }
-    document.getElementById('addDroneName').value = '';
+    document.getElementById('addDroneName').value     = '';
+    document.getElementById('addDroneCapacity').value = '';
     setButtonLoading(btn, false);
     showToast('Drone adicionado!', 'success');
     await loadStores();
@@ -598,9 +648,10 @@ window.deleteCategory = deleteCategory;
 // ─────────────────────────────────────────────
 //  EXPOR & INICIAR
 // ─────────────────────────────────────────────
-window.deleteStore  = deleteStore;
-window.deleteDrone  = deleteDrone;
-window.changeRole   = changeRole;
+window.deleteStore      = deleteStore;
+window.deleteDrone      = deleteDrone;
+window.changeRole       = changeRole;
+window.setStoreLocMode  = setStoreLocMode;
 
 document.addEventListener('DOMContentLoaded', function () {
     init();
