@@ -124,6 +124,18 @@
             section[id="vision"] > div:last-child,
             section[id="join-network"] > div:last-child { grid-template-columns: 1fr !important; }
         }
+        /* ── Drone cursor ── */
+        body.sky-mode, body.sky-mode * { cursor: none !important; }
+        #drone-cursor {
+            position: fixed;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+        @keyframes nd-spin { to { transform: rotate(360deg); } }
+        #drone-cursor .nd-r  { transform-box: fill-box; transform-origin: center; animation: nd-spin .22s linear infinite; }
+        #drone-cursor .nd-rr { transform-box: fill-box; transform-origin: center; animation: nd-spin .22s linear infinite reverse; }
     </style>
 </head>
 <body class="sky-mode">
@@ -248,6 +260,26 @@
         NICEDROP / 2026 / PORTUGAL
     </footer>
 
+    <!-- Drone cursor -->
+    <div id="drone-cursor">
+        <svg width="42" height="42" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg">
+            <!-- arms -->
+            <line x1="21" y1="21" x2="8"  y2="8"  stroke="#000" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="21" y1="21" x2="34" y2="8"  stroke="#000" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="21" y1="21" x2="8"  y2="34" stroke="#000" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="21" y1="21" x2="34" y2="34" stroke="#000" stroke-width="1.6" stroke-linecap="round"/>
+            <!-- rotors (alternate spin) -->
+            <ellipse class="nd-r"  cx="8"  cy="8"  rx="6" ry="2" stroke="#000" stroke-width="1" fill="rgba(0,0,0,0.07)"/>
+            <ellipse class="nd-rr" cx="34" cy="8"  rx="6" ry="2" stroke="#000" stroke-width="1" fill="rgba(0,0,0,0.07)"/>
+            <ellipse class="nd-rr" cx="8"  cy="34" rx="6" ry="2" stroke="#000" stroke-width="1" fill="rgba(0,0,0,0.07)"/>
+            <ellipse class="nd-r"  cx="34" cy="34" rx="6" ry="2" stroke="#000" stroke-width="1" fill="rgba(0,0,0,0.07)"/>
+            <!-- body -->
+            <rect x="17.5" y="17.5" width="7" height="7" fill="#000"/>
+            <!-- LED azul -->
+            <circle cx="21" cy="21" r="1.5" fill="#00d4ff"/>
+        </svg>
+    </div>
+
     <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
     <script>
         // Se o utilizador chegar aqui vindo de um link de email/OAuth, redireciona para auth.html
@@ -331,6 +363,18 @@
             });
         }
         loadLiveStats();
+
+        // Drone cursor
+        (function() {
+            const cur = document.getElementById('drone-cursor');
+            if (!cur) return;
+            document.addEventListener('mousemove', function(e) {
+                cur.style.display = 'block';
+                cur.style.left = e.clientX + 'px';
+                cur.style.top = e.clientY + 'px';
+            });
+            document.addEventListener('mouseleave', function() { cur.style.display = 'none'; });
+        })();
 
     </script>
 </body>

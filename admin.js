@@ -266,7 +266,7 @@ async function createStore() {
     const btn        = document.getElementById('createStoreBtn');
 
     if (!ownerEmail || !name || !lat || !lng) {
-        showToast('Preencha todos os campos e selecione a localização no mapa.', 'warning');
+        showToast('Preencha todos os campos incluindo as coordenadas.', 'warning');
         return;
     }
 
@@ -328,7 +328,6 @@ async function createStore() {
     document.getElementById('storeName').value  = '';
     document.getElementById('storeLat').value   = '';
     document.getElementById('storeLng').value   = '';
-    if (mapMarker) { mapMarker.remove(); mapMarker = null; }
 
     setButtonLoading(btn, false);
     showToast(`Loja "${name}" criada com sucesso!`, 'success');
@@ -417,61 +416,6 @@ function filterUsers() {
 }
 
 // ─────────────────────────────────────────────
-//  MAPA LEAFLET (com inicialização garantida)
-// ─────────────────────────────────────────────
-let leafletMap = null;
-let mapMarker = null;
-
-function initLeafletMap() {
-    if (!window.L) {
-        console.warn('Leaflet library not loaded yet, retrying...');
-        setTimeout(initLeafletMap, 500);
-        return;
-    }
-
-    const mapEl = document.getElementById('map');
-    if (!mapEl) {
-        console.warn('Map element not found');
-        return;
-    }
-
-    // Se já foi inicializado, não refaz
-    if (leafletMap) return;
-
-    try {
-        // Criar mapa
-        leafletMap = L.map('map').setView([39.5, -8.0], 7);
-        
-        // Adicionar tile layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors',
-            maxZoom: 19
-        }).addTo(leafletMap);
-
-        // Forçar redraw (importante!)
-        setTimeout(() => {
-            if (leafletMap) leafletMap.invalidateSize();
-        }, 100);
-
-        leafletMap.on('click', function (e) {
-            const lat = e.latlng.lat.toFixed(6);
-            const lng = e.latlng.lng.toFixed(6);
-            document.getElementById('storeLat').value = lat;
-            document.getElementById('storeLng').value = lng;
-
-            const coordsEl = document.getElementById('mapCoords');
-            if (coordsEl) coordsEl.textContent = `Lat: ${lat}  Lng: ${lng}`;
-
-            if (mapMarker) {
-                mapMarker.setLatLng(e.latlng);
-            } else {
-                mapMarker = L.marker(e.latlng).addTo(leafletMap);
-            }
-        });
-    } catch (err) {
-        console.error('❌ Erro ao inicializar mapa:', err);
-    }
-}
 
 // ─────────────────────────────────────────────
 //  ENCOMENDAS GLOBAIS
@@ -660,5 +604,4 @@ window.changeRole   = changeRole;
 
 document.addEventListener('DOMContentLoaded', function () {
     init();
-    setTimeout(initLeafletMap, 500);
 });

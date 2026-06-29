@@ -7,7 +7,6 @@
     
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
 
@@ -50,13 +49,11 @@
             <div class="card-header">
                 <h2 class="card-title">Criar Loja</h2>
             </div>
-            <div id="map" style="width: 100%; height: 400px; margin-bottom: 8px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.65); overflow: hidden; z-index: 10;"></div>
-            <div id="mapCoords" style="font-size:0.75rem;color:var(--ink-faint);letter-spacing:1px;margin-bottom:14px;min-height:1.2em;">Clica no mapa para definir a localização</div>
             <div class="form-row">
                 <input type="email" id="ownerEmail" placeholder="Email do owner">
                 <input type="text" id="storeName" placeholder="Nome da loja">
-                <input type="hidden" id="storeLat">
-                <input type="hidden" id="storeLng">
+                <input type="number" id="storeLat" placeholder="Latitude (ex: 38.716667)" step="any">
+                <input type="number" id="storeLng" placeholder="Longitude (ex: -9.139444)" step="any">
                 <button id="createStoreBtn" class="btn-primary">Criar Loja</button>
             </div>
         </section>
@@ -167,7 +164,6 @@
         </form>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
