@@ -38,7 +38,14 @@
       "Bash(node --input-type=module)",
       "Bash(Get-ChildItem -Recurse -Force)",
       "Bash(Select-Object FullName, PSIsContainer)",
-      "Bash(Sort-Object FullName)"
+      "Bash(Sort-Object FullName)",
+      "Bash(git fetch *)",
+      "Bash(git show *)",
+      "Bash(grep -n \"marquee\\\\|ENTREGAS\\\\|flying\\\\|drone-cursor\\\\|cursor-dot\\\\|particle\\\\|ticker\\\\|ZERO\\\\|LOGÍSTICA\\\\|scrollPulse\\\\|hero-three\\\\|motion\\\\.js\\\\|lenis\" /tmp/index_remote.html | head -60)",
+      "Read(//tmp/**)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
