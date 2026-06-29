@@ -282,45 +282,12 @@
             100% { transform: translateY(100%); }
         }
 
-        /* ---------- Marquee ---------- */
-        .marquee-band {
-            background: #000;
-            color: #fff;
-            overflow: hidden;
-            padding: 26px 0;
-        }
-        .marquee-track {
-            display: flex;
-            width: max-content;
-            will-change: transform;
-        }
-        .marquee-chunk {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(2rem, 4vw, 3.4rem);
-            letter-spacing: 2px;
-            white-space: nowrap;
-            line-height: 1;
-            flex-shrink: 0;
-        }
-
-        /* ---------- Cursor custom ---------- */
-        #cursor-dot, #cursor-ring {
-            position: fixed;
-            top: 0; left: 0;
-            pointer-events: none;
-            z-index: 10000;
-            border-radius: 50%;
-        }
-        #cursor-dot { width: 6px; height: 6px; background: #000; }
-        #cursor-ring { width: 30px; height: 30px; border: 1px solid rgba(0,0,0,0.45); }
-        html.has-cursor, html.has-cursor * { cursor: none !important; }
-
         /* ---------- Lenis ---------- */
         html.lenis, html.lenis body { height: auto; }
         .lenis.lenis-smooth { scroll-behavior: auto !important; }
         .lenis.lenis-stopped { overflow: hidden; }
 
-        header, section, footer, .marquee-band { position: relative; z-index: 1; }
+        header, section, footer { position: relative; z-index: 1; }
 
         /* Estados iniciais escondidos — só quando há animações (anti-FOUC) */
         html.motion [data-reveal] { opacity: 0; visibility: hidden; }
@@ -395,14 +362,6 @@
             Encomendes às empresas locais. Rastreias o drone em tempo real. Recebes em minutos.
         </p>
     </section>
-
-    <!-- MARQUEE -->
-    <div class="marquee-band" aria-hidden="true">
-        <div class="marquee-track">
-            <span class="marquee-chunk">RASTREIO AO VIVO&nbsp;&nbsp;✦&nbsp;&nbsp;MARKETPLACE LOCAL&nbsp;&nbsp;✦&nbsp;&nbsp;ENTREGA EM 12 MINUTOS&nbsp;&nbsp;✦&nbsp;&nbsp;V 1.0 DISPONÍVEL&nbsp;&nbsp;✦&nbsp;&nbsp;RASTREIO AO VIVO&nbsp;&nbsp;✦&nbsp;&nbsp;MARKETPLACE LOCAL&nbsp;&nbsp;✦&nbsp;&nbsp;ENTREGA EM 12 MINUTOS&nbsp;&nbsp;✦&nbsp;&nbsp;V 1.0 DISPONÍVEL&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
-            <span class="marquee-chunk">RASTREIO AO VIVO&nbsp;&nbsp;✦&nbsp;&nbsp;MARKETPLACE LOCAL&nbsp;&nbsp;✦&nbsp;&nbsp;ENTREGA EM 12 MINUTOS&nbsp;&nbsp;✦&nbsp;&nbsp;V 1.0 DISPONÍVEL&nbsp;&nbsp;✦&nbsp;&nbsp;RASTREIO AO VIVO&nbsp;&nbsp;✦&nbsp;&nbsp;MARKETPLACE LOCAL&nbsp;&nbsp;✦&nbsp;&nbsp;ENTREGA EM 12 MINUTOS&nbsp;&nbsp;✦&nbsp;&nbsp;V 1.0 DISPONÍVEL&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
-        </div>
-    </div>
 
     <section>
         <span class="sub-headline" data-reveal="up">Funcionalidades</span>
