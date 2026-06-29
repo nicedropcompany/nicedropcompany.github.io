@@ -5,9 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NiceDrop | Sky-Mode Logistics</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="nicedrop.png">
     <link rel="stylesheet" href="style.css">
+    <script>
+        // Redirect OAuth/email: se chegar aqui com tokens, segue para auth.html
+        (function() {
+            const hash = window.location.hash;
+            const params = new URLSearchParams(window.location.search);
+            if (hash.includes('access_token') || params.has('code') || params.has('token_hash')) {
+                window.location.replace('/auth.html' + window.location.search + window.location.hash);
+            }
+        })();
+        // Gate de animações: só anima se o utilizador não preferir movimento reduzido
+        (function(){try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('motion')}catch(e){}})();
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="supabase-config.js"></script>
     <style>
@@ -55,6 +67,15 @@
             z-index: 1000;
             box-sizing: border-box;
             max-width: 100vw;
+            transition: background 0.4s ease, padding 0.4s ease, box-shadow 0.4s ease;
+        }
+        .nav-fixed.nav-scrolled {
+            background: var(--glass-strong);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding-top: 14px;
+            padding-bottom: 14px;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.06);
         }
         .stat-block {
             background: #000;
@@ -81,6 +102,7 @@
             line-height: 1.6;
         }
         .tech-line {
+            position: relative;
             display: flex;
             align-items: flex-start;
             justify-content: center;
@@ -102,6 +124,27 @@
             opacity: 0.25;
             flex-shrink: 0;
             padding-top: 10px;
+            transition: color 0.3s ease, opacity 0.3s ease;
+        }
+        .tech-line:hover .tech-num {
+            opacity: 1;
+            color: var(--accent);
+        }
+        .tech-line > div h3 {
+            transition: transform 0.35s ease;
+        }
+        .tech-line:hover > div h3 {
+            transform: translateX(10px);
+        }
+        .line-draw {
+            position: absolute;
+            top: -1px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: rgba(0,0,0,0.3);
+            transform: scaleX(0);
+            transform-origin: left center;
         }
         .join-block {
             background: #fff;
@@ -113,71 +156,132 @@
             color: #fff;
             border-color: #000;
         }
-        @media (max-width: 768px) {
-            section { padding: 80px 24px; }
-            .nav-fixed { padding: 16px 20px; }
-            .nav-fixed > div { flex-wrap: wrap; justify-content: flex-end; max-width: 60vw; }
-            .nav-fixed .btn-primary { padding: 8px 14px !important; font-size: 0.68rem !important; letter-spacing: 0.8px !important; }
-            .huge-title { letter-spacing: -2px; }
-            .tech-line { flex-direction: column; gap: 20px; }
-            .join-block { padding: 50px 24px !important; }
-            section[id="vision"] > div:last-child,
-            section[id="join-network"] > div:last-child { grid-template-columns: 1fr !important; }
+
+        /* ---------- Hero ---------- */
+        .hero-inner {
+            text-align: center;
         }
-        /* ── Drone cursor ── */
+        .scroll-hint {
+            position: absolute;
+            bottom: 36px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.6rem;
+            letter-spacing: 4px;
+            font-weight: 700;
+        }
+        .scroll-hint-line {
+            width: 1px;
+            height: 46px;
+            background: rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        .scroll-hint-line::after {
+            content: '';
+            position: absolute;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background: #000;
+            transform: translateY(-100%);
+        }
+        html.motion .scroll-hint-line::after {
+            animation: scrollPulse 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+        }
+        @keyframes scrollPulse {
+            0% { transform: translateY(-100%); }
+            55% { transform: translateY(100%); }
+            100% { transform: translateY(100%); }
+        }
+
+
+        /* ---------- Drone cursor ---------- */
         body.sky-mode, body.sky-mode * { cursor: none !important; }
         #drone-cursor {
             position: fixed;
+            top: 0; left: 0;
             pointer-events: none;
-            z-index: 99999;
+            z-index: 10000;
             transform: translate(-50%, -50%);
             display: none;
         }
         @keyframes nd-spin { to { transform: rotate(360deg); } }
         #drone-cursor .nd-r  { transform-box: fill-box; transform-origin: center; animation: nd-spin .22s linear infinite; }
         #drone-cursor .nd-rr { transform-box: fill-box; transform-origin: center; animation: nd-spin .22s linear infinite reverse; }
+
+        /* ---------- Lenis ---------- */
+        html.lenis, html.lenis body { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto !important; }
+        .lenis.lenis-stopped { overflow: hidden; }
+
+        /* Conteúdo acima de outros elementos fixos */
+        header, section, footer { position: relative; z-index: 1; }
+
+        /* Estados iniciais escondidos — só quando há animações (anti-FOUC) */
+        html.motion [data-reveal] { opacity: 0; visibility: hidden; }
+        html.motion .hero-inner { opacity: 0; }
+        html.motion .nav-fixed { opacity: 0; }
+        html.motion .scroll-hint { opacity: 0; }
+        html.motion .tech-line { border-top-color: transparent; }
+
+        @media (max-width: 768px) {
+            section { padding: 80px 24px; }
+            .nav-fixed { padding: 16px 20px; }
+            .nav-fixed > div { flex-wrap: wrap; justify-content: flex-end; max-width: 60vw; }
+            .nav-fixed .btn-primary { padding: 8px 14px !important; font-size: 0.68rem !important; letter-spacing: 0.8px !important; }
+            .nav-fixed.nav-scrolled { padding-top: 10px; padding-bottom: 10px; }
+            .huge-title { letter-spacing: -2px; }
+            .tech-line { flex-direction: column; gap: 20px; }
+            .join-block { padding: 50px 24px !important; }
+            section[id="vision"] > div:last-child,
+            section[id="join-network"] > div:last-child { grid-template-columns: 1fr !important; }
+        }
     </style>
 </head>
-<body class="sky-mode">
+<body class="sky-mode" data-page="home">
 
     <nav class="nav-fixed">
         <a href="index.html"><img src="nicedrop.png" alt="NiceDrop" style="height: 35px;"></a>
         <div style="display:flex;gap:10px;align-items:center;">
-<a href="download.html" class="btn-primary" style="padding: 12px 28px;">APP</a>
-            <a href="auth.html" class="btn-primary" style="padding: 12px 40px;">DASHBOARD</a>
+            <a href="download.html" class="btn-primary" data-magnetic style="padding: 12px 28px;">APP</a>
+            <a href="auth.html" class="btn-primary" data-magnetic style="padding: 12px 40px;">DASHBOARD</a>
         </div>
     </nav>
 
-    <header class="full-screen">
-        <div style="text-align: center;" data-aos="fade-up">
-            <span class="sub-headline">Autonomous Infrastructure</span>
-            <h1 class="huge-title">NICEDROP<br>SKY-MODE</h1>
-            <div style="margin-top: 50px;">
-                <a href="auth.html" class="btn-primary" style="padding: 22px 60px; font-size: 1rem;">INICIAR OPERAÇÃO</a>
+    <header class="full-screen" id="hero">
+        <div class="hero-inner">
+            <span class="sub-headline hero-kicker">Autonomous Infrastructure</span>
+            <h1 class="huge-title js-split-chars">NICEDROP<br>SKY-MODE</h1>
+            <div class="hero-cta" style="margin-top: 50px;">
+                <a href="auth.html" class="btn-primary" data-magnetic style="padding: 22px 60px; font-size: 1rem;">INICIAR OPERAÇÃO</a>
             </div>
         </div>
+        <div class="scroll-hint" aria-hidden="true">SCROLL<span class="scroll-hint-line"></span></div>
     </header>
 
     <section style="text-align: center;">
-        <p data-aos="fade-up" style="font-size: 2.5rem; font-family: 'DM Sans'; color: #000; max-width: 900px; margin: 0 auto; font-weight: 400; line-height: 1.4;">
+        <p class="js-split-words" style="font-size: 2.5rem; font-family: 'DM Sans'; color: #000; max-width: 900px; margin: 0 auto; font-weight: 400; line-height: 1.4;">
             A redefinição da logística urbana não acontece no chão. Acontece no céu.
         </p>
     </section>
 
-
     <!-- LIVE_STATS -->
     <section id="live-stats" style="text-align: center;">
-        <span class="sub-headline" data-aos="fade-up">Live_Network</span>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2px; margin-top: 60px;" data-aos="fade-up" data-aos-delay="100">
-            <div class="stat-block" id="stat-drones" data-target="0" data-suffix="">
+        <span class="sub-headline" data-reveal="up">Live_Network</span>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2px; margin-top: 60px;" data-reveal-stagger="0.12">
+            <div class="stat-block" id="stat-drones" data-target="0" data-suffix="" data-reveal="clip">
                 <div class="stat-block-number">—</div>
                 <div class="stat-block-label">Drones<br>a Voar</div>
             </div>
-            <div class="stat-block" id="stat-stores" data-target="0" data-suffix="">
+            <div class="stat-block" id="stat-stores" data-target="0" data-suffix="" data-reveal="clip">
                 <div class="stat-block-number">—</div>
                 <div class="stat-block-label">Empresas<br>Ligadas</div>
             </div>
-            <div class="stat-block" id="stat-clients" data-target="0" data-suffix="">
+            <div class="stat-block" id="stat-clients" data-target="0" data-suffix="" data-reveal="clip">
                 <div class="stat-block-number">—</div>
                 <div class="stat-block-label">Clientes</div>
             </div>
@@ -186,14 +290,14 @@
 
     <!-- VISION -->
     <section id="vision">
-        <span class="sub-headline" data-aos="fade-up">The Vision</span>
-        <h2 class="huge-title" data-aos="fade-up" data-aos-delay="100" style="margin-top: 40px;">O CÉU É A<br>NOVA<br>INFRAESTRUTURA</h2>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-top: 100px; text-align: center;" data-aos="fade-up" data-aos-delay="200">
-            <div>
+        <span class="sub-headline" data-reveal="up">The Vision</span>
+        <h2 class="huge-title js-split-lines" style="margin-top: 40px;">O CÉU É A<br>NOVA<br>INFRAESTRUTURA</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-top: 100px; text-align: center;" data-reveal-stagger="0.15">
+            <div data-reveal="up">
                 <p style="font-size: 0.75rem; letter-spacing: 3px; font-weight: 700; margin-bottom: 20px; text-transform: uppercase;">O Problema</p>
                 <p style="font-size: 1.4rem; font-family: 'DM Sans'; line-height: 1.6; color: #000; font-weight: 400;">O trânsito urbano estrangula o comércio e o planeta. Cada entrega de última milha custa tempo, combustível e emissões que o sistema não consegue suportar.</p>
             </div>
-            <div>
+            <div data-reveal="up">
                 <p style="font-size: 0.75rem; letter-spacing: 3px; font-weight: 700; margin-bottom: 20px; text-transform: uppercase;">A Solução</p>
                 <p style="font-size: 1.4rem; font-family: 'DM Sans'; line-height: 1.6; color: #000; font-weight: 400;">Uma malha invisível de distribuição autónoma que utiliza o espaço aéreo não explorado. Silenciosa, rápida, sem congestionamentos.</p>
             </div>
@@ -202,30 +306,30 @@
 
     <!-- FUTURE_TECH -->
     <section id="future-tech">
-        <span class="sub-headline" data-aos="fade-up">Future_Tech</span>
+        <span class="sub-headline" data-reveal="up">Future_Tech</span>
         <div style="margin-top: 80px;">
-            <div class="tech-line" data-aos="fade-up" data-aos-delay="0">
+            <div class="tech-line">
                 <span class="tech-num">01</span>
                 <div>
                     <h3 style="font-family: 'Bebas Neue'; font-size: 3rem; letter-spacing: 2px;">Autonomia de Nível 5</h3>
                     <p style="opacity: 0.6; line-height: 1.8; max-width: 600px; margin-top: 8px;">Drones que tomam decisões de rota em milissegundos, sem qualquer intervenção humana. Adaptação total a obstáculos, clima e tráfego aéreo.</p>
                 </div>
             </div>
-            <div class="tech-line" data-aos="fade-up" data-aos-delay="100">
+            <div class="tech-line">
                 <span class="tech-num">02</span>
                 <div>
                     <h3 style="font-family: 'Bebas Neue'; font-size: 3rem; letter-spacing: 2px;">Swarm Intelligence</h3>
                     <p style="opacity: 0.6; line-height: 1.8; max-width: 600px; margin-top: 8px;">Drones que comunicam entre si para otimizar o fluxo de tráfego aéreo em tempo real. A frota pensa como um organismo único.</p>
                 </div>
             </div>
-            <div class="tech-line" data-aos="fade-up" data-aos-delay="200">
+            <div class="tech-line">
                 <span class="tech-num">03</span>
                 <div>
                     <h3 style="font-family: 'Bebas Neue'; font-size: 3rem; letter-spacing: 2px;">Nodes de Recarga Automática</h3>
                     <p style="opacity: 0.6; line-height: 1.8; max-width: 600px; margin-top: 8px;">Estações onde o drone aterra, troca de bateria em 30 segundos e volta ao ar. Zero downtime, operação contínua 24/7.</p>
                 </div>
             </div>
-            <div class="tech-line" data-aos="fade-up" data-aos-delay="300">
+            <div class="tech-line">
                 <span class="tech-num">04</span>
                 <div>
                     <h3 style="font-family: 'Bebas Neue'; font-size: 3rem; letter-spacing: 2px;">Escalabilidade Global</h3>
@@ -237,20 +341,20 @@
 
     <!-- JOIN_NETWORK -->
     <section id="join-network" style="text-align: center;">
-        <span class="sub-headline" data-aos="fade-up">Join_Network</span>
-        <h2 class="huge-title" data-aos="fade-up" data-aos-delay="100" style="margin-top: 40px;">ENTRAR<br>NA REDE</h2>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 80px;" data-aos="fade-up" data-aos-delay="200">
-            <div class="join-block">
+        <span class="sub-headline" data-reveal="up">Join_Network</span>
+        <h2 class="huge-title js-split-lines" style="margin-top: 40px;">ENTRAR<br>NA REDE</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 80px;" data-reveal-stagger="0.15">
+            <div class="join-block" data-reveal="clip-left">
                 <p style="font-size: 0.7rem; letter-spacing: 3px; font-weight: 700; margin-bottom: 30px; opacity: 0.5;">Para Empresas</p>
                 <h3 style="font-family: 'Bebas Neue'; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1; margin-bottom: 30px;">Torne-se um<br>Node Oficial</h3>
                 <p style="opacity: 0.7; line-height: 1.7; margin-bottom: 40px; max-width: 360px; margin-left: auto; margin-right: auto;">Comece a expedir via ar. Reduza custos logísticos, elimine atrasos e junte-se à rede de distribuição autónoma mais rápida do mercado.</p>
-                <a href="auth.html?tab=signup" class="btn-primary" style="padding: 18px 50px;">REGISTAR EMPRESA</a>
+                <a href="auth.html?tab=signup" class="btn-primary" data-magnetic style="padding: 18px 50px;">REGISTAR EMPRESA</a>
             </div>
-            <div class="join-block join-block-inv">
+            <div class="join-block join-block-inv" data-reveal="clip-right">
                 <p style="font-size: 0.7rem; letter-spacing: 3px; font-weight: 700; margin-bottom: 30px; opacity: 0.7;">Para Donos de Loja</p>
                 <h3 style="font-family: 'Bebas Neue'; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1; margin-bottom: 30px;">Junte-se<br>à Frota</h3>
                 <p style="opacity: 0.7; line-height: 1.7; margin-bottom: 40px; max-width: 360px; margin-left: auto; margin-right: auto;">Gira a logística do futuro. Opere nodes, monitorize frotas e faça parte da infraestrutura que está a redefinir o transporte urbano.</p>
-                <a href="auth.html" class="btn btn-inv" style="padding: 18px 50px;">ENTRAR COMO DONO DE LOJA</a>
+                <a href="auth.html" class="btn btn-inv" data-magnetic style="padding: 18px 50px;">ENTRAR COMO DONO DE LOJA</a>
             </div>
         </div>
     </section>
@@ -260,39 +364,7 @@
         NICEDROP / 2026 / PORTUGAL
     </footer>
 
-    <!-- Drone cursor -->
-    <div id="drone-cursor">
-        <svg width="42" height="42" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg">
-            <!-- arms -->
-            <line x1="21" y1="21" x2="8"  y2="8"  stroke="#000" stroke-width="1.6" stroke-linecap="round"/>
-            <line x1="21" y1="21" x2="34" y2="8"  stroke="#000" stroke-width="1.6" stroke-linecap="round"/>
-            <line x1="21" y1="21" x2="8"  y2="34" stroke="#000" stroke-width="1.6" stroke-linecap="round"/>
-            <line x1="21" y1="21" x2="34" y2="34" stroke="#000" stroke-width="1.6" stroke-linecap="round"/>
-            <!-- rotors (alternate spin) -->
-            <ellipse class="nd-r"  cx="8"  cy="8"  rx="6" ry="2" stroke="#000" stroke-width="1" fill="rgba(0,0,0,0.07)"/>
-            <ellipse class="nd-rr" cx="34" cy="8"  rx="6" ry="2" stroke="#000" stroke-width="1" fill="rgba(0,0,0,0.07)"/>
-            <ellipse class="nd-rr" cx="8"  cy="34" rx="6" ry="2" stroke="#000" stroke-width="1" fill="rgba(0,0,0,0.07)"/>
-            <ellipse class="nd-r"  cx="34" cy="34" rx="6" ry="2" stroke="#000" stroke-width="1" fill="rgba(0,0,0,0.07)"/>
-            <!-- body -->
-            <rect x="17.5" y="17.5" width="7" height="7" fill="#000"/>
-            <!-- LED azul -->
-            <circle cx="21" cy="21" r="1.5" fill="#00d4ff"/>
-        </svg>
-    </div>
-
-    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
     <script>
-        // Se o utilizador chegar aqui vindo de um link de email/OAuth, redireciona para auth.html
-        (function() {
-            const hash = window.location.hash;
-            const params = new URLSearchParams(window.location.search);
-            if (hash.includes('access_token') || params.has('code') || params.has('token_hash')) {
-                window.location.replace('/auth.html' + window.location.search + window.location.hash);
-            }
-        })();
-
-        AOS.init({ duration: 1200, once: true });
-
         // Counter animation — arranca depois de setar data-target
         function animateCounter(block) {
             const target = +block.dataset.target;
@@ -363,10 +435,30 @@
             });
         }
         loadLiveStats();
+    </script>
 
-        // Drone cursor
+    <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.min.js"></script>
+    <!-- Drone cursor -->
+    <div id="drone-cursor">
+        <svg width="42" height="42" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg">
+            <line x1="21" y1="21" x2="8"  y2="8"  stroke="#000" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="21" y1="21" x2="34" y2="8"  stroke="#000" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="21" y1="21" x2="8"  y2="34" stroke="#000" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="21" y1="21" x2="34" y2="34" stroke="#000" stroke-width="1.6" stroke-linecap="round"/>
+            <ellipse class="nd-r"  cx="8"  cy="8"  rx="6" ry="2" stroke="#000" stroke-width="1" fill="rgba(0,0,0,0.07)"/>
+            <ellipse class="nd-rr" cx="34" cy="8"  rx="6" ry="2" stroke="#000" stroke-width="1" fill="rgba(0,0,0,0.07)"/>
+            <ellipse class="nd-rr" cx="8"  cy="34" rx="6" ry="2" stroke="#000" stroke-width="1" fill="rgba(0,0,0,0.07)"/>
+            <ellipse class="nd-r"  cx="34" cy="34" rx="6" ry="2" stroke="#000" stroke-width="1" fill="rgba(0,0,0,0.07)"/>
+            <rect x="17.5" y="17.5" width="7" height="7" fill="#000"/>
+            <circle cx="21" cy="21" r="1.5" fill="#00d4ff"/>
+        </svg>
+    </div>
+    <script>
         (function() {
-            const cur = document.getElementById('drone-cursor');
+            var cur = document.getElementById('drone-cursor');
             if (!cur) return;
             document.addEventListener('mousemove', function(e) {
                 cur.style.display = 'block';
@@ -375,7 +467,7 @@
             });
             document.addEventListener('mouseleave', function() { cur.style.display = 'none'; });
         })();
-
     </script>
+    <script defer src="motion.js"></script>
 </body>
 </html>
