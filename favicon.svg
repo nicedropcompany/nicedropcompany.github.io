@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="NiceDrop">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a2cee9"/>
+      <stop offset="0.55" stop-color="#aed6ef"/>
+      <stop offset="1" stop-color="#bfe0f3"/>
+    </linearGradient>
+    <filter id="clouds" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="512" height="512" fill="url(#sky)"/>
+
+  <!-- Soft clouds -->
+  <g filter="url(#clouds)" fill="#ffffff">
+    <ellipse cx="120" cy="150" rx="120" ry="42" opacity="0.35"/>
+    <ellipse cx="410" cy="360" rx="140" ry="46" opacity="0.30"/>
+    <ellipse cx="300" cy="70"  rx="90"  ry="34" opacity="0.22"/>
+  </g>
+
+  <!-- Card shadow (offset lower-left) -->
+  <rect x="135" y="95" width="215" height="370" fill="#6f8596" opacity="0.85" filter="url(#soft)"/>
+
+  <!-- White card -->
+  <rect x="163" y="71" width="215" height="370" fill="#ffffff"/>
+
+  <!-- Bold "N" -->
+  <g fill="#000000">
+    <rect x="206" y="150" width="34" height="210"/>
+    <rect x="300" y="150" width="34" height="210"/>
+    <polygon points="206,150 240,150 334,360 300,360"/>
+  </g>
+</svg>
