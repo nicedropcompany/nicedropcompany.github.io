@@ -348,14 +348,18 @@ void setup() {
 
   Serial.println("Sistema NiceDrop (Universal) iniciado");
 
+  // O id vem SEMPRE do .ino gerado (não da flash). Senão, um ESP32 já usado
+  // ficava com o id antigo guardado e ignorava os comandos do drone certo.
+  droneId = DRONE_ID_BOOTSTRAP;
+  Serial.print("Drone ID: ");
+  Serial.println(droneId);
+
   verificarBotaoDeReset();
-  seedBootstrapDroneId();
   carregarRedesNoMulti();
   if (!ligarComRedesGuardadas(20000)) {
     Serial.println("Redes conhecidas falharam -> a abrir portal WiFiManager (emergencia)");
     configurarWiFiEDroneId();
   }
-  carregarDroneId();
 }
 
 void loop() {
