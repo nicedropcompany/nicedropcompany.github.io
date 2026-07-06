@@ -223,10 +223,13 @@ async function loadStores() {
         .from('drones')
         .select('id, store_id, status, name, capacity, wifi_ssid, wifi_password, last_seen');
     if (dronesErr) {
-        // Alguma coluna nova (wifi_ssid/wifi_password/last_seen) pode ainda não existir
-        // se a migração não foi corrida. Fallback seguro: nunca perder a lista de drones.
-        console.warn('Select de drones com colunas novas falhou — correste as migrações? →', dronesErr.message);
-        const fb = await adminSupabase.from('drones').select('id, store_id, status, name, capacity');
+        // Fallback em degraus: se só faltar o last_seen (migration_heartbeat por correr),
+        // ainda lemos a WiFi; só descemos à base se as colunas WiFi também faltarem.
+        let fb = await adminSupabase.from('drones').select('id, store_id, status, name, capacity, wifi_ssid, wifi_password');
+        if (fb.error) {
+            console.warn('Colunas de drones em falta — correste as migrações? →', fb.error.message);
+            fb = await adminSupabase.from('drones').select('id, store_id, status, name, capacity');
+        }
         drones = fb.data || [];
     }
     const { data: owners } = await adminSupabase.from('profiles').select('id, username, store_id, role');
@@ -265,12 +268,18 @@ async function loadStores() {
                 const on = droneOnlineInfo(d.last_seen);
                 const onColor = on.online ? '#27ae60' : '#9ca3af';
                 return `<div class="drone-item">
-                    <span>${d.name}</span>
-                    <span class="drone-online-badge" data-drone-id="${d.id}" title="Estado do ESP32 (deu sinal há &lt;90s = online)" style="background:${onColor};color:#fff;padding:1px 8px;border-radius:999px;font-size:0.55rem;font-weight:700;letter-spacing:0.5px;flex-shrink:0;">${on.label}</span>
-                    <span class="${dc}">${d.status.toUpperCase()}</span>
-                    <button style="background:rgba(41,128,239,0.15);border:1.5px solid rgba(41,128,239,0.5);color:#2980ef;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:13px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;transition:background 0.2s;" onmouseover="this.style.background='rgba(41,128,239,0.3)'" onmouseout="this.style.background='rgba(41,128,239,0.15)'" onclick="editDrone(${d.id})" title="Editar drone / WiFi">✎</button>
-                    <button style="background:rgba(39,174,96,0.15);border:1.5px solid rgba(39,174,96,0.5);color:#27ae60;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:15px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;transition:background 0.2s;" onmouseover="this.style.background='rgba(39,174,96,0.3)'" onmouseout="this.style.background='rgba(39,174,96,0.15)'" onclick="generateDroneFirmware(${d.id})" title="Gerar firmware .ino">⤓</button>
-                    <button style="background:rgba(220,38,38,0.15);border:1.5px solid rgba(220,38,38,0.5);color:#dc2626;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:15px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;transition:background 0.2s;" onmouseover="this.style.background='rgba(220,38,38,0.3)'" onmouseout="this.style.background='rgba(220,38,38,0.15)'" onclick="deleteDrone(${d.id})" title="Remover drone">×</button>
+                    <span class="drone-name">${d.name}</span>
+                    <div class="drone-item-bottom">
+                        <div class="drone-badges">
+                            <span class="drone-online-badge" data-drone-id="${d.id}" title="Estado do ESP32 (sinal há menos de 90s = online)" style="background:${onColor};">${on.label}</span>
+                            <span class="${dc}">${d.status.toUpperCase()}</span>
+                        </div>
+                        <div class="drone-actions">
+                            <button class="drone-btn drone-btn-edit" onclick="editDrone(${d.id})" title="Editar drone / WiFi">✎</button>
+                            <button class="drone-btn drone-btn-gen" onclick="generateDroneFirmware(${d.id})" title="Gerar firmware .ino">⤓</button>
+                            <button class="drone-btn drone-btn-del" onclick="deleteDrone(${d.id})" title="Remover drone">×</button>
+                        </div>
+                    </div>
                 </div>`;
             }).join('')
             : '<div class="drone-item" style="color:#bbb;">Nenhum drone</div>';
