@@ -7,6 +7,7 @@ let adminSupabase = null;
 let currentUser = null;
 let allUsers = [];
 let storeMap = {};
+let droneMap = {};
 let usersCurrentPage = 0;
 const USERS_PER_PAGE = 20;
 
@@ -194,8 +195,11 @@ async function loadStores() {
         .select('id, name, service, latitude, longitude');
     if (error) { console.error('Erro stores:', error.message); return; }
 
-    const { data: drones } = await adminSupabase.from('drones').select('id, store_id, status, name');
+    const { data: drones } = await adminSupabase.from('drones').select('id, store_id, status, name, capacity, wifi_ssid, wifi_password');
     const { data: owners } = await adminSupabase.from('profiles').select('id, username, store_id, role');
+
+    droneMap = {};
+    (drones || []).forEach(d => { droneMap[d.id] = d; });
 
     document.getElementById('addDroneStore').innerHTML = (stores || []).map(s =>
         `<option value="${s.id}">${s.name}</option>`).join('');
@@ -228,6 +232,8 @@ async function loadStores() {
                 return `<div class="drone-item">
                     <span>${d.name}</span>
                     <span class="${dc}">${d.status.toUpperCase()}</span>
+                    <button style="background:rgba(41,128,239,0.15);border:1.5px solid rgba(41,128,239,0.5);color:#2980ef;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:13px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;transition:background 0.2s;" onmouseover="this.style.background='rgba(41,128,239,0.3)'" onmouseout="this.style.background='rgba(41,128,239,0.15)'" onclick="editDrone(${d.id})" title="Editar drone / WiFi">✎</button>
+                    <button style="background:rgba(39,174,96,0.15);border:1.5px solid rgba(39,174,96,0.5);color:#27ae60;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:15px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;transition:background 0.2s;" onmouseover="this.style.background='rgba(39,174,96,0.3)'" onmouseout="this.style.background='rgba(39,174,96,0.15)'" onclick="generateDroneFirmware(${d.id})" title="Gerar firmware .ino">⤓</button>
                     <button style="background:rgba(220,38,38,0.15);border:1.5px solid rgba(220,38,38,0.5);color:#dc2626;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:15px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;transition:background 0.2s;" onmouseover="this.style.background='rgba(220,38,38,0.3)'" onmouseout="this.style.background='rgba(220,38,38,0.15)'" onclick="deleteDrone(${d.id})" title="Remover drone">×</button>
                 </div>`;
             }).join('')
@@ -293,6 +299,124 @@ async function deleteDrone(droneId) {
     if (error) { showToast('Erro ao apagar drone: ' + error.message, 'error'); return; }
     showToast('Drone removido.', 'success');
     await loadStores();
+}
+
+// ─────────────────────────────────────────────
+//  EDITAR DRONE (WiFi + id)
+// ─────────────────────────────────────────────
+function openDroneModal() {
+    document.getElementById('droneEditModal').classList.add('show');
+    document.getElementById('droneModalOverlay').classList.add('show');
+}
+
+function closeDroneModal() {
+    document.getElementById('droneEditModal').classList.remove('show');
+    document.getElementById('droneModalOverlay').classList.remove('show');
+}
+
+function editDrone(droneId) {
+    const d = droneMap[droneId];
+    if (!d) { showToast('Drone não encontrado.', 'error'); return; }
+    document.getElementById('editDroneOriginalId').value = d.id;
+    document.getElementById('editDroneId').value         = d.id;
+    document.getElementById('editDroneName').value        = d.name || '';
+    document.getElementById('editDroneCapacity').value    = (d.capacity ?? '');
+    document.getElementById('editDroneSsid').value        = d.wifi_ssid || '';
+    document.getElementById('editDronePassword').value    = d.wifi_password || '';
+    document.getElementById('droneEditError').style.display = 'none';
+    openDroneModal();
+}
+
+async function saveDroneEdit() {
+    const originalId = Number(document.getElementById('editDroneOriginalId').value);
+    const newIdRaw   = document.getElementById('editDroneId').value;
+    const name       = document.getElementById('editDroneName').value.trim();
+    const capRaw     = document.getElementById('editDroneCapacity').value;
+    const ssid       = document.getElementById('editDroneSsid').value.trim();
+    const password   = document.getElementById('editDronePassword').value;
+    const errorDiv   = document.getElementById('droneEditError');
+    errorDiv.style.display = 'none';
+
+    if (!name)               { errorDiv.textContent = 'O nome do drone é obrigatório.'; errorDiv.style.display = 'block'; return; }
+    if (!ssid || !password)  { errorDiv.textContent = 'WiFi SSID e password são obrigatórios.'; errorDiv.style.display = 'block'; return; }
+
+    const update = {
+        name,
+        capacity: capRaw !== '' ? parseInt(capRaw) : 500,
+        wifi_ssid: ssid,
+        wifi_password: password
+    };
+
+    // Mudança de id (chave primária) — pedir confirmação explícita
+    const idChanged = newIdRaw !== '' && Number(newIdRaw) !== originalId;
+    if (idChanged) {
+        const parsed = Number(newIdRaw);
+        if (!Number.isInteger(parsed) || parsed <= 0) {
+            errorDiv.textContent = 'ID inválido (tem de ser um inteiro positivo).'; errorDiv.style.display = 'block'; return;
+        }
+        if (!confirm(`Vais mudar o ID do drone de ${originalId} para ${parsed}.\n\nO ID é a chave primária: pode afetar encomendas/relações e OBRIGA a reflashar o ESP32 (o DRONE_ID muda). Continuar?`)) {
+            return;
+        }
+        update.id = parsed;
+    }
+
+    const { error } = await adminSupabase.from('drones').update(update).eq('id', originalId);
+    if (error) { errorDiv.textContent = 'Erro ao guardar: ' + error.message; errorDiv.style.display = 'block'; return; }
+
+    closeDroneModal();
+    showToast('Drone atualizado! (o ESP32 recebe as novas credenciais se estiver online)', 'success');
+    await loadStores();
+}
+
+// ─────────────────────────────────────────────
+//  GERAR FIRMWARE .ino
+// ─────────────────────────────────────────────
+// Escapa uma string para caber num literal C ("...").
+function escapeCString(s) {
+    return String(s ?? '').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
+
+async function downloadFirmware(id, ssid, password) {
+    if (!ssid || !password) { showToast('O drone não tem WiFi definido — edita e preenche primeiro.', 'warning'); return; }
+    let template;
+    try {
+        const res = await fetch('firmware/nicedrop_drone_template.ino', { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        template = await res.text();
+    } catch (e) {
+        showToast('Não consegui carregar o template do firmware (' + e.message + '). Precisa de estar publicado no site.', 'error');
+        return;
+    }
+    const code = template
+        .split('{{DRONE_ID}}').join(String(id))
+        .split('{{WIFI_SSID}}').join(escapeCString(ssid))
+        .split('{{WIFI_PASS}}').join(escapeCString(password));
+
+    const blob = new Blob([code], { type: 'text/plain' });
+    const url  = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `nicedrop_drone_${id}.ino`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast(`Firmware nicedrop_drone_${id}.ino gerado!`, 'success');
+}
+
+// A partir do cartão da loja (usa os valores guardados na BD).
+function generateDroneFirmware(droneId) {
+    const d = droneMap[droneId];
+    if (!d) { showToast('Drone não encontrado.', 'error'); return; }
+    downloadFirmware(d.id, d.wifi_ssid, d.wifi_password);
+}
+
+// A partir do modal de edição (usa os valores atuais dos campos).
+function generateFirmwareFromModal() {
+    const id   = document.getElementById('editDroneId').value || document.getElementById('editDroneOriginalId').value;
+    const ssid = document.getElementById('editDroneSsid').value.trim();
+    const pass = document.getElementById('editDronePassword').value;
+    downloadFirmware(id, ssid, pass);
 }
 
 // ─────────────────────────────────────────────
@@ -386,19 +510,25 @@ async function createStore() {
 //  ADICIONAR DRONE
 // ─────────────────────────────────────────────
 async function addDrone() {
-    const storeId = document.getElementById('addDroneStore').value;
-    const name    = document.getElementById('addDroneName').value.trim();
-    const capRaw  = document.getElementById('addDroneCapacity').value;
-    const cap     = capRaw !== '' ? parseInt(capRaw) : 500;
-    const btn     = document.getElementById('addDroneBtn');
+    const storeId  = document.getElementById('addDroneStore').value;
+    const name     = document.getElementById('addDroneName').value.trim();
+    const capRaw   = document.getElementById('addDroneCapacity').value;
+    const cap      = capRaw !== '' ? parseInt(capRaw) : 500;
+    const ssid     = document.getElementById('addDroneSsid').value.trim();
+    const password = document.getElementById('addDronePassword').value;
+    const btn      = document.getElementById('addDroneBtn');
     if (!storeId || !name) { showToast('Escolha uma loja e escreva o nome do drone.', 'warning'); return; }
+    if (!ssid || !password) { showToast('Preencha o WiFi SSID e a password (necessários para gerar o firmware).', 'warning'); return; }
     setButtonLoading(btn, true);
     const { error } = await adminSupabase.from('drones').insert({
-        name, store_id: parseInt(storeId), status: 'pending', capacity: cap, order_id: 0, servo_state: false
+        name, store_id: parseInt(storeId), status: 'pending', capacity: cap, order_id: 0, servo_state: false,
+        wifi_ssid: ssid, wifi_password: password
     });
     if (error) { showToast('Erro ao adicionar drone: ' + error.message, 'error'); setButtonLoading(btn, false); return; }
     document.getElementById('addDroneName').value     = '';
     document.getElementById('addDroneCapacity').value = '';
+    document.getElementById('addDroneSsid').value     = '';
+    document.getElementById('addDronePassword').value = '';
     setButtonLoading(btn, false);
     showToast('Drone adicionado!', 'success');
     await loadStores();
@@ -428,6 +558,8 @@ function bindEvents() {
     document.getElementById('addCategoryBtn').addEventListener('click', addCategory);
     document.getElementById('modalOverlay').addEventListener('click', closeAdminModal);
     document.getElementById('newPostModal').addEventListener('click', (e) => e.stopPropagation());
+    document.getElementById('droneModalOverlay').addEventListener('click', closeDroneModal);
+    document.getElementById('droneEditModal').addEventListener('click', (e) => e.stopPropagation());
 
     document.getElementById('newPostForm').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -650,6 +782,11 @@ window.deleteCategory = deleteCategory;
 // ─────────────────────────────────────────────
 window.deleteStore      = deleteStore;
 window.deleteDrone      = deleteDrone;
+window.editDrone            = editDrone;
+window.saveDroneEdit        = saveDroneEdit;
+window.closeDroneModal      = closeDroneModal;
+window.generateDroneFirmware   = generateDroneFirmware;
+window.generateFirmwareFromModal = generateFirmwareFromModal;
 window.changeRole       = changeRole;
 window.setStoreLocMode  = setStoreLocMode;
 

@@ -62,7 +62,10 @@
       "Bash(command -v inkscape)",
       "Bash(command -v node)",
       "Bash(command -v rsvg-convert)",
-      "PowerShell(try { [xml]$x = Get-Content -Raw \"favicon.svg\"; \"OK: SVG valido, root=<$\\($x.DocumentElement.Name\\)>, elementos=$\\($x.svg.ChildNodes.Count\\)\" } catch { \"ERRO: $\\($_.Exception.Message\\)\" })"
+      "PowerShell(try { [xml]$x = Get-Content -Raw \"favicon.svg\"; \"OK: SVG valido, root=<$\\($x.DocumentElement.Name\\)>, elementos=$\\($x.svg.ChildNodes.Count\\)\" } catch { \"ERRO: $\\($_.Exception.Message\\)\" })",
+      "Bash(node --check admin.js)",
+      "Bash(node -e ' *)",
+      "Bash(node \"C:/Users/diogo/AppData/Local/Temp/claude/c--Users-diogo-Desktop-teste-voo-autonomo-drone-nicedropcompany-github-io/d38798b5-9ffb-40d3-a915-c8fb1027fcb8/scratchpad/test_gen.js\")"
     ]
   }
 }

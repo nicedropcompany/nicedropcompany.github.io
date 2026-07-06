@@ -1,0 +1,40 @@
+-- ============================================================
+-- NiceDrop — Migração: credenciais WiFi por drone
+-- Executa este script no Supabase SQL Editor (uma única vez).
+-- ============================================================
+--
+-- Objetivo: permitir gerar o firmware ESP32 de cada drone a partir
+-- da consola admin. As credenciais WiFi passam a ficar guardadas na
+-- tabela `drones` (antes estavam hardcoded no .ino).
+--
+-- ------------------------------------------------------------
+-- 1) Colunas novas
+-- ------------------------------------------------------------
+ALTER TABLE drones ADD COLUMN IF NOT EXISTS wifi_ssid     text;
+ALTER TABLE drones ADD COLUMN IF NOT EXISTS wifi_password text;
+
+-- ------------------------------------------------------------
+-- 2) RLS — nada a alterar
+-- ------------------------------------------------------------
+-- As policies atuais de `drones` já cobrem SELECT/INSERT/UPDATE
+-- (ver rls-policies.sql). O acesso de escrita destas colunas é
+-- feito só pelo admin.html, que corre gated a role 'developer'.
+--
+-- ⚠️ NOTA DE SEGURANÇA (documentada, aceitável para PAP):
+--    A policy "drones_select ... USING (true)" deixa qualquer
+--    utilizador AUTENTICADO ler estas colunas via anon key. RLS é
+--    row-level, não column-level, por isso não é possível esconder
+--    só estas duas colunas mantendo essa policy.
+--    Se um dia for preciso isolamento real, mover as credenciais
+--    para uma tabela dedicada com RLS developer-only, por exemplo:
+--
+--    CREATE TABLE drone_credentials (
+--      drone_id      bigint PRIMARY KEY REFERENCES drones(id) ON DELETE CASCADE,
+--      wifi_ssid     text,
+--      wifi_password text
+--    );
+--    ALTER TABLE drone_credentials ENABLE ROW LEVEL SECURITY;
+--    CREATE POLICY "drone_credentials_dev" ON drone_credentials
+--      FOR ALL TO authenticated
+--      USING      (get_my_role() = 'developer')
+--      WITH CHECK (get_my_role() = 'developer');

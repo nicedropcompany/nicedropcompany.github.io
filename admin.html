@@ -95,6 +95,8 @@
                 <select id="addDroneStore"></select>
                 <input type="text" id="addDroneName" placeholder="Nome do drone">
                 <input type="number" id="addDroneCapacity" placeholder="Capacidade máx. (g)" step="1" min="0">
+                <input type="text" id="addDroneSsid" placeholder="WiFi SSID (rede)" autocomplete="off">
+                <input type="text" id="addDronePassword" placeholder="WiFi Password" autocomplete="off">
                 <button id="addDroneBtn" class="btn-primary">Adicionar Drone</button>
             </div>
         </section>
@@ -183,6 +185,30 @@
             <div style="display:flex;gap:10px;">
                 <button type="submit" class="btn-primary" style="flex:1;">GUARDAR</button>
                 <button type="button" class="btn-outline" onclick="closeAdminModal()" style="flex:1;">CANCELAR</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- MODAL EDITAR DRONE -->
+    <div id="droneModalOverlay" class="modal-overlay"></div>
+    <div id="droneEditModal" class="modal glass-panel" style="max-width:520px;width:92vw;">
+        <div class="modal-header">
+            <h2 style="font-size:1.4rem;margin:0;">Editar Drone</h2>
+            <button class="modal-close" onclick="closeDroneModal()">&times;</button>
+        </div>
+        <form id="droneEditForm" style="display:flex;flex-direction:column;gap:14px;" onsubmit="return false;">
+            <input type="hidden" id="editDroneOriginalId">
+            <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--ink-faint);margin:-4px 0 -8px;">ID <span style="color:#dc2626;text-transform:none;letter-spacing:0;">— chave primária; mudar obriga a reflashar o ESP32</span></label>
+            <input type="number" id="editDroneId" placeholder="ID do drone" step="1" min="1">
+            <input type="text" id="editDroneName" placeholder="Nome do drone">
+            <input type="number" id="editDroneCapacity" placeholder="Capacidade máx. (g)" step="1" min="0">
+            <input type="text" id="editDroneSsid" placeholder="WiFi SSID (rede)" autocomplete="off">
+            <input type="text" id="editDronePassword" placeholder="WiFi Password" autocomplete="off">
+            <div id="droneEditError" style="display:none;color:#e74c3c;font-size:0.82rem;"></div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <button type="button" class="btn-primary" style="flex:1;min-width:130px;" onclick="saveDroneEdit()">GUARDAR</button>
+                <button type="button" class="btn-outline" style="flex:1;min-width:130px;" onclick="generateFirmwareFromModal()">GERAR .INO</button>
+                <button type="button" class="btn-outline" style="flex:1;min-width:130px;" onclick="closeDroneModal()">CANCELAR</button>
             </div>
         </form>
     </div>
