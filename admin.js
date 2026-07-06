@@ -219,7 +219,16 @@ async function loadStores() {
         .select('id, name, service, latitude, longitude');
     if (error) { console.error('Erro stores:', error.message); return; }
 
-    const { data: drones } = await adminSupabase.from('drones').select('id, store_id, status, name, capacity, wifi_ssid, wifi_password, last_seen');
+    let { data: drones, error: dronesErr } = await adminSupabase
+        .from('drones')
+        .select('id, store_id, status, name, capacity, wifi_ssid, wifi_password, last_seen');
+    if (dronesErr) {
+        // Alguma coluna nova (wifi_ssid/wifi_password/last_seen) pode ainda não existir
+        // se a migração não foi corrida. Fallback seguro: nunca perder a lista de drones.
+        console.warn('Select de drones com colunas novas falhou — correste as migrações? →', dronesErr.message);
+        const fb = await adminSupabase.from('drones').select('id, store_id, status, name, capacity');
+        drones = fb.data || [];
+    }
     const { data: owners } = await adminSupabase.from('profiles').select('id, username, store_id, role');
 
     droneMap = {};
