@@ -80,6 +80,7 @@ async function init() {
         await Promise.all([loadGlobalOrders(), loadParentOrders(), loadPosts(), loadCategories()]);
         bindEvents();
         setTimeout(initStoreMap, 500);
+        setInterval(updateDroneOnlineBadges, 30000);
     });
 }
 
@@ -189,13 +190,36 @@ async function changeRole(userId, role) {
 // ─────────────────────────────────────────────
 //  LOJAS
 // ─────────────────────────────────────────────
+// ESP32 online se deu sinal de vida (last_seen) nos últimos 90s.
+function droneOnlineInfo(lastSeen) {
+    if (!lastSeen) return { online: false, label: 'OFFLINE' };
+    const ageMs = Date.now() - new Date(lastSeen).getTime();
+    const online = ageMs < 90000;
+    return { online, label: online ? 'ONLINE' : 'OFFLINE' };
+}
+
+// Atualiza só os badges online/offline (chamado num intervalo, sem re-render total)
+async function updateDroneOnlineBadges() {
+    const badges = document.querySelectorAll('.drone-online-badge');
+    if (!badges.length || !adminSupabase) return;
+    const { data: drones } = await adminSupabase.from('drones').select('id, last_seen');
+    if (!drones) return;
+    const seen = {};
+    drones.forEach(d => { seen[d.id] = d.last_seen; });
+    badges.forEach(b => {
+        const info = droneOnlineInfo(seen[b.dataset.droneId]);
+        b.textContent = info.label;
+        b.style.background = info.online ? '#27ae60' : '#9ca3af';
+    });
+}
+
 async function loadStores() {
     const { data: stores, error } = await adminSupabase
         .from('stores')
         .select('id, name, service, latitude, longitude');
     if (error) { console.error('Erro stores:', error.message); return; }
 
-    const { data: drones } = await adminSupabase.from('drones').select('id, store_id, status, name, capacity, wifi_ssid, wifi_password');
+    const { data: drones } = await adminSupabase.from('drones').select('id, store_id, status, name, capacity, wifi_ssid, wifi_password, last_seen');
     const { data: owners } = await adminSupabase.from('profiles').select('id, username, store_id, role');
 
     droneMap = {};
@@ -229,8 +253,11 @@ async function loadStores() {
                 else if (d.status === 'pending')  dc += ' badge-pending';
                 else if (d.status === 'shipping') dc += ' badge-shipping';
                 else dc += ' badge-inactive';
+                const on = droneOnlineInfo(d.last_seen);
+                const onColor = on.online ? '#27ae60' : '#9ca3af';
                 return `<div class="drone-item">
                     <span>${d.name}</span>
+                    <span class="drone-online-badge" data-drone-id="${d.id}" title="Estado do ESP32 (deu sinal há &lt;90s = online)" style="background:${onColor};color:#fff;padding:1px 8px;border-radius:999px;font-size:0.55rem;font-weight:700;letter-spacing:0.5px;flex-shrink:0;">${on.label}</span>
                     <span class="${dc}">${d.status.toUpperCase()}</span>
                     <button style="background:rgba(41,128,239,0.15);border:1.5px solid rgba(41,128,239,0.5);color:#2980ef;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:13px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;transition:background 0.2s;" onmouseover="this.style.background='rgba(41,128,239,0.3)'" onmouseout="this.style.background='rgba(41,128,239,0.15)'" onclick="editDrone(${d.id})" title="Editar drone / WiFi">✎</button>
                     <button style="background:rgba(39,174,96,0.15);border:1.5px solid rgba(39,174,96,0.5);color:#27ae60;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:15px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;transition:background 0.2s;" onmouseover="this.style.background='rgba(39,174,96,0.3)'" onmouseout="this.style.background='rgba(39,174,96,0.15)'" onclick="generateDroneFirmware(${d.id})" title="Gerar firmware .ino">⤓</button>
@@ -329,7 +356,6 @@ function editDrone(droneId) {
 
 async function saveDroneEdit() {
     const originalId = Number(document.getElementById('editDroneOriginalId').value);
-    const newIdRaw   = document.getElementById('editDroneId').value;
     const name       = document.getElementById('editDroneName').value.trim();
     const capRaw     = document.getElementById('editDroneCapacity').value;
     const ssid       = document.getElementById('editDroneSsid').value.trim();
@@ -340,25 +366,13 @@ async function saveDroneEdit() {
     if (!name)               { errorDiv.textContent = 'O nome do drone é obrigatório.'; errorDiv.style.display = 'block'; return; }
     if (!ssid || !password)  { errorDiv.textContent = 'WiFi SSID e password são obrigatórios.'; errorDiv.style.display = 'block'; return; }
 
+    // O ID (chave primária) NÃO é editável — evita colisões e reflash desnecessário do ESP32.
     const update = {
         name,
         capacity: capRaw !== '' ? parseInt(capRaw) : 500,
         wifi_ssid: ssid,
         wifi_password: password
     };
-
-    // Mudança de id (chave primária) — pedir confirmação explícita
-    const idChanged = newIdRaw !== '' && Number(newIdRaw) !== originalId;
-    if (idChanged) {
-        const parsed = Number(newIdRaw);
-        if (!Number.isInteger(parsed) || parsed <= 0) {
-            errorDiv.textContent = 'ID inválido (tem de ser um inteiro positivo).'; errorDiv.style.display = 'block'; return;
-        }
-        if (!confirm(`Vais mudar o ID do drone de ${originalId} para ${parsed}.\n\nO ID é a chave primária: pode afetar encomendas/relações e OBRIGA a reflashar o ESP32 (o DRONE_ID muda). Continuar?`)) {
-            return;
-        }
-        update.id = parsed;
-    }
 
     const { error } = await adminSupabase.from('drones').update(update).eq('id', originalId);
     if (error) { errorDiv.textContent = 'Erro ao guardar: ' + error.message; errorDiv.style.display = 'block'; return; }

@@ -57,6 +57,7 @@ Preferences prefs;
 
 bool websocketStarted = false;
 unsigned long lastWifiAttempt = 0;
+unsigned long lastHeartbeat = 0;
 
 int  droneId = 0;
 char droneIdBuffer[8] = "0";
@@ -187,6 +188,19 @@ void confirmarReconfigTratado() {
   http.end();
 }
 
+// Diz à BD "estou vivo" -> o site mostra o drone ONLINE.
+void enviarHeartbeat() {
+  if (WiFi.status() != WL_CONNECTED) return;
+  HTTPClient http;
+  String url = "https://" + String(supabase_host) + "/rest/v1/rpc/drone_heartbeat";
+  http.begin(url);
+  http.addHeader("apikey", supabase_anon_key);
+  http.addHeader("Authorization", "Bearer " + String(supabase_anon_key));
+  http.addHeader("Content-Type", "application/json");
+  http.POST("{\"p_id\": " + String(droneId) + "}");
+  http.end();
+}
+
 void apagarWifiEReiniciar() {
   Serial.println(">>> RECONFIGURACAO REMOTA PEDIDA PELO SITE <<<");
   confirmarReconfigTratado();
@@ -287,12 +301,17 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
           return;
         }
 
-        if (servo_state) {
-          servo.write(SERVO_ABERTO);
-          Serial.println(">>> Servo aberto MANUALMENTE (carregar encomenda)");
-        } else {
-          servo.write(SERVO_FECHADO);
-          Serial.println(">>> Servo fechado MANUALMENTE (pronto para descolar)");
+        // Só mexe o servo quando o estado MUDA (evita repetir a cada heartbeat)
+        static int ultimoServo = -1;
+        if ((int)servo_state != ultimoServo) {
+          ultimoServo = (int)servo_state;
+          if (servo_state) {
+            servo.write(SERVO_ABERTO);
+            Serial.println(">>> Servo aberto MANUALMENTE (carregar encomenda)");
+          } else {
+            servo.write(SERVO_FECHADO);
+            Serial.println(">>> Servo fechado MANUALMENTE (pronto para descolar)");
+          }
         }
       }
 
@@ -360,5 +379,11 @@ void loop() {
       websocketStarted = true;
     }
     webSocket.loop();
+
+    // Heartbeat: dá sinal de vida a cada 30s -> site mostra ONLINE
+    if (millis() - lastHeartbeat > 30000) {
+      lastHeartbeat = millis();
+      enviarHeartbeat();
+    }
   }
 }
