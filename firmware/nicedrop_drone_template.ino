@@ -41,8 +41,8 @@ const char* WIFI_PASS_BOOTSTRAP = "{{WIFI_PASS}}";
 #define SERVO_PIN       19
 #define BOTAO_RESET_PIN 0
 
-const int SERVO_ABERTO  = 113;
-const int SERVO_FECHADO = 203;
+const int SERVO_ABERTO  = 90;
+const int SERVO_FECHADO = 180;
 const char* STATUS_ENTREGA = "complete";
 
 const char* supabase_host = "ggpjinhvxvieaeulhdyw.supabase.co";
@@ -65,7 +65,6 @@ char droneIdBuffer[8] = "0";
 // ---------------------------------------------------------------------------
 //  WiFi — redes guardadas (bootstrap + credenciais empurradas pela consola)
 // ---------------------------------------------------------------------------
-// Semeia o drone_id a partir do bootstrap na 1ª vez (se ainda não existir).
 void seedBootstrapDroneId() {
   prefs.begin("nicedrop", false);
   String savedId = prefs.getString("drone_id", "");
@@ -77,7 +76,6 @@ void seedBootstrapDroneId() {
   prefs.end();
 }
 
-// Carrega no WiFiMulti a rede de bootstrap + a última rede empurrada (se houver).
 void carregarRedesNoMulti() {
   if (strlen(WIFI_SSID_BOOTSTRAP) > 0) {
     wifiMulti.addAP(WIFI_SSID_BOOTSTRAP, WIFI_PASS_BOOTSTRAP);
@@ -95,7 +93,6 @@ void carregarRedesNoMulti() {
   }
 }
 
-// Tenta ligar a qualquer rede conhecida durante timeoutMs. true se ligou.
 bool ligarComRedesGuardadas(unsigned long timeoutMs) {
   Serial.println("A tentar ligar as redes conhecidas (WiFiMulti)...");
   unsigned long inicio = millis();
