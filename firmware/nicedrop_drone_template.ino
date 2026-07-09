@@ -2,7 +2,7 @@
 //  NiceDrop — Firmware ESP32 (TEMPLATE)
 // ----------------------------------------------------------------------------
 //  Este ficheiro é um TEMPLATE. NÃO o compiles diretamente — as marcas
-//  {{DRONE_ID}}, {{WIFI_SSID}} e {{WIFI_PASS}} são substituídas pela consola
+//  29, MEO-BEA7B0 e 5561827982 são substituídas pela consola
 //  admin quando carregas em "Gerar .ino". Descarrega sempre o ficheiro
 //  nicedrop_drone_<id>.ino a partir da consola e é ESSE que gravas no ESP32.
 //
@@ -33,16 +33,16 @@
 #include <HTTPClient.h>
 
 // ==== GERADO PELA CONSOLA NICEDROP (substituído ao descarregar) ====
-const long  DRONE_ID_BOOTSTRAP  = {{DRONE_ID}};
-const char* WIFI_SSID_BOOTSTRAP = "{{WIFI_SSID}}";
-const char* WIFI_PASS_BOOTSTRAP = "{{WIFI_PASS}}";
+const long  DRONE_ID_BOOTSTRAP  = 29;
+const char* WIFI_SSID_BOOTSTRAP = "MEO-BEA7B0";
+const char* WIFI_PASS_BOOTSTRAP = "5561827982";
 // ===================================================================
 
 #define SERVO_PIN       19
 #define BOTAO_RESET_PIN 0
 
 const int SERVO_ABERTO  = 90;
-const int SERVO_FECHADO = 180;
+const int SERVO_FECHADO = 185;
 const char* STATUS_ENTREGA = "complete";
 
 const char* supabase_host = "ggpjinhvxvieaeulhdyw.supabase.co";
@@ -65,6 +65,7 @@ char droneIdBuffer[8] = "0";
 // ---------------------------------------------------------------------------
 //  WiFi — redes guardadas (bootstrap + credenciais empurradas pela consola)
 // ---------------------------------------------------------------------------
+// Semeia o drone_id a partir do bootstrap na 1ª vez (se ainda não existir).
 void seedBootstrapDroneId() {
   prefs.begin("nicedrop", false);
   String savedId = prefs.getString("drone_id", "");
@@ -76,6 +77,7 @@ void seedBootstrapDroneId() {
   prefs.end();
 }
 
+// Carrega no WiFiMulti a rede de bootstrap + a última rede empurrada (se houver).
 void carregarRedesNoMulti() {
   if (strlen(WIFI_SSID_BOOTSTRAP) > 0) {
     wifiMulti.addAP(WIFI_SSID_BOOTSTRAP, WIFI_PASS_BOOTSTRAP);
@@ -93,6 +95,7 @@ void carregarRedesNoMulti() {
   }
 }
 
+// Tenta ligar a qualquer rede conhecida durante timeoutMs. true se ligou.
 bool ligarComRedesGuardadas(unsigned long timeoutMs) {
   Serial.println("A tentar ligar as redes conhecidas (WiFiMulti)...");
   unsigned long inicio = millis();
