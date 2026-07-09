@@ -33,9 +33,9 @@
 #include <HTTPClient.h>
 
 // ==== GERADO PELA CONSOLA NICEDROP (substituído ao descarregar) ====
-const long  DRONE_ID_BOOTSTRAP  = 29;
-const char* WIFI_SSID_BOOTSTRAP = "MEO-BEA7B0";
-const char* WIFI_PASS_BOOTSTRAP = "5561827982";
+const long  DRONE_ID_BOOTSTRAP  = {{DRONE_ID}};
+const char* WIFI_SSID_BOOTSTRAP = "{{WIFI_SSID}}";
+const char* WIFI_PASS_BOOTSTRAP = "{{WIFI_PASS}}";
 // ===================================================================
 
 #define SERVO_PIN       19
