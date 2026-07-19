@@ -229,6 +229,121 @@
         html.motion .scroll-hint { opacity: 0; }
         html.motion .tech-line { border-top-color: transparent; }
 
+        /* ---------- Planos / Pricing ---------- */
+        .plan-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            margin-top: 90px;
+            align-items: stretch;
+        }
+        .plan-card {
+            position: relative;
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.12);
+            padding: 60px 40px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        .plan-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow);
+            z-index: 3;
+        }
+        .plan-card--featured {
+            background: #000;
+            color: #fff;
+            border-color: #000;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
+        .plan-card--featured:hover {
+            box-shadow: 0 26px 55px rgba(0,0,0,0.4);
+        }
+        .plan-badge {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--accent);
+            color: #000;
+            font-size: 0.6rem;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            font-weight: 700;
+            padding: 9px 18px;
+            white-space: nowrap;
+        }
+        .plan-name {
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            font-weight: 700;
+            text-transform: uppercase;
+            opacity: 0.55;
+            margin-bottom: 26px;
+        }
+        .plan-card--featured .plan-name { opacity: 0.7; }
+        .plan-price {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(3.5rem, 6vw, 5rem);
+            line-height: 0.9;
+            letter-spacing: -1px;
+        }
+        .plan-price small {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            font-weight: 500;
+            opacity: 0.5;
+            margin-left: 4px;
+        }
+        .plan-price--quote {
+            font-size: clamp(2.4rem, 4vw, 3.2rem);
+        }
+        .plan-features {
+            list-style: none;
+            margin: 40px 0;
+            padding: 0;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            flex: 1;
+        }
+        .plan-features li {
+            position: relative;
+            padding-left: 26px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            opacity: 0.75;
+        }
+        .plan-features li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.6em;
+            width: 12px;
+            height: 1px;
+            background: #000;
+        }
+        .plan-card--featured .plan-features li { opacity: 0.85; }
+        .plan-card--featured .plan-features li::before { background: var(--accent); }
+        .plan-card .btn-primary,
+        .plan-card .btn-inv {
+            width: 100%;
+            height: auto;
+            padding: 18px 20px;
+        }
+        .plan-note {
+            max-width: 620px;
+            margin: 50px auto 0;
+            font-size: 0.78rem;
+            line-height: 1.7;
+            color: var(--ink-faint);
+        }
+
         @media (max-width: 768px) {
             section { padding: 80px 24px; }
             .nav-fixed { padding: 16px 20px; }
@@ -240,6 +355,10 @@
             .join-block { padding: 50px 24px !important; }
             section[id="vision"] > div:last-child,
             section[id="join-network"] > div:last-child { grid-template-columns: 1fr !important; }
+            .plan-grid { grid-template-columns: 1fr; gap: 28px; margin-top: 60px; }
+            .plan-card { padding: 44px 28px; }
+            .plan-card:hover { transform: none; }
+            .plan-card--featured { margin-top: 8px; }
         }
     </style>
 </head>
@@ -358,6 +477,62 @@
                 <a href="auth.html" class="btn btn-inv" data-magnetic style="padding: 18px 50px;">ENTRAR COMO DONO DE LOJA</a>
             </div>
         </div>
+    </section>
+
+
+    <!-- PRICING -->
+    <section id="pricing">
+        <span class="sub-headline" data-reveal="up">Pricing</span>
+        <h2 class="huge-title js-split-lines" style="margin-top: 40px;">PLANOS PARA<br>FARMÁCIAS</h2>
+        <div class="plan-grid" data-reveal-stagger="0.15">
+
+            <!-- Cartão 1 — Básico -->
+            <div class="plan-card" data-reveal="up">
+                <p class="plan-name">Básico</p>
+                <div class="plan-price">129 €<small>/mês</small></div>
+                <ul class="plan-features">
+                    <li>1 drone incluído (aluguer + manutenção)</li>
+                    <li>Entregas ilimitadas</li>
+                    <li>1,00 € por entrega realizada</li>
+                    <li>App cliente e operador</li>
+                    <li>Dashboard de gestão</li>
+                    <li>Suporte por email</li>
+                </ul>
+                <a href="auth.html" class="btn-primary" data-magnetic>Começar</a>
+            </div>
+
+            <!-- Cartão 2 — Pro (destacado) -->
+            <div class="plan-card plan-card--featured" data-reveal="up">
+                <span class="plan-badge">Mais Popular</span>
+                <p class="plan-name">Pro</p>
+                <div class="plan-price">229 €<small>/mês</small></div>
+                <ul class="plan-features">
+                    <li>2 drones incluídos</li>
+                    <li>Entregas ilimitadas</li>
+                    <li>0,90 € por entrega realizada</li>
+                    <li>Tudo do plano Básico</li>
+                    <li>Suporte prioritário</li>
+                    <li>Drone de substituição em 24h</li>
+                </ul>
+                <a href="auth.html" class="btn-inv" data-magnetic>Começar</a>
+            </div>
+
+            <!-- Cartão 3 — Enterprise -->
+            <div class="plan-card" data-reveal="up">
+                <p class="plan-name">Enterprise</p>
+                <div class="plan-price plan-price--quote">Sob consulta</div>
+                <ul class="plan-features">
+                    <li>3 ou mais drones</li>
+                    <li>Gestão multi-loja</li>
+                    <li>Preço por entrega negociável</li>
+                    <li>SLA garantido</li>
+                    <li>Gestor de conta dedicado</li>
+                </ul>
+                <a href="mailto:nicedrop.company@gmail.com" class="btn-primary" data-magnetic>Falar connosco</a>
+            </div>
+
+        </div>
+        <p class="plan-note">O cliente final paga apenas 0,75 € de taxa de entrega por encomenda. Todos os preços acrescem IVA à taxa legal em vigor.</p>
     </section>
 
 
